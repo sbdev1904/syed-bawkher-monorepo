@@ -1,0 +1,281 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  customer_id           Int                      @id @default(autoincrement())
+  first_name            String?
+  middle_name           String?
+  last_name             String?
+  add1                  String?
+  add2                  String?
+  add3                  String?
+  add4                  String?
+  email                 String?
+  mobile                String?
+  office_phone          String?
+  residential_phone     String?
+  last_ordered_date     DateTime?
+  orders                Orders[]
+  measurements          FinalJacketMeasurement[]
+  FinalPantMeasurement  FinalPantMeasurement[]
+  FinalShirtMeasurement FinalShirtMeasurement[]
+  JacketMeasurement     JacketMeasurement[]
+  PantMeasurement       PantMeasurement[]
+  ShirtMeasurement      ShirtMeasurement[]
+}
+
+model Fabric {
+  fabric_id        Int               @id @default(autoincrement())
+  description      String?
+  available_length Decimal?
+  fabric_code      String?
+  fabric_brand     String?
+  stock_location   String?
+  image            String?
+  barcode          String?
+  fabricOrders     FabricOrderList[]
+  items            Items[]           @relation("FabricRelation")
+  liningItems      Items[]           @relation("LiningFabricRelation")
+}
+
+model FabricOrderList {
+  order_id      Int       @id @default(autoincrement())
+  fabric        Fabric?   @relation(fields: [fabric_id], references: [fabric_id])
+  fabric_id     Int?
+  description   String?
+  supplier_name String?
+  meters        Decimal?
+  ordered_date  DateTime?
+  ordered_for   String?
+  supplier      Supplier? @relation(fields: [supplier_id], references: [supplier_id])
+  supplier_id   Int?
+}
+
+model FinalJacketMeasurement {
+  measurement_id    String    @id @default(uuid())
+  customer          Customer? @relation(fields: [customer_id], references: [customer_id])
+  customer_id       Int?
+  order             Orders?   @relation(fields: [orderNo], references: [orderNo])
+  orderNo           String?
+  date              DateTime?
+  jacket_length     String?
+  natural_length    String?
+  back_length       String?
+  x_back            String?
+  half_shoulder     String?
+  to_sleeve         String?
+  chest             String?
+  waist             String?
+  collar            String?
+  waist_coat_length String?
+  sherwani_length   String?
+  other_notes       String?
+  Items             Items[]
+}
+
+model JacketMeasurement {
+  measurement_id    String    @id @default(uuid())
+  customer          Customer? @relation(fields: [customer_id], references: [customer_id])
+  customer_id       Int?
+  order             Orders?   @relation(fields: [orderNo], references: [orderNo])
+  orderNo           String?
+  date              DateTime?
+  jacket_length     String?
+  natural_length    String?
+  back_length       String?
+  x_back            String?
+  half_shoulder     String?
+  to_sleeve         String?
+  chest             String?
+  waist             String?
+  collar            String?
+  waist_coat_length String?
+  sherwani_length   String?
+  other_notes       String?
+  Items             Items[]
+}
+
+model FinalPantMeasurement {
+  measurement_id String    @id @default(uuid())
+  customer       Customer? @relation(fields: [customer_id], references: [customer_id])
+  customer_id    Int?
+  order          Orders?   @relation(fields: [orderNo], references: [orderNo])
+  orderNo        String?
+  date           DateTime?
+  length         String?
+  inseem         String?
+  waist          String?
+  hips           String?
+  bottom         String?
+  knee           String?
+  other_notes    String?
+  Items          Items[]
+}
+
+model PantMeasurement {
+  measurement_id String    @id @default(uuid())
+  customer       Customer? @relation(fields: [customer_id], references: [customer_id])
+  customer_id    Int?
+  order          Orders?   @relation(fields: [orderNo], references: [orderNo])
+  orderNo        String?
+  date           DateTime?
+  length         String?
+  inseem         String?
+  waist          String?
+  hips           String?
+  bottom         String?
+  knee           String?
+  other_notes    String?
+  Items          Items[]
+}
+
+model FinalShirtMeasurement {
+  measurement_id String    @id @default(uuid())
+  customer       Customer? @relation(fields: [customer_id], references: [customer_id])
+  customer_id    Int?
+  order          Orders?   @relation(fields: [orderNo], references: [orderNo])
+  orderNo        String?
+  date           DateTime?
+  length         String?
+  half_shoulder  String?
+  to_sleeve      String?
+  chest          String?
+  waist          String?
+  collar         String?
+  other_notes    String?
+  Items          Items[]
+}
+
+model ShirtMeasurement {
+  measurement_id String    @id @default(uuid())
+  customer       Customer? @relation(fields: [customer_id], references: [customer_id])
+  customer_id    Int?
+  order          Orders?   @relation(fields: [orderNo], references: [orderNo])
+  orderNo        String?
+  date           DateTime?
+  length         String?
+  half_shoulder  String?
+  to_sleeve      String?
+  chest          String?
+  waist          String?
+  collar         String?
+  other_notes    String?
+  Items          Items[]
+}
+
+model OrderPhotos {
+  photo_id    Int      @id @default(autoincrement())
+  orderNo     String?
+  s3_key      String?
+  uploaded_at DateTime @default(now())
+  order       Orders?  @relation(fields: [orderNo], references: [orderNo])
+
+  @@index([orderNo])
+}
+
+model Orders {
+  orderNo                String                   @id
+  customer               Customer?                @relation(fields: [customer_id], references: [customer_id])
+  customer_id            Int?
+  date                   DateTime?
+  onote                  String?
+  items                  Items[]
+  FinalJacketMeasurement FinalJacketMeasurement[]
+  FinalPantMeasurement   FinalPantMeasurement[]
+  FinalShirtMeasurement  FinalShirtMeasurement[]
+  JacketMeasurement      JacketMeasurement[]
+  PantMeasurement        PantMeasurement[]
+  ShirtMeasurement       ShirtMeasurement[]
+  OrderPhotos            OrderPhotos[]
+}
+
+model Items {
+  item_id                     Int                     @id @default(autoincrement())
+  order                       Orders?                 @relation(fields: [orderNo], references: [orderNo])
+  orderNo                     String?
+  item_name                   String?
+  item_type                   ItemType?
+  fabric                      Fabric?                 @relation("FabricRelation", fields: [fabric_id], references: [fabric_id])
+  fabric_id                   Int?
+  lining_fabric               Fabric?                 @relation("LiningFabricRelation", fields: [lining_fabric_id], references: [fabric_id])
+  lining_fabric_id            Int?
+  jacket_measurement          JacketMeasurement?      @relation(fields: [jacket_measurement_id], references: [measurement_id])
+  jacket_measurement_id       String?
+  shirt_measurement           ShirtMeasurement?       @relation(fields: [shirt_measurement_id], references: [measurement_id])
+  shirt_measurement_id        String?
+  pant_measurement            PantMeasurement?        @relation(fields: [pant_measurement_id], references: [measurement_id])
+  pant_measurement_id         String?
+  final_jacket_measurement    FinalJacketMeasurement? @relation(fields: [final_jacket_measurement_id], references: [measurement_id])
+  final_jacket_measurement_id String?
+  final_shirt_measurement     FinalShirtMeasurement?  @relation(fields: [final_shirt_measurement_id], references: [measurement_id])
+  final_shirt_measurement_id  String?
+  final_pant_measurement      FinalPantMeasurement?   @relation(fields: [final_pant_measurement_id], references: [measurement_id])
+  final_pant_measurement_id   String?
+}
+
+enum ItemType {
+  SHIRT
+  JACKET
+  PANT
+}
+
+model Supplier {
+  supplier_id           Int                     @id @default(autoincrement())
+  supplier_name         String
+  add1                  String?
+  add2                  String?
+  add3                  String?
+  phone_number1         String?
+  phone_number2         String?
+  phone_number3         String?
+  email                 String?
+  primary_contact_name1 String?
+  primary_contact_name2 String?
+  primary_contact_name3 String?
+  notes                 String?
+  FabricOrderList       FabricOrderList[]
+  RawMaterialsOrderList RawMaterialsOrderList[]
+}
+
+model RawMaterialsOrderList {
+  order_id          Int       @id @default(autoincrement())
+  product_name      String?
+  description       String?
+  raw_material_code String?
+  color             String?
+  supplier_name     String?
+  quantity          Decimal?
+  ordered_date      DateTime?
+  supplier          Supplier? @relation(fields: [supplier_id], references: [supplier_id])
+  supplier_id       Int?
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
+  password  String
+  role      Role
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  logs      LogEntry[]
+}
+
+model LogEntry {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  action    String
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  FLOOR_MANAGER
+  INVENTORY_MANAGER
+}
