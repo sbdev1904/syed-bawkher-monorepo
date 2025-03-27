@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
 
-// Get all orders
+// Get all log entries
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -11,18 +11,18 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orders = await prisma.orders.findMany();
-    return NextResponse.json(orders);
+    const logEntries = await prisma.logEntry.findMany();
+    return NextResponse.json(logEntries);
   } catch (error) {
-    console.error("Failed to fetch orders:", error);
+    console.error("Failed to fetch log entries:", error);
     return NextResponse.json(
-      { error: "Failed to fetch orders" },
+      { error: "Failed to fetch log entries" },
       { status: 500 }
     );
   }
 }
 
-// Create a new order
+// Create a new log entry
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -31,41 +31,35 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { orderNo, date, note, customerId } = body;
+    const { action } = body;
 
-    // Validate required fields
-    if (!orderNo || !customerId) {
+    if (!action) {
       return NextResponse.json(
         {
-          message:
-            "Missing required order details. Order number and customer ID are required.",
+          error: "Missing required field: log_type or log_message",
         },
         { status: 400 }
       );
     }
 
-    const orderDate = date || new Date().toISOString().split("T")[0];
-
-    const order = await prisma.orders.create({
+    const logEntry = await prisma.logEntry.create({
       data: {
-        orderNo,
-        customer_id: customerId,
-        date: orderDate,
-        onote: note,
+        action,
+        user: { connect: { id: Number(session.user.id) } },
       },
     });
 
     return NextResponse.json(
       {
-        message: "Order created successfully",
-        orderNo: order.orderNo,
+        message: "Log entry created successfully",
+        logEntry,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Failed to create order:", error);
+    console.error("Failed to create log entry:", error);
     return NextResponse.json(
-      { error: "Failed to create order" },
+      { error: "Failed to create log entry" },
       { status: 500 }
     );
   }
