@@ -66,7 +66,7 @@ export async function GET(
 // Generate upload URL for fabric image
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -74,7 +74,9 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const fabricId = parseInt(params.id);
+    const id = (await params).id;
+    const fabricId = parseInt(id);
+
     if (isNaN(fabricId)) {
       return NextResponse.json({ error: "Invalid fabric ID" }, { status: 400 });
     }
@@ -116,7 +118,7 @@ export async function POST(
 // Delete fabric image
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -124,7 +126,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const fabricId = parseInt(params.id);
+    const id = (await params).id;
+    const fabricId = parseInt(id);
+
     if (isNaN(fabricId)) {
       return NextResponse.json({ error: "Invalid fabric ID" }, { status: 400 });
     }
