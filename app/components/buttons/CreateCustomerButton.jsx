@@ -1,10 +1,10 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import { IoMdCreate } from "react-icons/io";
 import { Button, Tooltip } from "antd";
 import CreateCustomerModal from "../modals/CreateCustomerModal";
 
-const CreateCustomerButton = ({ customerId = null }) => {
+const CreateCustomerButton = ({ customerId = Number | null }) => {
   const [isCreateCustomerModalVisible, setIsCreateCustomerModalVisible] =
     useState(false);
 

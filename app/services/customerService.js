@@ -21,7 +21,7 @@ const customerService = {
     const url = `${BASE_URL}/api/customers/${customer_id}`;
     try {
       const response = await axios.get(url);
-      return response.data[0];
+      return response.data;
     } catch (error) {
       console.error("Error finding customer:", error);
       throw error;
@@ -29,7 +29,9 @@ const customerService = {
   },
 
   findByOrderNo: async (orderNo) => {
-    const url = `${BASE_URL}/api/customers/order/${encodeURIComponent(orderNo)}`;
+    const url = `${BASE_URL}/api/customers/order/${encodeURIComponent(
+      orderNo
+    )}`;
     try {
       const response = await axios.get(url);
       console.log("Customer by order number:", response.data);
