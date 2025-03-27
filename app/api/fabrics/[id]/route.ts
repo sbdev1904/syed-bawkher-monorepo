@@ -15,7 +15,7 @@ const s3Client = new S3Client({
 // Get a fabric by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -23,7 +23,9 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const fabricId = parseInt(params.id);
+    const id = (await params).id;
+    const fabricId = parseInt(id);
+
     if (isNaN(fabricId)) {
       return NextResponse.json({ error: "Invalid fabric ID" }, { status: 400 });
     }
@@ -50,10 +52,10 @@ export async function GET(
   }
 }
 
-// Update an existing fabric
+// Update a fabric
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -61,7 +63,9 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const fabricId = parseInt(params.id);
+    const id = (await params).id;
+    const fabricId = parseInt(id);
+
     if (isNaN(fabricId)) {
       return NextResponse.json({ error: "Invalid fabric ID" }, { status: 400 });
     }
@@ -72,11 +76,6 @@ export async function PUT(
     Object.keys(body).forEach(
       (key) => body[key] === undefined && delete body[key]
     );
-
-    // Handle numeric fields
-    if (body.available_length) {
-      body.available_length = parseFloat(body.available_length);
-    }
 
     const fabric = await prisma.fabric.update({
       where: { fabric_id: fabricId },
@@ -102,7 +101,7 @@ export async function PUT(
 // Delete a fabric
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -110,36 +109,39 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const fabricId = parseInt(params.id);
+    const id = (await params).id;
+    const fabricId = parseInt(id);
+
     if (isNaN(fabricId)) {
       return NextResponse.json({ error: "Invalid fabric ID" }, { status: 400 });
     }
 
-    // Start a transaction to handle the deletion
-    await prisma.$transaction(async (tx) => {
-      // Get the fabric to check for image
-      const fabric = await tx.fabric.findUnique({
-        where: { fabric_id: fabricId },
-      });
+    // Get the fabric to check if it has an image
+    const fabric = await prisma.fabric.findUnique({
+      where: { fabric_id: fabricId },
+    });
 
-      // Delete image from S3 if it exists
-      if (fabric?.image) {
-        const command = new DeleteObjectCommand({
-          Bucket: process.env.AWS_S3_BUCKET_NAME!,
-          Key: fabric.image,
-        });
-        await s3Client.send(command);
+    if (!fabric) {
+      return NextResponse.json({ error: "Fabric not found" }, { status: 404 });
+    }
+
+    // Delete the image from S3 if it exists
+    if (fabric.image) {
+      try {
+        await s3Client.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET_NAME!,
+            Key: fabric.image,
+          })
+        );
+      } catch (error) {
+        console.error("Failed to delete fabric image from S3:", error);
       }
+    }
 
-      // Delete related fabric orders
-      await tx.fabricOrderList.deleteMany({
-        where: { fabric_id: fabricId },
-      });
-
-      // Delete the fabric
-      await tx.fabric.delete({
-        where: { fabric_id: fabricId },
-      });
+    // Delete the fabric from the database
+    await prisma.fabric.delete({
+      where: { fabric_id: fabricId },
     });
 
     return NextResponse.json({

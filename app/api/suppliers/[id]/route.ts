@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 // Get a supplier by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,16 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supplierId = parseInt(params.id);
+    const id = (await params).id;
+    const supplierId = parseInt(id);
+
+    if (isNaN(supplierId)) {
+      return NextResponse.json(
+        { error: "Invalid supplier ID" },
+        { status: 400 }
+      );
+    }
+
     const supplier = await prisma.supplier.findUnique({
       where: { supplier_id: supplierId },
     });
@@ -39,7 +48,7 @@ export async function GET(
 // Update a supplier
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -47,7 +56,16 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supplierId = parseInt(params.id);
+    const id = (await params).id;
+    const supplierId = parseInt(id);
+
+    if (isNaN(supplierId)) {
+      return NextResponse.json(
+        { error: "Invalid supplier ID" },
+        { status: 400 }
+      );
+    }
+
     const body = await req.json();
 
     Object.keys(body).forEach(
@@ -81,7 +99,7 @@ export async function PUT(
 // Delete a supplier
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -89,7 +107,16 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supplierId = parseInt(params.id);
+    const id = (await params).id;
+    const supplierId = parseInt(id);
+
+    if (isNaN(supplierId)) {
+      return NextResponse.json(
+        { error: "Invalid supplier ID" },
+        { status: 400 }
+      );
+    }
+
     await prisma.supplier.delete({
       where: { supplier_id: supplierId },
     });

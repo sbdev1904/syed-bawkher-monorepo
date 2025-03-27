@@ -15,7 +15,7 @@ const s3Client = new S3Client({
 // Get an order by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const id = (await params).id;
     const order = await prisma.orders.findUnique({
       where: { orderNo: id },
     });
@@ -42,10 +42,10 @@ export async function GET(
   }
 }
 
-// Delete an order and its associated entities
+// Delete an order
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -53,7 +53,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id: orderNo } = params;
+    const orderNo = (await params).id;
 
     // Get all photos associated with the order
     const photos = await prisma.orderPhotos.findMany({

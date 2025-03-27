@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 // Get a fabric order by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,9 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orderId = parseInt(params.id);
+    const id = (await params).id;
+    const orderId = parseInt(id);
+
     if (isNaN(orderId)) {
       return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
     }
@@ -44,10 +46,10 @@ export async function GET(
   }
 }
 
-// Update an existing fabric order
+// Update a fabric order
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -55,7 +57,9 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orderId = parseInt(params.id);
+    const id = (await params).id;
+    const orderId = parseInt(id);
+
     if (isNaN(orderId)) {
       return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
     }
@@ -100,7 +104,7 @@ export async function PUT(
 // Delete a fabric order
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -108,7 +112,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orderId = parseInt(params.id);
+    const id = (await params).id;
+    const orderId = parseInt(id);
+
     if (isNaN(orderId)) {
       return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
     }

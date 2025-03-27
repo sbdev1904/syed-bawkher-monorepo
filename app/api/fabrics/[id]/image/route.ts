@@ -21,7 +21,7 @@ const s3Client = new S3Client({
 // Get fabric image URL
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -29,7 +29,9 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const fabricId = parseInt(params.id);
+    const id = (await params).id;
+    const fabricId = parseInt(id);
+
     if (isNaN(fabricId)) {
       return NextResponse.json({ error: "Invalid fabric ID" }, { status: 400 });
     }

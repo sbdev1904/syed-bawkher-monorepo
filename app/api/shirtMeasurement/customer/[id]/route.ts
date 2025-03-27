@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 // Get shirt measurements by customer ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: number } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,15 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const customerId = params.id;
+    const id = (await params).id;
+    const customerId = parseInt(id);
+
+    if (isNaN(customerId)) {
+      return NextResponse.json(
+        { error: "Invalid customer ID" },
+        { status: 400 }
+      );
+    }
 
     const measurements = await prisma.shirtMeasurement.findMany({
       where: { customer_id: customerId },
