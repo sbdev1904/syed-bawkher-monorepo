@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 // Get all fabric orders by fabric ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { fabricId: string } }
+  { params }: { params: Promise<{ fabricId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,10 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const fabricId = parseInt(params.fabricId);
+    const id = (await params).fabricId;
+
+    const fabricId = parseInt(id);
+
     if (isNaN(fabricId)) {
       return NextResponse.json({ error: "Invalid fabric ID" }, { status: 400 });
     }

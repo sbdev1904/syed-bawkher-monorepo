@@ -20,7 +20,7 @@ const s3Client = new S3Client({
 // Get photos for order
 export async function GET(
   req: NextRequest,
-  { params }: { params: { orderNo: string } }
+  { params }: { params: Promise<{ orderNo: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -28,7 +28,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { orderNo } = params;
+    const orderNo = (await params).orderNo;
 
     const photos = await prisma.orderPhotos.findMany({
       where: { orderNo },
@@ -60,7 +60,7 @@ export async function GET(
 // Delete photo
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { orderNo: string } }
+  { params }: { params: Promise<{ orderNo: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -68,7 +68,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { orderNo } = params;
+    const orderNo = (await params).orderNo;
+    
     const body = await req.json();
     const { s3Key } = body;
 
