@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import orderService from "../../services/orderService";
 import { Table, Input, Space, Button, Modal, message } from "antd";

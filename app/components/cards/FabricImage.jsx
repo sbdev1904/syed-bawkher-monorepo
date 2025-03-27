@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
-import { InboxOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { message, Upload, Modal, Button } from 'antd';
-import fabricService from '../../services/fabricService';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  InboxOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
+import { message, Upload, Modal, Button, Popconfirm } from "antd";
+import fabricService from "../../services/fabricService";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const { Dragger } = Upload;
 const { confirm } = Modal;
 
 const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -38,8 +44,8 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }) => {
         {
           uid: `fabric-image-${prevList.length + 1}`, // Unique keys for the uploaded images
           name: file.name,
-          status: 'done',
-          url: presignedUrl.split('?')[0], // URL for displaying the image (without query params)
+          status: "done",
+          url: presignedUrl.split("?")[0], // URL for displaying the image (without query params)
         },
       ]);
 
@@ -54,12 +60,12 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }) => {
   // Show a confirmation modal before deleting
   const showDeleteConfirm = () => {
     confirm({
-      title: 'Are you sure you want to delete this image?',
+      title: "Are you sure you want to delete this image?",
       icon: <ExclamationCircleOutlined />,
-      content: 'This action cannot be undone.',
-      okText: 'Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
+      content: "This action cannot be undone.",
+      okText: "Delete",
+      okType: "danger",
+      cancelText: "Cancel",
       onOk: handleDelete,
     });
   };
@@ -69,17 +75,20 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }) => {
     try {
       setLoading(true);
       await fabricService.deleteFabricImage(fabricId);
-      message.success('Image deleted successfully.');
+      message.success("Image deleted successfully.");
       setLoading(false);
 
       // Notify parent or refresh the component state
       onImageUploadSuccess();
-
     } catch (error) {
-      message.error('Failed to delete the image.');
+      message.error("Failed to delete the image.");
       setLoading(false);
     }
     //needs to refresh page to see the changes
+  };
+
+  const handleViewFabric = () => {
+    router.push(`/fabric/${fabricId}`);
   };
 
   return (
@@ -94,19 +103,17 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }) => {
           <p className="ant-upload-drag-icon">
             <InboxOutlined />
           </p>
-          <p className="ant-upload-text">Click or drag file to this area to upload</p>
+          <p className="ant-upload-text">
+            Click or drag file to this area to upload
+          </p>
         </Dragger>
       )}
 
       {imageUrl && (
-        <div style={{ position: 'relative' }}>
-          <img
-            src={imageUrl}
-            alt="Fabric"
-            className="w-[150px] h-auto mt-2"
-          />
-          <div onClick={showDeleteConfirm} className='absolute top-0 right-2'>
-            <DeleteOutlined className='text-white hover:text-red-500 transition-colors'/>
+        <div style={{ position: "relative" }}>
+          <img src={imageUrl} alt="Fabric" className="w-[150px] h-auto mt-2" />
+          <div onClick={showDeleteConfirm} className="absolute top-0 right-2">
+            <DeleteOutlined className="text-white hover:text-red-500 transition-colors" />
           </div>
         </div>
       )}

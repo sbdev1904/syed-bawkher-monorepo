@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import itemsService from "../../services/itemsService";
 import { Table, Spin, Alert } from "antd";
@@ -45,14 +46,16 @@ const ItemsTable = ({ orderNo }) => {
       key: "lining_fabric_id",
     },
     {
-        title: "Action",
-        key: "action",
-        render: (_, record) => (
-            <span>
-                <a href={``} className='text-blue-600'>View</a>
-            </span>
-        ),
-    }
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <span>
+          <a href={``} className="text-blue-600">
+            View
+          </a>
+        </span>
+      ),
+    },
     // Add more columns as needed
   ];
 
@@ -73,13 +76,19 @@ const ItemsTable = ({ orderNo }) => {
 
   return (
     <div className="items-table">
-      <Table columns={columns} dataSource={data} rowKey={(record) => record.item_id} className="bg-slate-100 rounded-lg" footer={() => {
-        return (
-          <div>
-            <AddItemsButton orderNo={orderNo} />
-          </div>
-        );
-      }}/>
+      <Table
+        columns={columns}
+        dataSource={data}
+        rowKey={(record) => record.item_id}
+        className="bg-slate-100 rounded-lg"
+        footer={() => {
+          return (
+            <div>
+              <AddItemsButton orderNo={orderNo} />
+            </div>
+          );
+        }}
+      />
     </div>
   );
 };

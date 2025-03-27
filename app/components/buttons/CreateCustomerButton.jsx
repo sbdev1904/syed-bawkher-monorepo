@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import { IoMdCreate } from "react-icons/io";
 import { Button, Tooltip } from "antd";

@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, InputNumber, Button, DatePicker, message, Select } from 'antd';
-import fabricOrderService from '../../services/fabricOrderListService';
-import supplierService from '../../services/supplierService';
-import dayjs from 'dayjs';
+"use client";
+
+import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Button,
+  DatePicker,
+  message,
+  Select,
+} from "antd";
+import fabricOrderService from "../../services/fabricOrderListService";
+import supplierService from "../../services/supplierService";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -17,7 +27,7 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }) => {
         const supplierList = await supplierService.getAllSuppliers();
         setSuppliers(supplierList);
       } catch (error) {
-        message.error('Failed to load suppliers: ' + error.message);
+        message.error("Failed to load suppliers: " + error.message);
       }
     };
 
@@ -37,8 +47,8 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }) => {
       } = form.getFieldsValue(true);
 
       const formattedOrderedDate = ordered_date
-        ? ordered_date.format('YYYY-MM-DD')
-        : dayjs().format('YYYY-MM-DD');
+        ? ordered_date.format("YYYY-MM-DD")
+        : dayjs().format("YYYY-MM-DD");
 
       const formattedValues = {
         fabric_id,
@@ -51,13 +61,13 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }) => {
       };
 
       await fabricOrderService.createFabricOrder(formattedValues);
-      message.success('Fabric Purchase Order created successfully');
+      message.success("Fabric Purchase Order created successfully");
       form.resetFields();
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
-      message.error('Failed to create fabric order: ' + error.message);
+      message.error("Failed to create fabric order: " + error.message);
     }
   };
 
@@ -71,14 +81,14 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }) => {
       layout="vertical"
       onFinish={handleSubmit}
       initialValues={{
-        fabric_id: fabricId || '',
+        fabric_id: fabricId || "",
         ordered_date: dayjs(),
       }}
     >
       <Form.Item
         label="Fabric ID"
         name="fabric_id"
-        rules={[{ required: true, message: 'Please input the fabric Id!' }]}
+        rules={[{ required: true, message: "Please input the fabric Id!" }]}
       >
         <Input
           placeholder="Enter fabric ID"
@@ -90,7 +100,7 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }) => {
       <Form.Item
         label="Description"
         name="description"
-        rules={[{ required: true, message: 'Please input the description!' }]}
+        rules={[{ required: true, message: "Please input the description!" }]}
       >
         <Input placeholder="Enter purchase order description" />
       </Form.Item>
@@ -98,7 +108,7 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }) => {
       <Form.Item
         label="Supplier Name"
         name="supplier_name"
-        rules={[{ required: true, message: 'Please select a supplier!' }]}
+        rules={[{ required: true, message: "Please select a supplier!" }]}
       >
         <Select placeholder="Select a supplier" onChange={handleSupplierChange}>
           {suppliers.map((supplier) => (
@@ -112,15 +122,21 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }) => {
       <Form.Item
         label="Meters"
         name="meters"
-        rules={[{ required: true, message: 'Please input the number of meters!' }]}
+        rules={[
+          { required: true, message: "Please input the number of meters!" },
+        ]}
       >
-        <InputNumber min={0} placeholder="Enter meters" style={{ width: '100%' }} />
+        <InputNumber
+          min={0}
+          placeholder="Enter meters"
+          style={{ width: "100%" }}
+        />
       </Form.Item>
 
       <Form.Item
         label="Ordered Date"
         name="ordered_date"
-        rules={[{ required: true, message: 'Please select the ordered date!' }]}
+        rules={[{ required: true, message: "Please select the ordered date!" }]}
       >
         <DatePicker />
       </Form.Item>
@@ -128,7 +144,9 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }) => {
       <Form.Item
         label="Ordered For"
         name="ordered_for"
-        rules={[{ required: true, message: 'Please input who the order is for!' }]}
+        rules={[
+          { required: true, message: "Please input who the order is for!" },
+        ]}
       >
         <Input placeholder="Enter client name or purpose" />
       </Form.Item>

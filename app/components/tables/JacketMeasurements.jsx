@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { Table } from "antd";
 import jacketService from "../../services/jacketService";
@@ -22,7 +23,7 @@ const JacketMeasurements = ({ customerId }) => {
             chest,
             waist,
             collar,
-            waist_coat_length, 
+            waist_coat_length,
             sherwani_length,
           } = entry;
           return [
@@ -35,7 +36,7 @@ const JacketMeasurements = ({ customerId }) => {
             chest,
             waist,
             collar,
-            waist_coat_length, 
+            waist_coat_length,
             sherwani_length,
           ].some((val) => val !== null);
         });

@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect } from "react";
 import { Modal, Form, message } from "antd";
 import PantForm from "../forms/PantForm";

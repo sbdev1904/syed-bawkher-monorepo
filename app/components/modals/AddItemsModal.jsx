@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Modal, Button, message, Steps, Form } from "antd";
 import itemsService from "../../services/itemsService";

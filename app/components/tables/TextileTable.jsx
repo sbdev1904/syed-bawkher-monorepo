@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Input } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import fabricService from '../../services/fabricService';
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { Table, Button, Input } from "antd";
+import { useRouter } from "next/navigation";
+import fabricService from "../../services/fabricService";
 
 const TextileTable = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const fabrics = await fabricService.getAllFabrics();
-      setData(fabrics.map((fabric, index) => ({ ...fabric, key: index.toString() })));
+      setData(
+        fabrics.map((fabric, index) => ({ ...fabric, key: index.toString() }))
+      );
     } catch (error) {
-      console.error('Failed to fetch fabrics:', error);
+      console.error("Failed to fetch fabrics:", error);
     }
     setLoading(false);
   };
@@ -25,7 +29,7 @@ const TextileTable = () => {
   }, []);
 
   const handleView = (fabricId) => {
-    navigate(`/fabric/${fabricId}`);
+    router.push(`/fabric/${fabricId}`);
   };
 
   const handleSearch = async (value) => {
@@ -33,9 +37,11 @@ const TextileTable = () => {
     if (value) {
       try {
         const results = await fabricService.searchFabrics(value);
-        setData(results.map((fabric, index) => ({ ...fabric, key: index.toString() })));
+        setData(
+          results.map((fabric, index) => ({ ...fabric, key: index.toString() }))
+        );
       } catch (error) {
-        console.error('Failed to search fabrics:', error);
+        console.error("Failed to search fabrics:", error);
       }
     } else {
       // If search query is empty, fetch all fabrics
@@ -46,34 +52,34 @@ const TextileTable = () => {
 
   const columns = [
     {
-      title: 'Fabric Id',
-      dataIndex: 'fabric_id',
+      title: "Fabric Id",
+      dataIndex: "fabric_id",
     },
     {
-      title: 'Fabric Code',
-      dataIndex: 'fabric_code',
-      fixed: 'left',
+      title: "Fabric Code",
+      dataIndex: "fabric_code",
+      fixed: "left",
     },
     {
-      title: 'Description',
-      dataIndex: 'description',
+      title: "Description",
+      dataIndex: "description",
     },
     {
-      title: 'Available Length',
-      dataIndex: 'available_length',
+      title: "Available Length",
+      dataIndex: "available_length",
     },
     {
-      title: 'Brand',
-      dataIndex: 'fabric_brand',
+      title: "Brand",
+      dataIndex: "fabric_brand",
     },
     {
-      title: 'Stock Location',
-      dataIndex: 'stock_location',
+      title: "Stock Location",
+      dataIndex: "stock_location",
     },
     {
-      title: 'Operation',
-      dataIndex: 'operation',
-      fixed: 'right',
+      title: "Operation",
+      dataIndex: "operation",
+      fixed: "right",
       render: (_, record) => (
         <span>
           <Button type="link" onClick={() => handleView(record.fabric_id)}>
@@ -90,7 +96,7 @@ const TextileTable = () => {
         placeholder="Search fabrics"
         enterButton
         onSearch={handleSearch}
-        style={{ marginBottom: 16, width: '100%' }}
+        style={{ marginBottom: 16, width: "100%" }}
       />
       <Table
         bordered

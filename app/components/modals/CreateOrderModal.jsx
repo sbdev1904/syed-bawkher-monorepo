@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Modal, Button, message, Steps, Form } from "antd";
 import orderService from "../../services/orderService";
@@ -9,7 +10,11 @@ import moment from "moment";
 import OrderDetailsForm from "../forms/OrderDetailsForm";
 import AddMeasurementsForm from "../forms/AddMeasurementsForm";
 import AddItemsForm from "../forms/AddItemsForm";
-import { useNavigate } from "react-router-dom"; 
+import { useRouter } from "next/navigation";
+import FindCustomer from "../search/FindCustomer";
+import FindCustomerByOrderNo from "../search/FindCustomerByOrderNo";
+import CreateCustomerForm from "../forms/CreateCustomerForm";
+import customerService from "../../services/customerService";
 
 const { Step } = Steps;
 
@@ -23,7 +28,7 @@ const CreateOrderModal = ({ isOpen, isCancel, customerid = null }) => {
     displayPantForm: false,
   });
 
-  const navigate = useNavigate(); // Hook to get the navigate function
+  const router = useRouter();
 
   //Array of steps for the order creation process
   const steps = [
@@ -52,7 +57,14 @@ const CreateOrderModal = ({ isOpen, isCancel, customerid = null }) => {
     //Step 2: 'Add Measurements'
     {
       title: "Add Measurements",
-      content: <AddMeasurementsForm form={form} visibility={visibility} formData={formData} setFormData={setFormData}/>,
+      content: (
+        <AddMeasurementsForm
+          form={form}
+          visibility={visibility}
+          formData={formData}
+          setFormData={setFormData}
+        />
+      ),
     },
   ];
 
@@ -76,18 +88,34 @@ const CreateOrderModal = ({ isOpen, isCancel, customerid = null }) => {
       const measurementPromises = items.map((item) => {
         // Ensure you pass only the relevant measurement data
         const measurementData = form.getFieldValue([item.item_type]); // Assuming item_type is 'jacket', 'shirt', or 'pant'
-        console.log("Measurement data for item:", item.item_type, measurementData);
+        console.log(
+          "Measurement data for item:",
+          item.item_type,
+          measurementData
+        );
         switch (item.item_type) {
-            case "jacket":
-                return jacketService.createJacketMeasurement(customerid, orderResponse.orderNo, measurementData);
-            case "shirt":
-                return shirtService.createShirtMeasurement(customerid, orderResponse.orderNo, measurementData);
-            case "pant":
-                return pantService.createPantMeasurement(customerid, orderResponse.orderNo, measurementData);
-            default:
-                throw new Error("Unsupported item type");
+          case "jacket":
+            return jacketService.createJacketMeasurement(
+              customerid,
+              orderResponse.orderNo,
+              measurementData
+            );
+          case "shirt":
+            return shirtService.createShirtMeasurement(
+              customerid,
+              orderResponse.orderNo,
+              measurementData
+            );
+          case "pant":
+            return pantService.createPantMeasurement(
+              customerid,
+              orderResponse.orderNo,
+              measurementData
+            );
+          default:
+            throw new Error("Unsupported item type");
         }
-    });
+      });
 
       const measurementResults = await Promise.allSettled(measurementPromises);
       console.log("Measurement results:", measurementResults);
@@ -148,6 +176,17 @@ const CreateOrderModal = ({ isOpen, isCancel, customerid = null }) => {
 
   const handlePrev = () => {
     setCurrentStep(currentStep - 1);
+  };
+
+  const handleFinish = async () => {
+    try {
+      const values = await form.validateFields();
+      const { orderNo } = values;
+      router.push(`/order/${orderNo}`);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      message.error("Failed to create order");
+    }
   };
 
   return (

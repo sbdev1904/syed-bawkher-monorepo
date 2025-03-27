@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Form, Input, InputNumber, Button, message } from "antd";
 import fabricService from "../../services/fabricService";
@@ -61,10 +62,7 @@ const AddTextileForm = ({ onSuccess }) => {
           <Input placeholder="Enter fabric brand" />
         </Form.Item>
 
-        <Form.Item
-          label="Stock Location"
-          name="stock_location"
-        >
+        <Form.Item label="Stock Location" name="stock_location">
           <Input placeholder="Enter stock location" />
         </Form.Item>
 

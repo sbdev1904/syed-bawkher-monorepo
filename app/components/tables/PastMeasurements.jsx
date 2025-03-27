@@ -1,4 +1,5 @@
-import React from 'react'
+"use client";
+import React from "react";
 import PantMeasurements from './PantMeasurements';
 import ShirtMeasurements from './ShirtMeasurements';
 import JacketMeasurements from './JacketMeasurements';

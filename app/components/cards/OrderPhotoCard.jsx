@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Image, Upload, message, Modal } from "antd";
@@ -115,7 +116,9 @@ const OrderPhotoCard = ({ orderNo }) => {
     <>
       <div className="bg-white rounded-lg shadow-lg p-3 pb-4">
         <div>
-            <h3 className="text-lg font-semibold pb-2 text-gray-700">Order Photos</h3>
+          <h3 className="text-lg font-semibold pb-2 text-gray-700">
+            Order Photos
+          </h3>
         </div>
         <Upload
           customRequest={handleUpload}

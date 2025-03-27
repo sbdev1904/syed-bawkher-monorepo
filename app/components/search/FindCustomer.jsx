@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Input, message, Spin } from "antd";
 import customerService from "../../services/customerService";

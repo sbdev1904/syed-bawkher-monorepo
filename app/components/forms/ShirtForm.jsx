@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Input, Form } from "antd";
 import TextArea from "antd/es/input/TextArea";

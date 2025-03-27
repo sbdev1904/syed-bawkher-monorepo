@@ -1,8 +1,8 @@
+"use client";
 import React from "react";
 import MergeCustomerButton from "../buttons/MergeCustomerButton";
 
 const CustomerDetailsCard = ({ customer }) => {
-  
   return (
     <>
       <div className="bg-white rounded-lg shadow-lg mt-2">

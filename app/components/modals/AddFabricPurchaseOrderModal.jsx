@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Modal } from "antd";
 import AddFabricPurchaseOrderForm from "../forms/AddFabricPurchaseOrderForm";

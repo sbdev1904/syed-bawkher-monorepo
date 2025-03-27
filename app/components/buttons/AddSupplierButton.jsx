@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import { Button, Tooltip } from "antd";

@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect } from "react";
 import { Modal, Form, message } from "antd";
 import JacketForm from "../forms/JacketForm";
@@ -16,7 +17,10 @@ const UpdateJacketMeasurementModal = ({ isOpen, onCancel, measurement }) => {
     try {
       const values = await form.validateFields();
       const { jacket } = values;
-      await jacketService.updateJacketMeasurement(measurement.measurement_id, jacket);
+      await jacketService.updateJacketMeasurement(
+        measurement.measurement_id,
+        jacket
+      );
       message.success("Jacket measurement updated successfully");
       window.location.reload();
     } catch (error) {

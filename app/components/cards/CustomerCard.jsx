@@ -1,5 +1,6 @@
+"use client";
 import React from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useRouter } from "next/navigation";
 
 const CustomerCard = ({
   fName,
@@ -11,16 +12,16 @@ const CustomerCard = ({
   email,
   customer_id,
 }) => {
-  const navigate = useNavigate(); // Hook to get the navigate function
+  const router = useRouter();
 
   const fullName = [fName, mName, lName]
-    .filter(name => name && name !== "NULL") // Check for non-null and not "NULL"
-    .map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()) // Capitalize names
+    .filter((name) => name && name !== "NULL") // Check for non-null and not "NULL"
+    .map((name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()) // Capitalize names
     .join(" ");
 
   // Function to handle click on the card
   const handleCardClick = () => {
-    navigate(`/customer/${customer_id}`); // Navigate to customer details
+    router.push(`/customer/${customer_id}`); // Navigate to customer details
   };
 
   return (

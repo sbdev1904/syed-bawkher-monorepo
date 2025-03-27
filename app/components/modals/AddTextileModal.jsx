@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Modal } from "antd";
 import AddTextileForm from "../forms/AddTextileForm";
@@ -12,7 +13,7 @@ const AddTextileModal = ({ isOpen, onCancel }) => {
     >
       <AddTextileForm onSuccess={onCancel} />
     </Modal>
-  )
-}
+  );
+};
 
 export default AddTextileModal;

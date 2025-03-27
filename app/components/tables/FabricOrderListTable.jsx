@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { Table, Button } from "antd";
 import fabricOrderService from "../../services/fabricOrderListService";
@@ -63,7 +64,7 @@ const FabricOrderListTable = ({ fabricId }) => {
   return (
     <>
       <div>
-        <AddFabricPurchaseOrderButton fabricId={fabricId}/>
+        <AddFabricPurchaseOrderButton fabricId={fabricId} />
       </div>
       <div className="py-2">
         <Table

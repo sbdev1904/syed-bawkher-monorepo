@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { Input, Form, DatePicker} from "antd";
+import { Input, Form, DatePicker } from "antd";
 
 const OrderDetailsForm = ({ form, formData, setFormData }) => {
   const handleValueChange = (changedValues) => {

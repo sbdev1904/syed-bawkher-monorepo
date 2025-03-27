@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import pantService from "../../services/pantService";
 import EditMeasurementsButton from "../buttons/EditMeasurementsButton";
@@ -21,9 +22,17 @@ const PantCard = ({ orderNo }) => {
 
   if (!pant) {
     return <></>;
-  } 
+  }
 
-  if (!pant.length && !pant.inseem && !pant.waist && !pant.hips && !pant.bottom && !pant.knee && !pant.other_notes) {
+  if (
+    !pant.length &&
+    !pant.inseem &&
+    !pant.waist &&
+    !pant.hips &&
+    !pant.bottom &&
+    !pant.knee &&
+    !pant.other_notes
+  ) {
     return <></>;
   }
 
@@ -33,32 +42,32 @@ const PantCard = ({ orderNo }) => {
         <div className="text-lg text-gray-300 px-2 pt-2">Pant Measurements</div>
         <div className="flex flex-col p-2">
           <div className="flex flex-row space-x-2">
-            <div className="text-gray-400 font-light" >Length: </div>
+            <div className="text-gray-400 font-light">Length: </div>
             <div>{pant.length}</div>
           </div>
           <div className="flex flex-row space-x-2">
-            <div className="text-gray-400 font-light" >Inseem: </div>
+            <div className="text-gray-400 font-light">Inseem: </div>
             <div>{pant.inseem}</div>
           </div>
           <div className="flex flex-row space-x-2">
-            <div className="text-gray-400 font-light" >Waist: </div>
+            <div className="text-gray-400 font-light">Waist: </div>
             <div>{pant.waist}</div>
           </div>
           <div className="flex flex-row space-x-2">
-            <div className="text-gray-400 font-light" >Hips: </div>
+            <div className="text-gray-400 font-light">Hips: </div>
             <div>{pant.hips}</div>
           </div>
           <div className="flex flex-row space-x-2">
-            <div className="text-gray-400 font-light" >Bottom: </div>
+            <div className="text-gray-400 font-light">Bottom: </div>
             <div>{pant.bottom}</div>
           </div>
           <div className="flex flex-row space-x-2">
-            <div className="text-gray-400 font-light" >Knee: </div>
+            <div className="text-gray-400 font-light">Knee: </div>
             <div>{pant.knee}</div>
           </div>
         </div>
         <div className="flex flex-row space-x-2 p-2">
-          <div className="text-gray-400 font-light" >Other Notes: </div>
+          <div className="text-gray-400 font-light">Other Notes: </div>
           <div>{pant.other_notes}</div>
         </div>
         <div className="flex flex-row p-2">

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Input, Form } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -77,10 +78,7 @@ const JacketForm = ({ requiredFieldRule = null }) => {
         >
           <Input className="w-10" />
         </Form.Item>
-        <Form.Item
-          name={["jacket", "sherwani_length"]}
-          label="Sherwani Length"
-        >
+        <Form.Item name={["jacket", "sherwani_length"]} label="Sherwani Length">
           <Input className="w-10" />
         </Form.Item>
       </div>

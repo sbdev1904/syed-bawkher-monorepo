@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import fabricService from "../../services/fabricService";
@@ -10,12 +11,12 @@ import {
 import { IoMdBarcode } from "react-icons/io";
 import { message, Upload, Modal, Button, Tooltip } from "antd";
 import FabricImage from "./FabricImage";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import EditTextileModal from "../modals/EditTextileModal";
 import Barcode from "react-barcode";
 
 const FabricCard = ({ fabric }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
@@ -63,7 +64,7 @@ const FabricCard = ({ fabric }) => {
       setLoading(true);
       await fabricService.deleteFabric(fabricData.fabric_id);
       message.success("Fabric deleted successfully.");
-      navigate("/fabrics");
+      router.push("/fabrics");
     } catch (error) {
       message.error("Failed to delete the fabric.");
     }
@@ -78,6 +79,10 @@ const FabricCard = ({ fabric }) => {
     contentRef,
     pageStyle: `@page { margin: 0; } body { display: flex; justify-content: center; align-items: center; height: 100vh; }`,
   });
+
+  const handleView = () => {
+    router.push(`/fabric/${fabric.fabric_id}`);
+  };
 
   return (
     <div className="flex flex-row bg-white shadow-lg rounded-lg p-4 justify-between">
