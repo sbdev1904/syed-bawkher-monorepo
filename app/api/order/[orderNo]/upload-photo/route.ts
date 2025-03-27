@@ -16,7 +16,7 @@ const s3Client = new S3Client({
 // Get presigned URL for photo upload
 export async function POST(
   req: NextRequest,
-  { params }: { params: { orderNo: string } }
+  { params }: { params: Promise<{ orderNo: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -24,7 +24,8 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { orderNo } = params;
+    const orderNo = (await params).orderNo;
+
     const body = await req.json();
     const { filename } = body;
 
