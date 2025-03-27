@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 // Get a raw materials order by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,9 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orderId = parseInt(params.id);
+    const id = (await params).id;
+    const orderId = parseInt(id);
+
     const order = await prisma.rawMaterialsOrderList.findUnique({
       where: { order_id: orderId },
     });
@@ -39,7 +41,7 @@ export async function GET(
 // Update a raw materials order
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -47,7 +49,9 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orderId = parseInt(params.id);
+    const id = (await params).id;
+    const orderId = parseInt(id);
+
     const body = await req.json();
 
     // Remove undefined values to avoid Prisma validation errors
@@ -87,7 +91,7 @@ export async function PUT(
 // Delete a raw materials order
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -95,7 +99,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orderId = parseInt(params.id);
+    const id = (await params).id;
+    const orderId = parseInt(id);
+
     await prisma.rawMaterialsOrderList.delete({
       where: { order_id: orderId },
     });

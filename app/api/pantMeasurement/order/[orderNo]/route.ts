@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 // Get pant measurements by order number
 export async function GET(
   req: NextRequest,
-  { params }: { params: { orderNo: string } }
+  { params }: { params: Promise<{ orderNo: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { orderNo } = params;
+    const orderNo = (await params).orderNo;
 
     const measurements = await prisma.pantMeasurement.findMany({
       where: { orderNo },
