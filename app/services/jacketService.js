@@ -7,7 +7,9 @@ const jacketService = {
   getJacketByOrderNo: async (orderNo) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/jacketMeasurement/order/${encodeURIComponent(orderNo)}`
+        `${BASE_URL}/api/jacket-measurement/order/${encodeURIComponent(
+          orderNo
+        )}`
       );
       return response.data[0];
     } catch (error) {
@@ -18,7 +20,7 @@ const jacketService = {
   getJacketByCustomerId: async (customerId) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/jacketMeasurement/customer/${encodeURIComponent(
+        `${BASE_URL}/api/jacket-measurement/customer/${encodeURIComponent(
           customerId
         )}`
       );
@@ -32,7 +34,7 @@ const jacketService = {
   createJacketMeasurement: async (customerId, orderNo, measurementData) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/jacketMeasurement/${encodeURIComponent(
+        `${BASE_URL}/api/jacket-measurement/${encodeURIComponent(
           customerId
         )}/${encodeURIComponent(orderNo)}`,
         measurementData,
@@ -52,7 +54,7 @@ const jacketService = {
   updateJacketMeasurement: async (measurementId, measurementData) => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/jacketMeasurement/${encodeURIComponent(
+        `${BASE_URL}/api/jacket-measurement/${encodeURIComponent(
           measurementId
         )}`,
         measurementData,

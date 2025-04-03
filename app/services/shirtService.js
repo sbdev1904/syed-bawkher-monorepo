@@ -7,7 +7,7 @@ const shirtService = {
   getShirtByOrderNo: async (orderNo) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/shirtMeasurement/order/${encodeURIComponent(orderNo)}`
+        `${BASE_URL}/api/shirt-measurement/order/${encodeURIComponent(orderNo)}`
       );
       return response.data[0];
     } catch (error) {
@@ -18,7 +18,7 @@ const shirtService = {
   getShirtByCustomerId: async (customerId) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/shirtMeasurement/customer/${encodeURIComponent(
+        `${BASE_URL}/api/shirt-measurement/customer/${encodeURIComponent(
           customerId
         )}`
       );
@@ -32,7 +32,7 @@ const shirtService = {
   createShirtMeasurement: async (customerId, orderNo, measurementData) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/shirtMeasurement/${encodeURIComponent(
+        `${BASE_URL}/api/shirt-measurement/${encodeURIComponent(
           customerId
         )}/${encodeURIComponent(orderNo)}`,
         measurementData,
@@ -52,7 +52,7 @@ const shirtService = {
   updateShirtMeasurement: async (measurementId, measurementData) => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/shirtMeasurement/${encodeURIComponent(measurementId)}`,
+        `${BASE_URL}/api/shirt-measurement/${encodeURIComponent(measurementId)}`,
         measurementData,
         {
           headers: {
