@@ -1,15 +1,16 @@
+"use client";
 import React from "react";
 import TextileTable from "../components/tables/TextileTable";
 import AddTextileButton from "../components/buttons/AddTextileButton";
 import { TbTruckDelivery } from "react-icons/tb";
 import { Button } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 const TextileDetails = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleManageSuppliersClick = () => {
-    navigate("/suppliers"); // Navigate to the /suppliers route
+    router.push("/suppliers");
   };
 
   return (
