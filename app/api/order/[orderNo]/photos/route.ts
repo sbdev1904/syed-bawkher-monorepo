@@ -69,7 +69,7 @@ export async function DELETE(
     }
 
     const orderNo = (await params).orderNo;
-    
+
     const body = await req.json();
     const { s3Key } = body;
 

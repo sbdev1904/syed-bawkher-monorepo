@@ -7,7 +7,7 @@ const pantService = {
   getPantByOrderNo: async (orderNo) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/pantMeasurement/order/${encodeURIComponent(orderNo)}`
+        `${BASE_URL}/api/pant-measurement/order/${encodeURIComponent(orderNo)}`
       );
       return response.data[0];
     } catch (error) {
@@ -18,7 +18,7 @@ const pantService = {
   getPantByCustomerId: async (customerId) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/pantMeasurement/customer/${encodeURIComponent(
+        `${BASE_URL}/api/pant-measurement/customer/${encodeURIComponent(
           customerId
         )}`
       );
@@ -32,7 +32,7 @@ const pantService = {
   createPantMeasurement: async (customerId, orderNo, measurementData) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/pantMeasurement/${encodeURIComponent(
+        `${BASE_URL}/api/pant-measurement/${encodeURIComponent(
           customerId
         )}/${encodeURIComponent(orderNo)}`,
         measurementData,
@@ -52,7 +52,7 @@ const pantService = {
   updatePantMeasurement: async (measurementId, measurementData) => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/pantMeasurement/${encodeURIComponent(measurementId)}`,
+        `${BASE_URL}/api/pant-measurement/${encodeURIComponent(measurementId)}`,
         measurementData,
         {
           headers: {
