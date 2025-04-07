@@ -1,13 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { usePathname } from "next/navigation";
 import customerService from "@/app/services/customerService";
 import OrderTable from "@/app/components/tables/OrderTable";
 import PastMeasurements from "@/app/components/tables/PastMeasurements";
 import CreateCustomerButton from "@/app/components/buttons/CreateCustomerButton";
 import CustomerDetailsCard from "@/app/components/cards/CustomerDetailsCard";
 import { Customer } from "@prisma/client";
-import { usePathname } from "next/navigation";
 
 const CustomerDetails = () => {
   const pathname = usePathname();
@@ -68,9 +67,8 @@ const CustomerDetails = () => {
   return (
     <>
       <div className="flex flex-row items-center">
-        <h1 className="text-3xl font-semibold ">{`${
-          customer.customer_id + ": " + fullName
-        }`}</h1>
+        <h1 className="text-3xl font-semibold ">{`${customer.customer_id + ": " + fullName
+          }`}</h1>
         <CreateCustomerButton customerId={parseInt(customerId!)} />
       </div>
       <CustomerDetailsCard customer={customer} />

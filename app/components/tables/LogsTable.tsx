@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Table, DatePicker, Select, Input, Button } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { RangePickerProps } from "antd/es/date-picker";
-import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
+import { Search, RefreshCw } from "lucide-react";
 import LogDetailsModal from "../modals/LogDetailsModal";
 import type { LogEntry } from "@/lib/logs";
 import dayjs, { Dayjs } from "dayjs";
@@ -130,7 +130,7 @@ const LogsTable: React.FC<LogsTableProps> = ({ initialLogs = [] }) => {
 
           <Input
             placeholder="Search logs..."
-            prefix={<SearchOutlined />}
+            prefix={<Search size={16} />}
             onChange={(e) =>
               setFilters({ ...filters, searchText: e.target.value })
             }
@@ -138,7 +138,7 @@ const LogsTable: React.FC<LogsTableProps> = ({ initialLogs = [] }) => {
           />
 
           <Button
-            icon={<ReloadOutlined />}
+            icon={<RefreshCw size={16} />}
             onClick={() => filterLogs()}
             loading={loading}
           >

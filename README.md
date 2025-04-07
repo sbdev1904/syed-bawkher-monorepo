@@ -1,4 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Textile Management System
+
+This is a comprehensive textile and fabric management system built with [Next.js](https://nextjs.org), designed to help textile businesses manage their operations efficiently.
+
+## Features
+
+- 👕 **Textile & Fabric Management**: Track and manage different types of textiles and fabrics
+- 📦 **Inventory Management**: Keep track of stock levels and materials
+- 🏭 **Production Tracking**: Monitor production processes and workflows
+- 👥 **Customer Management**: Manage customer information and orders
+- 📊 **Admin Dashboard**: Comprehensive admin interface for business oversight
+- 🛍️ **Order Management**: Handle customer orders and processing
+- 👥 **Supplier Management**: Manage supplier relationships and materials sourcing
+- 🔐 **Secure Authentication**: Built-in authentication system using NextAuth.js
+
+## Tech Stack
+
+- **Frontend**: Next.js 15.2, React 19, Ant Design
+- **Authentication**: NextAuth.js
+- **Database**: Prisma ORM
+- **Styling**: TailwindCSS
+- **UI/UX**: Framer Motion for animations
+- **API Integration**: Axios for HTTP requests
+- **Cloud Storage**: AWS S3 for file storage
+- **Type Safety**: TypeScript
 
 ## Getting Started
 
@@ -16,9 +40,14 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Make sure to set up the following environment variables in your `.env` file:
+
+- Database connection string
+- AWS credentials (for S3 storage)
+- NextAuth configuration
+- API keys and secrets
 
 ## Learn More
 

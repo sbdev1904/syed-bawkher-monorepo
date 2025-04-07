@@ -2,308 +2,298 @@
 
 import React, { useState } from "react";
 import {
+  Package,
+  AlertTriangle,
+  ShoppingBag,
+  Plus,
+  Search,
+  RefreshCw,
+} from "lucide-react";
+import DashboardLayout from "../components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
   Table,
-  Tag,
-  Button,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   Select,
-  Card,
-  Row,
-  Col,
-  Statistic,
-  Input,
-  Tabs,
-  Tree,
-  Space,
-  Badge,
-} from "antd";
-import type { ColumnsType } from "antd/es/table";
-import { SearchOutlined, WarningOutlined } from "@ant-design/icons";
-import type {
-  InventoryItem,
-  Location,
-  Rack,
-  Supplier,
-} from "@/app/types/inventory";
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
-const { Option } = Select;
-const { TabPane } = Tabs;
+interface InventoryItem {
+  id: string;
+  name: string;
+  category: "fabric" | "accessory" | "packaging";
+  type: string;
+  color?: string;
+  supplier: string;
+  stockLevel: number;
+  minStockLevel: number;
+  reorderPoint: number;
+  unitPrice: number;
+  location: string;
+  lastRestocked: string;
+}
 
-// Hardcoded data
-const mockLocations: Location[] = [
-  { id: "L1", name: "Main Warehouse", description: "Primary storage facility" },
-  { id: "L2", name: "Workshop Storage", description: "Near production area" },
-];
-
-const mockRacks: Rack[] = [
-  {
-    id: "R1",
-    name: "Rack A1",
-    locationId: "L1",
-    capacity: 100,
-    currentOccupancy: 75,
-  },
-  {
-    id: "R2",
-    name: "Rack A2",
-    locationId: "L1",
-    capacity: 100,
-    currentOccupancy: 45,
-  },
-  {
-    id: "R3",
-    name: "Rack B1",
-    locationId: "L2",
-    capacity: 50,
-    currentOccupancy: 30,
-  },
-];
-
-const mockSuppliers: Supplier[] = [
-  {
-    id: "S1",
-    name: "Premium Fabrics Ltd",
-    contactPerson: "John Smith",
-    email: "john@premiumfabrics.com",
-    phone: "+1234567890",
-    address: "123 Fabric Street",
-    rating: 4.5,
-    activeFrom: "2023-01-01",
-  },
-  {
-    id: "S2",
-    name: "Quality Materials Co",
-    contactPerson: "Emma Wilson",
-    email: "emma@qualitymaterials.com",
-    phone: "+1234567891",
-    address: "456 Material Avenue",
-    rating: 4.8,
-    activeFrom: "2023-03-15",
-  },
-];
-
-const mockItems: InventoryItem[] = [
-  {
-    id: "I1",
-    sku: "FAB-001",
-    name: "Premium Wool",
-    type: "fabric",
-    description: "High-quality wool fabric",
-    quantity: 150,
-    unit: "meters",
-    minStockLevel: 100,
-    bunchId: "B1",
-    suppliers: [
-      { supplierId: "S1", price: 45.99, leadTime: 7, minimumOrderQuantity: 50 },
-      { supplierId: "S2", price: 48.99, leadTime: 5, minimumOrderQuantity: 30 },
-    ],
-    tags: ["wool", "premium", "suit"],
-    createdAt: "2024-01-01",
-    updatedAt: "2024-03-27",
-  },
-  {
-    id: "I2",
-    sku: "BTN-001",
-    name: "Pearl Buttons",
-    type: "raw_material",
-    description: "Mother of pearl buttons",
-    quantity: 1000,
-    unit: "pieces",
-    minStockLevel: 500,
-    suppliers: [
-      { supplierId: "S2", price: 0.99, leadTime: 3, minimumOrderQuantity: 100 },
-    ],
-    tags: ["buttons", "pearl"],
-    createdAt: "2024-01-15",
-    updatedAt: "2024-03-26",
-  },
-];
-
-const locationTreeData = mockLocations.map((location) => ({
-  title: location.name,
-  key: location.id,
-  children: mockRacks
-    .filter((rack) => rack.locationId === location.id)
-    .map((rack) => ({
-      title: (
-        <span>
-          {rack.name}{" "}
-          <Tag
-            color={
-              rack.currentOccupancy > rack.capacity * 0.8 ? "red" : "green"
-            }
-          >
-            {rack.currentOccupancy}/{rack.capacity}
-          </Tag>
-        </span>
-      ),
-      key: rack.id,
-    })),
-}));
-
-export default function InventoryDashboard() {
-  const [selectedLocation, setSelectedLocation] = useState<string>();
+export default function InventoryPage() {
   const [searchText, setSearchText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>();
 
-  const columns: ColumnsType<InventoryItem> = [
+  // Mock data for inventory items
+  const inventoryItems: InventoryItem[] = [
     {
-      title: "SKU",
-      dataIndex: "sku",
-      key: "sku",
-      sorter: (a, b) => a.sku.localeCompare(b.sku),
+      id: "FAB001",
+      name: "Premium Wool",
+      category: "fabric",
+      type: "Wool",
+      color: "Navy",
+      supplier: "WoolCo Ltd",
+      stockLevel: 150,
+      minStockLevel: 100,
+      reorderPoint: 120,
+      unitPrice: 45.99,
+      location: "A-12",
+      lastRestocked: "2024-03-20",
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      id: "FAB002",
+      name: "Cotton Shirting",
+      category: "fabric",
+      type: "Cotton",
+      color: "White",
+      supplier: "TextilePro",
+      stockLevel: 80,
+      minStockLevel: 100,
+      reorderPoint: 120,
+      unitPrice: 15.99,
+      location: "B-03",
+      lastRestocked: "2024-03-15",
     },
     {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-      render: (type) => (
-        <Tag
-          color={
-            type === "fabric"
-              ? "blue"
-              : type === "raw_material"
-              ? "green"
-              : "orange"
-          }
-        >
-          {type.replace("_", " ").toUpperCase()}
-        </Tag>
-      ),
-      filters: [
-        { text: "Fabric", value: "fabric" },
-        { text: "Raw Material", value: "raw_material" },
-        { text: "Packaging", value: "packaging" },
-      ],
-      onFilter: (value, record) => record.type === value,
+      id: "ACC001",
+      name: "Buttons",
+      category: "accessory",
+      type: "Button",
+      color: "Gold",
+      supplier: "AccessoryCo",
+      stockLevel: 1000,
+      minStockLevel: 500,
+      reorderPoint: 750,
+      unitPrice: 0.50,
+      location: "C-15",
+      lastRestocked: "2024-03-25",
     },
     {
-      title: "Quantity",
-      key: "quantity",
-      render: (_, record) => (
-        <Space>
-          {record.quantity} {record.unit}
-          {record.quantity <= record.minStockLevel && (
-            <Badge count={<WarningOutlined style={{ color: "#faad14" }} />} />
-          )}
-        </Space>
-      ),
-      sorter: (a, b) => a.quantity - b.quantity,
-    },
-    {
-      title: "Suppliers",
-      key: "suppliers",
-      render: (_, record) => (
-        <>
-          {record.suppliers.map((supplier) => {
-            const supplierData = mockSuppliers.find(
-              (s) => s.id === supplier.supplierId
-            );
-            return (
-              <Tag key={supplier.supplierId} color="blue">
-                {supplierData?.name}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: "Tags",
-      key: "tags",
-      dataIndex: "tags",
-      render: (tags: string[]) => (
-        <>
-          {tags.map((tag) => (
-            <Tag key={tag}>{tag}</Tag>
-          ))}
-        </>
-      ),
+      id: "PKG001",
+      name: "Suit Bags",
+      category: "packaging",
+      type: "Bag",
+      supplier: "PackagingPro",
+      stockLevel: 200,
+      minStockLevel: 150,
+      reorderPoint: 175,
+      unitPrice: 2.99,
+      location: "D-01",
+      lastRestocked: "2024-03-18",
     },
   ];
 
+  const getStockStatus = (item: InventoryItem) => {
+    if (item.stockLevel <= item.minStockLevel) return "destructive";
+    if (item.stockLevel <= item.reorderPoint) return "warning";
+    return "default";
+  };
+
+  const getCategoryColor = (category: InventoryItem["category"]) => {
+    switch (category) {
+      case "fabric":
+        return "bg-blue-500";
+      case "accessory":
+        return "bg-green-500";
+      case "packaging":
+        return "bg-orange-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Inventory Management</h1>
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Inventory Management</h1>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Sync Stock
+            </Button>
+            <Button size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Item
+            </Button>
+          </div>
+        </div>
 
-      <Row gutter={[16, 16]} className="mb-6">
-        <Col span={6}>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
-            <Statistic title="Total Items" value={mockItems.length} />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="text-sm font-medium">Total Items</div>
+              <Package className="h-4 w-4 text-blue-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{inventoryItems.length}</div>
+            </CardContent>
           </Card>
-        </Col>
-        <Col span={6}>
           <Card>
-            <Statistic
-              title="Low Stock Items"
-              value={
-                mockItems.filter((item) => item.quantity <= item.minStockLevel)
-                  .length
-              }
-              valueStyle={{ color: "#faad14" }}
-            />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="text-sm font-medium">Low Stock Items</div>
+              <AlertTriangle className="h-4 w-4 text-yellow-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {inventoryItems.filter((item) => item.stockLevel <= item.minStockLevel).length}
+              </div>
+            </CardContent>
           </Card>
-        </Col>
-        <Col span={6}>
           <Card>
-            <Statistic
-              title="Active Suppliers"
-              value={mockSuppliers.length}
-              valueStyle={{ color: "#1890ff" }}
-            />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="text-sm font-medium">Need Reorder</div>
+              <ShoppingBag className="h-4 w-4 text-purple-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {inventoryItems.filter(
+                  (item) =>
+                    item.stockLevel > item.minStockLevel && item.stockLevel <= item.reorderPoint
+                ).length}
+              </div>
+            </CardContent>
           </Card>
-        </Col>
-        <Col span={6}>
           <Card>
-            <Statistic
-              title="Storage Utilization"
-              value={Math.round(
-                (mockRacks.reduce(
-                  (acc, rack) => acc + rack.currentOccupancy,
-                  0
-                ) /
-                  mockRacks.reduce((acc, rack) => acc + rack.capacity, 0)) *
-                  100
-              )}
-              suffix="%"
-              valueStyle={{ color: "#52c41a" }}
-            />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="text-sm font-medium">Total Value</div>
+              <Package className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                ${inventoryItems
+                  .reduce((sum, item) => sum + item.stockLevel * item.unitPrice, 0)
+                  .toFixed(2)}
+              </div>
+            </CardContent>
           </Card>
-        </Col>
-      </Row>
+        </div>
 
-      <Row gutter={[16, 16]}>
-        <Col span={6}>
-          <Card title="Location Hierarchy" className="mb-4">
-            <Tree
-              treeData={locationTreeData}
-              defaultExpandAll
-              onSelect={(keys) => setSelectedLocation(keys[0] as string)}
-            />
-          </Card>
-        </Col>
-        <Col span={18}>
-          <Card>
-            <div className="mb-4">
-              <Input
-                placeholder="Search inventory..."
-                prefix={<SearchOutlined />}
-                onChange={(e) => setSearchText(e.target.value)}
-                style={{ width: 300 }}
-              />
+        <Card>
+          <CardContent className="pt-6">
+            <div className="mb-4 flex space-x-4">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search inventory..."
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="pl-8 w-[300px]"
+                />
+              </div>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Filter by category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fabric">Fabric</SelectItem>
+                  <SelectItem value="accessory">Accessory</SelectItem>
+                  <SelectItem value="packaging">Packaging</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Table
-              columns={columns}
-              dataSource={mockItems}
-              rowKey="id"
-              pagination={false}
-            />
-          </Card>
-        </Col>
-      </Row>
-    </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Color</TableHead>
+                  <TableHead>Stock Level</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Unit Price</TableHead>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>Last Restocked</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {inventoryItems.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.id}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>
+                      <Badge className={cn("text-white", getCategoryColor(item.category))}>
+                        {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{item.type}</TableCell>
+                    <TableCell>
+                      {item.color && (
+                        <Badge variant="outline">{item.color}</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="w-[200px]">
+                              <Progress
+                                value={(item.stockLevel / item.reorderPoint) * 100}
+                                className={cn(
+                                  getStockStatus(item) === "destructive" && "text-red-500",
+                                  getStockStatus(item) === "warning" && "text-yellow-500"
+                                )}
+                              />
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {item.stockLevel} / {item.reorderPoint}
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Min: {item.minStockLevel}</p>
+                            <p>Reorder: {item.reorderPoint}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                    <TableCell>{item.location}</TableCell>
+                    <TableCell>${item.unitPrice.toFixed(2)}</TableCell>
+                    <TableCell>{item.supplier}</TableCell>
+                    <TableCell>{new Date(item.lastRestocked).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    </DashboardLayout>
   );
 }

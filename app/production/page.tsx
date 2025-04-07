@@ -1,250 +1,202 @@
 "use client";
 
 import React, { useState } from "react";
-import { Table, Tag, Button, Select, Card, Row, Col, Statistic } from "antd";
-import type { ColumnsType } from "antd/es/table";
-import type {
-  ProductionOrder,
-  ProductionStatus,
-  Tailor,
-} from "@/app/types/production";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Wrench, Clock, CheckCircle2, User } from "lucide-react";
+import DashboardLayout from "../components/layout/DashboardLayout";
 
-const { Option } = Select;
+interface ProductionItem {
+  id: string;
+  orderNo: string;
+  customer: string;
+  items: string[];
+  assignedTo?: string;
+  dueDate: string;
+  progress: number;
+  priority: "high" | "medium" | "low";
+}
 
-// Hardcoded data
-const mockTailors: Tailor[] = [
-  { id: "T1", name: "John Smith", specialization: "suit", currentLoad: 3 },
-  { id: "T2", name: "Mary Johnson", specialization: "both", currentLoad: 2 },
-  { id: "T3", name: "Robert Lee", specialization: "shirt", currentLoad: 1 },
-  { id: "T4", name: "Sarah Wilson", specialization: "suit", currentLoad: 4 },
-];
+interface ProductionColumn {
+  title: string;
+  items: ProductionItem[];
+}
 
-const mockOrders: ProductionOrder[] = [
-  {
-    orderId: "ORD-2024-001",
-    customerName: "Alex Brown",
-    items: [{ type: "suit", quantity: 1 }],
-    status: "pattern_cutting_pending",
-    dueDate: "2024-04-15",
-    priority: "high",
-    startDate: "2024-03-27",
-  },
-  {
-    orderId: "ORD-2024-002",
-    customerName: "Emma Wilson",
-    items: [{ type: "shirt", quantity: 3 }],
-    status: "tailor_assignment_pending",
-    dueDate: "2024-04-20",
-    priority: "medium",
-    startDate: "2024-03-26",
-  },
-  {
-    orderId: "ORD-2024-003",
-    customerName: "James Miller",
-    items: [
-      { type: "suit", quantity: 1 },
-      { type: "shirt", quantity: 2 },
-    ],
-    status: "base_suit_production",
-    assignedTailor: "T1",
-    dueDate: "2024-04-10",
-    priority: "high",
-    startDate: "2024-03-25",
-  },
-  {
-    orderId: "ORD-2024-004",
-    customerName: "Sophie Clark",
-    items: [{ type: "suit", quantity: 1 }],
-    status: "trial_pending",
-    assignedTailor: "T4",
-    dueDate: "2024-04-12",
-    priority: "medium",
-    startDate: "2024-03-24",
-  },
-];
-
-const statusColors: Record<ProductionStatus, string> = {
-  pattern_cutting_pending: "gold",
-  tailor_assignment_pending: "orange",
-  base_suit_production: "processing",
-  trial_pending: "cyan",
-  final_production: "blue",
-  final_fitting_pending: "geekblue",
-  delivery_pending: "purple",
-  delivered: "green",
-};
-
-const statusLabels: Record<ProductionStatus, string> = {
-  pattern_cutting_pending: "Pattern Cutting Pending",
-  tailor_assignment_pending: "Tailor Assignment Pending",
-  base_suit_production: "Base Suit Production",
-  trial_pending: "Trial Pending",
-  final_production: "Final Production",
-  final_fitting_pending: "Final Fitting Pending",
-  delivery_pending: "Delivery Pending",
-  delivered: "Delivered",
-};
-
-export default function ProductionDashboard() {
-  const [selectedTailor, setSelectedTailor] = useState<string>();
-
-  const columns: ColumnsType<ProductionOrder> = [
+export default function ProductionPage() {
+  // Mock data for production items
+  const [columns, setColumns] = useState<ProductionColumn[]>([
     {
-      title: "Order ID",
-      dataIndex: "orderId",
-      key: "orderId",
-      sorter: (a, b) => a.orderId.localeCompare(b.orderId),
-    },
-    {
-      title: "Customer",
-      dataIndex: "customerName",
-      key: "customerName",
-    },
-    {
-      title: "Items",
-      key: "items",
-      render: (_, record) => (
-        <>
-          {record.items.map((item, index) => (
-            <Tag key={index}>
-              {item.quantity}x {item.type}
-            </Tag>
-          ))}
-        </>
-      ),
-    },
-    {
-      title: "Status",
-      key: "status",
-      render: (_, record) => (
-        <Tag color={statusColors[record.status]}>
-          {statusLabels[record.status]}
-        </Tag>
-      ),
-      filters: Object.entries(statusLabels).map(([value, text]) => ({
-        text,
-        value,
-      })),
-      onFilter: (value, record) => record.status === value,
-    },
-    {
-      title: "Assigned Tailor",
-      key: "assignedTailor",
-      render: (_, record) =>
-        record.status !== "delivered" ? (
-          <Select
-            style={{ width: 150 }}
-            value={record.assignedTailor}
-            onChange={(value) => console.log("Assign tailor:", value)}
-            placeholder="Select tailor"
-          >
-            {mockTailors.map((tailor) => (
-              <Option key={tailor.id} value={tailor.id}>
-                {tailor.name} ({tailor.currentLoad})
-              </Option>
-            ))}
-          </Select>
-        ) : (
-          "-"
-        ),
-    },
-    {
-      title: "Due Date",
-      dataIndex: "dueDate",
-      key: "dueDate",
-      sorter: (a, b) =>
-        new Date(a.dueDate).valueOf() - new Date(b.dueDate).valueOf(),
-      render: (date) => new Date(date).toLocaleDateString(),
-    },
-    {
-      title: "Priority",
-      key: "priority",
-      dataIndex: "priority",
-      render: (priority) => (
-        <Tag
-          color={
-            priority === "high"
-              ? "red"
-              : priority === "medium"
-              ? "orange"
-              : "green"
-          }
-        >
-          {priority.toUpperCase()}
-        </Tag>
-      ),
-      filters: [
-        { text: "High", value: "high" },
-        { text: "Medium", value: "medium" },
-        { text: "Low", value: "low" },
+      title: "To Do",
+      items: [
+        {
+          id: "1",
+          orderNo: "ORD001",
+          customer: "John Doe",
+          items: ["Suit", "Shirt"],
+          dueDate: "2024-04-15",
+          progress: 0,
+          priority: "high",
+        },
+        {
+          id: "2",
+          orderNo: "ORD002",
+          customer: "Jane Smith",
+          items: ["Dress"],
+          dueDate: "2024-04-20",
+          progress: 0,
+          priority: "medium",
+        },
       ],
-      onFilter: (value, record) => record.priority === value,
     },
-  ];
+    {
+      title: "In Progress",
+      items: [
+        {
+          id: "3",
+          orderNo: "ORD003",
+          customer: "Mike Johnson",
+          items: ["Jacket"],
+          assignedTo: "Tailor 1",
+          dueDate: "2024-04-10",
+          progress: 60,
+          priority: "high",
+        },
+      ],
+    },
+    {
+      title: "Quality Check",
+      items: [
+        {
+          id: "4",
+          orderNo: "ORD004",
+          customer: "Sarah Wilson",
+          items: ["Pants", "Vest"],
+          assignedTo: "Tailor 2",
+          dueDate: "2024-04-08",
+          progress: 90,
+          priority: "medium",
+        },
+      ],
+    },
+    {
+      title: "Completed",
+      items: [
+        {
+          id: "5",
+          orderNo: "ORD005",
+          customer: "David Brown",
+          items: ["Suit"],
+          assignedTo: "Tailor 1",
+          dueDate: "2024-04-05",
+          progress: 100,
+          priority: "low",
+        },
+      ],
+    },
+  ]);
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "high":
+        return "destructive";
+      case "medium":
+        return "secondary";
+      default:
+        return "outline";
+    }
+  };
+
+  const StatCard = ({ title, value, icon: Icon }: { title: string; value: number; icon: any }) => (
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <h2 className="text-2xl font-bold">{value}</h2>
+          </div>
+          <Icon className="h-5 w-5 text-muted-foreground" />
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Production Dashboard</h1>
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Production Management</h1>
+          <Button>
+            <Wrench className="mr-2 h-4 w-4" />
+            Manage Tailors
+          </Button>
+        </div>
 
-      <Row gutter={[16, 16]} className="mb-6">
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Total Active Orders"
-              value={mockOrders.filter((o) => o.status !== "delivered").length}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Pending Assignment"
-              value={
-                mockOrders.filter(
-                  (o) => o.status === "tailor_assignment_pending"
-                ).length
-              }
-              valueStyle={{ color: "#faad14" }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="In Production"
-              value={
-                mockOrders.filter((o) =>
-                  [
-                    "base_suit_production",
-                    "trial_pending",
-                    "final_production",
-                  ].includes(o.status)
-                ).length
-              }
-              valueStyle={{ color: "#1890ff" }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Ready for Delivery"
-              value={
-                mockOrders.filter((o) => o.status === "delivery_pending").length
-              }
-              valueStyle={{ color: "#52c41a" }}
-            />
-          </Card>
-        </Col>
-      </Row>
+        <div className="grid grid-cols-4 gap-4">
+          <StatCard title="Total In Production" value={8} icon={Wrench} />
+          <StatCard title="Pending Assignment" value={2} icon={Clock} />
+          <StatCard title="In Quality Check" value={1} icon={Clock} />
+          <StatCard title="Completed Today" value={5} icon={CheckCircle2} />
+        </div>
 
-      <Table
-        columns={columns}
-        dataSource={mockOrders}
-        rowKey="orderId"
-        pagination={false}
-        className="bg-white rounded-lg shadow"
-      />
-    </div>
+        <div className="grid grid-cols-4 gap-4">
+          {columns.map((column) => (
+            <div key={column.title} className="bg-secondary/10 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-4 flex justify-between items-center">
+                {column.title}
+                <Badge variant="secondary">{column.items.length}</Badge>
+              </h3>
+              <div className="space-y-4">
+                {column.items.map((item) => (
+                  <Card key={item.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                    <CardContent className="pt-6 space-y-2">
+                      <div className="flex justify-between items-start">
+                        <span className="font-medium">{item.orderNo}</span>
+                        <Badge variant={getPriorityColor(item.priority)}>
+                          {item.priority.toUpperCase()}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">{item.customer}</div>
+                      <div className="flex flex-wrap gap-1">
+                        {item.items.map((itemName) => (
+                          <Badge key={itemName} variant="outline">{itemName}</Badge>
+                        ))}
+                      </div>
+                      {item.assignedTo && (
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback>
+                              <User className="h-4 w-4" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm">{item.assignedTo}</span>
+                        </div>
+                      )}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center gap-2">
+                              <Clock className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">{item.dueDate}</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>Due Date</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      {item.progress > 0 && (
+                        <Progress value={item.progress} className="h-2" />
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </DashboardLayout>
   );
 }

@@ -2,8 +2,8 @@
 import React from "react";
 import TextileTable from "../components/tables/TextileTable";
 import AddTextileButton from "../components/buttons/AddTextileButton";
-import { TbTruckDelivery } from "react-icons/tb";
-import { Button } from "antd";
+import { Truck } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 const TextileDetails = () => {
@@ -19,11 +19,11 @@ const TextileDetails = () => {
       <div className="py-2 flex flex-row space-x-2">
         <AddTextileButton />
         <Button
-          type="dashed"
-          className="flex flex-row items-center space-x-1"
+          variant="outline"
+          className="flex items-center gap-2"
           onClick={handleManageSuppliersClick}
         >
-          <TbTruckDelivery />
+          <Truck className="h-4 w-4" />
           Manage Suppliers
         </Button>
       </div>
