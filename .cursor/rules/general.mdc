@@ -1,8 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-- Try to use yarn if possible
-- Always check if a lib or package exists before attempting to install it
-- 
