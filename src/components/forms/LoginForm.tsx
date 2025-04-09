@@ -36,6 +36,7 @@ const LoginForm = () => {
     const { username, password } = values;
     try {
       const token = await authService.login(username, password);
+      localStorage.setItem("token", token);
       toast({
         title: "Success",
         description: "Login successful!",
@@ -56,7 +57,7 @@ const LoginForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md space-y-4"
+        className="mt-8 p-6 rounded-lg shadow-md space-y-4"
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
