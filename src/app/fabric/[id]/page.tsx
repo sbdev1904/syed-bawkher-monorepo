@@ -4,6 +4,7 @@ import fabricService from "@/services/fabricService";
 import FabricCard from "@/components/cards/FabricCard";
 import FabricOrderListTable from "@/components/tables/FabricOrderListTable";
 import { usePathname } from "next/navigation";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
 const FabricDetails = () => {
   const pathname = usePathname();
@@ -37,13 +38,13 @@ const FabricDetails = () => {
   }
 
   return (
-    <>
+    <DashboardLayout>
       <div className="text-xl font-bold">Fabric Details</div>
       <div className="py-2">{fabric && <FabricCard fabric={fabric} />}</div>
       <div>
         <FabricOrderListTable fabricId={fabricId} />
       </div>
-    </>
+    </DashboardLayout>
   );
 };
 

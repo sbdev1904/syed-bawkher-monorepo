@@ -56,7 +56,11 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }: { onSuccess?: () =>
     resolver: zodResolver(formSchema),
     defaultValues: {
       fabric_id: fabricId || "",
+      description: "",
+      supplier_name: "",
+      meters: 0,
       ordered_date: new Date(),
+      ordered_for: "",
     },
   });
 

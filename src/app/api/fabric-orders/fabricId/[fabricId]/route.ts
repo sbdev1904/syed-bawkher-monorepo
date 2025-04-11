@@ -33,7 +33,7 @@ export async function GET(
     if (orders.length === 0) {
       return NextResponse.json(
         { error: "No fabric orders found for the provided fabric ID" },
-        { status: 404 }
+        { status: 204 }
       );
     }
 

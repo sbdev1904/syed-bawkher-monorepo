@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import supplierService from "../../services/supplierService";
 
 import {
@@ -44,7 +43,6 @@ const SupplierListTable = () => {
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
-  const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -87,9 +85,7 @@ const SupplierListTable = () => {
     }
   };
 
-  const handleView = (supplierId: string) => {
-    router.push(`/supplier/${supplierId}`);
-  };
+
 
   if (loading) {
     return <div className="flex justify-center p-4">Loading...</div>;
@@ -132,12 +128,7 @@ const SupplierListTable = () => {
               <TableCell>{supplier.notes}</TableCell>
               <TableCell>
                 <div className="flex space-x-2">
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleView(supplier.supplier_id)}
-                  >
-                    View
-                  </Button>
+
                   <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <DialogTrigger asChild>
                       <Button
@@ -152,7 +143,7 @@ const SupplierListTable = () => {
                         <DialogHeader>
                           <DialogTitle>Delete Supplier</DialogTitle>
                           <DialogDescription>
-                            Are you sure you want to delete "{selectedSupplier.supplier_name}" from the supplier list?
+                            Are you sure you want to delete &quot;{selectedSupplier.supplier_name}&quot; from the supplier list?
                           </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>

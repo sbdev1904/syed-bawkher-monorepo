@@ -16,7 +16,7 @@ interface AddSupplierModalProps {
 const AddSupplierModal = ({ isOpen, onCancel }: AddSupplierModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
-      <DialogContent>
+      <DialogContent className="min-w-5xl">
         <DialogHeader>
           <DialogTitle>Add New Supplier</DialogTitle>
         </DialogHeader>

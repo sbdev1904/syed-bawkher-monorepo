@@ -94,7 +94,7 @@ const TextileTable = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <Table className="bg-white rounded-lg shadow-lg min-w-[1300px]">
+        <Table className="bg-slate-800 rounded-lg shadow-lg min-w-[1300px]">
           <TableHeader>
             <TableRow>
               <TableHead>Fabric Id</TableHead>

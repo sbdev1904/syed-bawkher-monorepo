@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Inbox, Trash2, AlertCircle } from "lucide-react";
+import { Inbox, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,8 +16,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import fabricService from "../../services/fabricService";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 interface FabricImageProps {
   fabricId: string;
@@ -25,17 +23,8 @@ interface FabricImageProps {
   onImageUploadSuccess: () => void;
 }
 
-interface FileItem {
-  uid: string;
-  name: string;
-  status: string;
-  url: string;
-}
-
 const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }: FabricImageProps) => {
-  const router = useRouter();
   const { toast } = useToast();
-  const [fileList, setFileList] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -65,20 +54,10 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }: FabricImagePr
         description: `${file.name} uploaded successfully.`,
       });
 
-      // Update file list and refresh the image
-      setFileList((prevList) => [
-        ...prevList,
-        {
-          uid: `fabric-image-${prevList.length + 1}`, // Unique keys for the uploaded images
-          name: file.name,
-          status: "done",
-          url: presignedUrl.split("?")[0], // URL for displaying the image (without query params)
-        },
-      ]);
-
       // Notify parent of success (e.g., to refresh the displayed image)
       onImageUploadSuccess();
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error("Error uploading image:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -103,7 +82,8 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }: FabricImagePr
 
       // Notify parent or refresh the component state
       onImageUploadSuccess();
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error("Error deleting image:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -115,14 +95,11 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }: FabricImagePr
     }
   };
 
-  const handleViewFabric = () => {
-    router.push(`/fabric/${fabricId}`);
-  };
 
   return (
     <div>
       {!imageUrl && (
-        <div className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center">
+        <div className="py-24 border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center">
           <label className="cursor-pointer flex flex-col items-center justify-center w-full">
             <Inbox className="h-10 w-10 text-gray-400" />
             <p className="mt-2 text-sm text-gray-500">

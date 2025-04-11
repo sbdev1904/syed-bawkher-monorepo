@@ -49,26 +49,29 @@ const FabricOrderListTable = ({ fabricId }: { fabricId: string }) => {
         <AddFabricPurchaseOrderButton fabricId={fabricId} />
       </div>
       <div className="py-2">
-        <Table className="shadow-lg bg-white rounded-lg">
+        <Table className="shadow-lg bg-slate-800 rounded-lg">
           <TableHeader>
-            <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Supplier Name</TableHead>
-              <TableHead>Meters</TableHead>
-              <TableHead>Ordered Date</TableHead>
-              <TableHead>Ordered For</TableHead>
+            <TableRow className="border-b border-slate-600">
+              <TableHead className="text-slate-200">Order ID</TableHead>
+              <TableHead className="text-slate-200">Description</TableHead>
+              <TableHead className="text-slate-200">Supplier Name</TableHead>
+              <TableHead className="text-slate-200">Meters</TableHead>
+              <TableHead className="text-slate-200">Ordered Date</TableHead>
+              <TableHead className="text-slate-200">Ordered For</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {orders.map((order) => (
-              <TableRow key={order.order_id}>
-                <TableCell>{order.order_id}</TableCell>
-                <TableCell>{order.description}</TableCell>
-                <TableCell>{order.supplier_name}</TableCell>
-                <TableCell>{order.meters}</TableCell>
-                <TableCell>{moment(order.ordered_date).format("MMM D, YYYY")}</TableCell>
-                <TableCell>{order.ordered_for}</TableCell>
+              <TableRow
+                key={order.order_id}
+                className="border-b border-slate-600 hover:bg-slate-700"
+              >
+                <TableCell className="text-slate-300">{order.order_id}</TableCell>
+                <TableCell className="text-slate-300">{order.description}</TableCell>
+                <TableCell className="text-slate-300">{order.supplier_name}</TableCell>
+                <TableCell className="text-slate-300">{order.meters}</TableCell>
+                <TableCell className="text-slate-300">{moment(order.ordered_date).format("MMM D, YYYY")}</TableCell>
+                <TableCell className="text-slate-300">{order.ordered_for}</TableCell>
               </TableRow>
             ))}
           </TableBody>
