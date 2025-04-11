@@ -7,6 +7,8 @@ import PastMeasurements from "@/components/tables/PastMeasurements";
 import CreateCustomerButton from "@/components/buttons/CreateCustomerButton";
 import CustomerDetailsCard from "@/components/cards/CustomerDetailsCard";
 import { Customer } from "@prisma/client";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+
 
 const CustomerDetails = () => {
   const pathname = usePathname();
@@ -41,15 +43,33 @@ const CustomerDetails = () => {
   }, [customerId]);
 
   if (loading) {
-    return <div>Loading customer details...</div>;
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-full">
+          <div className="animate-pulse">Loading customer details...</div>
+        </div>
+      </DashboardLayout>
+    );
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-red-500">{error}</div>
+        </div>
+      </DashboardLayout>
+    );
   }
 
   if (!customer) {
-    return <div>No customer found.</div>;
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-full">
+          <div>No customer found.</div>
+        </div>
+      </DashboardLayout>
+    );
   }
 
   const fullName = [
@@ -66,16 +86,15 @@ const CustomerDetails = () => {
     .join(" ");
 
   return (
-    <>
-      <div className="flex flex-row items-center">
-        <h1 className="text-3xl font-semibold ">{`${customer.customer_id + ": " + fullName
-          }`}</h1>
+    <DashboardLayout>
+      <div className="flex flex-row items-center justify-between">
+        <h1 className="text-3xl font-semibold ">{`#${customer.customer_id} ${fullName}`}</h1>
         <CreateCustomerButton customerId={parseInt(customerId!)} />
       </div>
       <CustomerDetailsCard customer={customer} />
       <OrderTable customerId={customerId} />
       <PastMeasurements customerId={customerId} />
-    </>
+    </DashboardLayout>
   );
 };
 

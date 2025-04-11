@@ -3,7 +3,25 @@
 import React from "react";
 import CustomerCard from "../cards/CustomerCard";
 
-const CustomerList = ({ customers }: { customers: any[] }) => {
+const CustomerList = ({ customers }: {
+  customers: {
+    customer_id: string;
+    first_name: string;
+    middle_name: string;
+    last_name: string;
+    email: string;
+    office_phone: string;
+    residential_phone: string;
+    mobile: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+    created_at: string;
+    updated_at: string;
+  }[]
+}) => {
   return (
     <div className="flex flex-wrap space-y-1 p-1 pt-2">
       {customers.map((customer) => (

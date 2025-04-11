@@ -53,7 +53,7 @@ export function Button({
         primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
         default: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         dashed: 'border-dashed border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+        link: 'bg-slate-800 hover:bg-slate-800 text-primary underline-offset-4 hover:underline',
         text: 'hover:bg-accent hover:text-accent-foreground',
     };
 

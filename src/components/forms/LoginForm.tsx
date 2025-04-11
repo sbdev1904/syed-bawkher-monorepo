@@ -8,9 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-
-// Assuming authService is imported correctly from your auth service file
-import authService from "../../services/authService";
+import { signIn } from "next-auth/react";
 
 // Create zod schema for validation
 const loginFormSchema = z.object({
@@ -35,14 +33,24 @@ const LoginForm = () => {
   const onSubmit = async (values: LoginFormValues) => {
     const { username, password } = values;
     try {
-      const token = await authService.login(username, password);
-      localStorage.setItem("token", token);
+      const result = await signIn("credentials", {
+        username,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
       toast({
         title: "Success",
         description: "Login successful!",
       });
-      // You can redirect or perform any other actions here
-      router.push("/dashboard");
+
+      // Always redirect to the dashboard after successful login
+      router.push("/");
+      router.refresh();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       toast({
@@ -57,9 +65,9 @@ const LoginForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mt-8 p-6 rounded-lg shadow-md space-y-4"
+        className="border border-slate-600 min-w-xl mt-8 p-12 rounded-lg shadow-md space-y-4"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <h2 className="text-2xl font-bold mb-12 text-center">Login to Syed Bawkher</h2>
 
         <FormField
           control={form.control}
@@ -92,6 +100,11 @@ const LoginForm = () => {
         <Button type="submit" className="w-full">
           Log in
         </Button>
+
+        <div className="text-center mt-4">
+          <span className="text-gray-600">Don&apos;t have an account? </span>
+          <a href="/register" className="text-blue-500 hover:text-blue-700">Register here</a>
+        </div>
       </form>
     </Form>
   );

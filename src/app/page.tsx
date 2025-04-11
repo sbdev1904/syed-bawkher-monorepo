@@ -1,12 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   User,
   ShoppingCart,
   Scissors,
   Package,
   Clock,
+  Sun,
+  Moon,
+  Sunrise,
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import CreateCustomerButton from "@/components/buttons/CreateCustomerButton";
@@ -15,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 import {
   Table,
   TableBody,
@@ -35,6 +39,30 @@ interface RecentOrder {
 
 export default function Home() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    return null;
+  }
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return { text: "Good morning", icon: Sunrise };
+    if (hour < 18) return { text: "Good afternoon", icon: Sun };
+    return { text: "Good evening", icon: Moon };
+  };
+
+  const { text: greeting, icon: GreetingIcon } = getGreeting();
 
   // Mock data for recent orders
   const recentOrders: RecentOrder[] = [
@@ -78,7 +106,21 @@ export default function Home() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl text-slate-100 font-bold">Dashboard Overview</h1>
+          <div>
+            <h1 className="text-2xl text-slate-100 font-bold">Dashboard Overview</h1>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center text-slate-300">
+                <GreetingIcon className="h-4 w-4 mr-2" />
+                <span className="text-lg">{greeting}, {session.user.username}!</span>
+              </div>
+              <p className="text-slate-400 text-sm ml-6">What are we doing today?</p>
+              <div className="flex items-center ml-6 mt-1">
+                <Badge variant="secondary" className="text-xs">
+                  {session.user.role.toLowerCase()}
+                </Badge>
+              </div>
+            </div>
+          </div>
           <div className="space-x-4">
             <CreateCustomerButton />
             <CreateOrderButton />

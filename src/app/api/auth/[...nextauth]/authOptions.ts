@@ -5,6 +5,11 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { Role } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
+  pages: {
+    signIn: "/login",
+    signOut: "/login",
+    error: "/login", // Error code passed in query string as ?error=
+  },
   session: {
     strategy: "jwt",
   },
@@ -66,6 +71,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.name = user.name;
+        token.role = user.role;
       }
       return token;
     },

@@ -35,23 +35,14 @@ const CreateOrderButton = ({ customerId = null }: CreateOrderButtonProps) => {
 
   return (
     <>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="ml-2"
-              onClick={handleCreateOrder}
-            >
-              <FileEdit className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Create Order</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button
+        variant="outline"
+        className="ml-2"
+        onClick={handleCreateOrder}
+      >
+        <FileEdit className="h-4 w-4" />
+        Create Order
+      </Button>
       {isCreateOrderModalVisible && (
         <CreateOrderModal
           isOpen={isCreateOrderModalVisible}

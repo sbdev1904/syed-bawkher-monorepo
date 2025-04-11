@@ -1,11 +1,13 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:8080";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
 
-// Function to get the bearer token from session storage
-const getBearerToken = () => {
-  return sessionStorage.getItem("bearer_token");
-};
+interface OrderDetails {
+  orderNo: string;
+  date: string;
+  note?: string;
+}
 
 const orderService = {
   findByCustomerId: async (customer_id: string) => {
@@ -31,7 +33,8 @@ const orderService = {
       throw error;
     }
   },
-  createOrder: async (customerId: string, orderDetails: any) => {
+
+  createOrder: async (customerId: string, orderDetails: OrderDetails) => {
     const url = `${BASE_URL}/api/order/${customerId}`;
     try {
       const { orderNo, date, note } = orderDetails;

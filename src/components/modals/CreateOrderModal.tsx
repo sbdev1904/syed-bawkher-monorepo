@@ -278,7 +278,7 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({ isOpen, isCancel, c
       });
       isCancel();
     }}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="min-w-5xl">
         <DialogHeader>
           <DialogTitle>Create New Order</DialogTitle>
         </DialogHeader>

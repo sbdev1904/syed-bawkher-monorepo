@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shadcn Next.js Starter",
-  description: "A starter project with Next.js, Tailwind CSS, and Shadcn UI components",
+  title: "Syed Bawkher Admin",
+  description: "ERP Admin Suite",
 };
 
 export default function RootLayout({

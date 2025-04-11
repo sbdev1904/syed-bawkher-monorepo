@@ -19,9 +19,9 @@ const CreateCustomerButton = ({ customerId = null }: CreateCustomerButtonProps) 
   return (
     <>
       <Button
-        type={customerId ? "link" : "primary"}
+        type={"primary"}
         icon={<PenLine className="h-4 w-4" />}
-        className={customerId ? "text-lg text-white" : "ml-2"}
+        className={customerId ? "text-lg " : "ml-2"}
         onClick={handleCreateCustomer}
       >
         Create Customer

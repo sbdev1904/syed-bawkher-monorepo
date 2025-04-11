@@ -1,8 +1,10 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LogoutButton } from '@/app/auth';
+import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import Image from 'next/image';
+
 import {
     LayoutDashboard,
     Users,
@@ -77,7 +79,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             {/* Sidebar */}
             <div className="fixed inset-y-0 left-0 w-64 bg-slate-300 border-r shadow-sm z-10">
                 <div className="p-4">
-                    <h1 className="text-xl text-slate-900 font-bold">Syed Bawkher Admin</h1>
+                    <div className="w-full h-24 overflow-hidden">
+                        <Image
+                            src="/logo.png"
+                            alt="Logo"
+                            width={500}
+                            height={500}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                    <h1 className="text-xl text-slate-900 font-bold mt-3">Admin</h1>
                 </div>
                 <nav className="space-y-1 px-2">
                     {menuItems.map((item) => {
@@ -122,7 +133,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56" align="end" forceMount>
+                            <DropdownMenuContent>
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
@@ -136,9 +147,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
                                     <LogOut className="mr-2 h-4 w-4" />
-                                    <LogoutButton />
+                                    <span>Sign out</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

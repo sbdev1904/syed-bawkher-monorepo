@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import orderService from "../../services/orderService";
 import moment from "moment";
 import CreateOrderButton from "../buttons/CreateOrderButton";
-import { Search as SearchIcon } from "lucide-react";
+import { Search as SearchIcon, Package } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -91,8 +91,33 @@ const OrderTable = ({ customerId }: { customerId: string }) => {
     }
   };
 
+  const EmptyState = () => (
+    <div className="text-center py-10 px-4">
+      <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 mb-4">
+        <Package className="h-6 w-6 text-slate-600" />
+      </div>
+      <h3 className="text-lg font-semibold text-slate-900 mb-1">No orders found</h3>
+      <p className="text-sm text-slate-500 mb-6">
+        {searchText
+          ? "No orders match your search criteria. Try a different search term."
+          : "Get started by creating your first order."}
+      </p>
+      <CreateOrderButton customerId={customerId} />
+    </div>
+  );
+
   if (!orders) {
-    return <div className="pt-2">Loading Table...</div>;
+    return (
+      <div className="pt-2">
+        <div className="flex items-center justify-center h-32">
+          <div className="animate-pulse flex space-x-4">
+            <div className="h-4 w-24 bg-slate-200 rounded"></div>
+            <div className="h-4 w-24 bg-slate-200 rounded"></div>
+            <div className="h-4 w-24 bg-slate-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -122,48 +147,51 @@ const OrderTable = ({ customerId }: { customerId: string }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredOrders?.map((order) => (
-              <TableRow key={order.orderNo}>
-                <TableCell>{order.orderNo}</TableCell>
-                <TableCell>{moment(order.date).format("YYYY-MM-DD")}</TableCell>
-                <TableCell>{order.onote || "N/A"}</TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="link"
-                      className="text-blue-600 p-0"
-                      asChild
-                    >
-                      <a href={`/order/${encodeURIComponent(order.orderNo)}`}>
-                        View Order
-                      </a>
-                    </Button>
-                    <Button
-                      variant="link"
-                      className="text-red-600 p-0"
-                      onClick={() => confirmDelete(order.orderNo)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-            {filteredOrders?.length === 0 && (
+            {filteredOrders?.length ? (
+              filteredOrders.map((order) => (
+                <TableRow key={order.orderNo}>
+                  <TableCell>{order.orderNo}</TableCell>
+                  <TableCell>{moment(order.date).format("YYYY-MM-DD")}</TableCell>
+                  <TableCell>{order.onote || "N/A"}</TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="link"
+                        className="text-blue-600 p-0"
+                        asChild
+                      >
+                        <a href={`/order/${encodeURIComponent(order.orderNo)}`}>
+                          View Order
+                        </a>
+                      </Button>
+                      <Button
+                        variant="link"
+                        className="text-red-600 p-0"
+                        onClick={() => confirmDelete(order.orderNo)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-4">
-                  No orders found
+                <TableCell colSpan={4}>
+                  <EmptyState />
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
-          <tfoot>
-            <tr>
-              <td colSpan={4} className="p-4">
-                <CreateOrderButton customerId={customerId} />
-              </td>
-            </tr>
-          </tfoot>
+          {filteredOrders && filteredOrders.length > 0 && (
+            <tfoot>
+              <tr>
+                <td colSpan={4} className="p-4">
+                  <CreateOrderButton customerId={customerId} />
+                </td>
+              </tr>
+            </tfoot>
+          )}
         </Table>
       </div>
 

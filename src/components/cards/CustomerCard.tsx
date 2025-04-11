@@ -35,7 +35,7 @@ const CustomerCard = ({
 
   return (
     <div
-      className="sm:w-full bg-slate-100 md:p-2 rounded-lg shadow-sm hover:bg-slate-200 cursor-pointer snap-start"
+      className="sm:w-full bg-slate-800 md:p-2 rounded-lg shadow-sm hover:bg-slate-700 cursor-pointer snap-start"
       onClick={handleCardClick} // Set onClick handler
     >
       <div className="font-bold">
