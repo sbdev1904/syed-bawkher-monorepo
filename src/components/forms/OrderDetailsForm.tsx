@@ -29,16 +29,32 @@ export const orderDetailsSchema = z.object({
 
 export type OrderDetailsFormData = z.infer<typeof orderDetailsSchema>;
 
+interface FormValues {
+  orderNo: string;
+  date?: Date;
+  note?: string;
+  items: Item[];
+  jacket?: Record<string, string | number>;
+  shirt?: Record<string, string | number>;
+  pant?: Record<string, string | number>;
+  customerId?: string;
+  [key: string]: unknown;
+}
+
+export interface OrderDetailsFormData {
+  orderNo: string;
+  date?: Date;
+  note?: string;
+}
+
 interface OrderDetailsFormProps {
-  form: UseFormReturn<OrderDetailsFormData>;
+  form: UseFormReturn<FormValues>;
   formData: OrderDetailsFormData;
   setFormData: (data: OrderDetailsFormData) => void;
 }
 
 const OrderDetailsForm: React.FC<OrderDetailsFormProps> = ({
   form,
-  formData,
-  setFormData,
 }) => {
   return (
     <Form {...form}>
@@ -48,11 +64,7 @@ const OrderDetailsForm: React.FC<OrderDetailsFormProps> = ({
             control={form.control}
             name="orderNo"
             rules={{
-              required: "Please enter an order number",
-              pattern: {
-                value: /^[A-Za-z0-9-]+$/,
-                message: "Order number can only contain letters, numbers, and hyphens",
-              },
+              required: "Please enter an order number"
             }}
             render={({ field }) => (
               <FormItem>
@@ -74,10 +86,7 @@ const OrderDetailsForm: React.FC<OrderDetailsFormProps> = ({
             name="date"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Date</FormLabel>
-                <FormDescription>
-                  If no date is provided, today's date will be used.
-                </FormDescription>
+                <FormLabel className="mb-2">Date</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -110,7 +119,12 @@ const OrderDetailsForm: React.FC<OrderDetailsFormProps> = ({
                   </PopoverContent>
                 </Popover>
                 <FormMessage />
+
+                <FormDescription>
+                  If no date is provided, today&apos;s date will be used.
+                </FormDescription>
               </FormItem>
+
             )}
           />
         </div>

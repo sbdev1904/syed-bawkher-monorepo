@@ -35,7 +35,7 @@ const orderService = {
   },
 
   createOrder: async (customerId: string, orderDetails: OrderDetails) => {
-    const url = `${BASE_URL}/api/order/${customerId}`;
+    const url = `${BASE_URL}/api/orders`;
     try {
       const { orderNo, date, note } = orderDetails;
       console.log("Order:", orderDetails);
@@ -43,8 +43,9 @@ const orderService = {
         orderNo,
         date,
         note,
+        customerId,
       });
-      return response.data; // This will now include orderNo
+      return response.data;
     } catch (error) {
       console.error("Error creating order:", error);
       throw error;

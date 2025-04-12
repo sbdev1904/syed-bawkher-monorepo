@@ -14,7 +14,7 @@ import {
     Bell,
     User,
     Settings,
-    LogOut
+    LogOut, UserCog
 } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
@@ -71,6 +71,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             path: '/suppliers',
             icon: <Users className="h-5 w-5" />,
             label: 'Suppliers',
+        },
+        {
+            path: '/tailors',
+            icon: <UserCog className="h-5 w-5" />,
+            label: 'Tailors',
         },
     ];
 
@@ -158,7 +163,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
                 {/* Page Content */}
                 <main className="p-6">
-                    <div className="p-6 min-h-[360px] bg-slate-600 rounded-lg shadow-sm">
+                    <div className="p-6 min-h-[360px] bg-slate-700 rounded-lg shadow-sm">
                         {children}
                     </div>
                 </main>

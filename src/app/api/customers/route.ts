@@ -3,12 +3,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 
 const QuerySchema = z.object({
   page: z.string().transform(Number).default("1"),
   pageSize: z.string().transform(Number).default("10"),
   sortBy: z.string().default("customer_id"),
   sortOrder: z.enum(["asc", "desc"]).default("asc"),
+  search: z.string().optional(),
 });
 
 // Get all customers
@@ -20,12 +22,49 @@ export async function GET(request: Request) {
       pageSize: url.searchParams.get("pageSize") ?? "10",
       sortBy: url.searchParams.get("sortBy") ?? "customer_id",
       sortOrder: url.searchParams.get("sortOrder") ?? "asc",
+      search: url.searchParams.get("search") ?? undefined,
     });
 
     const skip = (parsed.page - 1) * parsed.pageSize;
 
+    // Build the where clause based on search
+    const where: Prisma.CustomerWhereInput = parsed.search
+      ? {
+          OR: [
+            {
+              first_name: {
+                contains: parsed.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+            {
+              middle_name: {
+                contains: parsed.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+            {
+              last_name: {
+                contains: parsed.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+            { mobile: { contains: parsed.search } },
+            { office_phone: { contains: parsed.search } },
+            { residential_phone: { contains: parsed.search } },
+            {
+              email: {
+                contains: parsed.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+          ],
+        }
+      : {};
+
     const [customers, totalCount] = await Promise.all([
       prisma.customer.findMany({
+        where,
         skip,
         take: parsed.pageSize,
         orderBy: {
@@ -45,7 +84,7 @@ export async function GET(request: Request) {
           },
         },
       }),
-      prisma.customer.count(),
+      prisma.customer.count({ where }),
     ]);
 
     const formattedCustomers = customers.map((customer) => ({
@@ -59,8 +98,8 @@ export async function GET(request: Request) {
         customer.residential_phone ||
         "",
       email: customer.email || "",
-      totalOrders: customer._count.orders,
-      lastOrder: customer.orders[0]?.date?.toISOString().split("T")[0] || "",
+      totalOrders: customer._count?.orders || 0,
+      lastOrder: customer.orders?.[0]?.date?.toISOString().split("T")[0] || "",
     }));
 
     return NextResponse.json({

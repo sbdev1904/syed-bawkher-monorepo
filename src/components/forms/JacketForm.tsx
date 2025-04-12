@@ -10,15 +10,63 @@ import {
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 
-interface JacketFormProps {
-  form: UseFormReturn<any>;
-  requiredFieldRule?: any;
+interface Item {
+  item_name: string;
+  item_type: "jacket" | "shirt" | "pant";
+  fabric_id?: string;
+  lining_fabric_id?: string;
+  key: string;
 }
 
-const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
+interface FormValues {
+  orderNo: string;
+  date?: Date;
+  note?: string;
+  items: Item[];
+  jacket: {
+    jacket_length: string;
+    natural_length: string;
+    back_length: string;
+    x_back: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    waist_coat_length: string;
+    sherwani_length: string;
+    other_notes: string;
+  };
+  shirt: {
+    length: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    other_notes: string;
+  };
+  pant: {
+    length: string;
+    inseem: string;
+    waist: string;
+    hips: string;
+    bottom: string;
+    knee: string;
+    other_notes: string;
+  };
+  customerId?: string;
+  [key: string]: unknown;
+}
+
+interface JacketFormProps {
+  form: UseFormReturn<FormValues>;
+}
+
+const JacketForm = ({ form }: JacketFormProps) => {
   return (
     <>
-      <div className="grid grid-flow-row-dense md:grid-cols-3 justify-items-end">
+      <div className="grid grid-flow-row-dense md:grid-cols-3 justify-items-between gap-2">
         <FormField
           control={form.control}
           name="jacket.jacket_length"
@@ -26,7 +74,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Jacket Length</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -38,7 +86,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Natural Length</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -50,7 +98,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Back Length</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -62,7 +110,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Cross Back</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -74,7 +122,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Half Shoulder</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -86,7 +134,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>To Sleeve</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -98,7 +146,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Chest</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -110,7 +158,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Waist</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -122,13 +170,15 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Collar</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
         />
       </div>
-      <div className="grid grid-flow-row-dense md:grid-cols-2 justify-items-end">
+
+
+      <div className="grid grid-flow-row-dense md:grid-cols-2 justify-items-between space-x-4">
         <FormField
           control={form.control}
           name="jacket.waist_coat_length"
@@ -136,7 +186,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Vest Coat Length</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -148,7 +198,7 @@ const JacketForm = ({ form, requiredFieldRule = null }: JacketFormProps) => {
             <FormItem>
               <FormLabel>Sherwani Length</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}

@@ -10,15 +10,63 @@ import {
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 
-interface PantFormProps {
-  form: UseFormReturn<any>;
-  requiredFieldRule?: any;
+interface Item {
+  item_name: string;
+  item_type: "jacket" | "shirt" | "pant";
+  fabric_id?: string;
+  lining_fabric_id?: string;
+  key: string;
 }
 
-const PantForm = ({ form, requiredFieldRule = null }: PantFormProps) => {
+interface FormValues {
+  orderNo: string;
+  date?: Date;
+  note?: string;
+  items: Item[];
+  jacket: {
+    jacket_length: string;
+    natural_length: string;
+    back_length: string;
+    x_back: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    waist_coat_length: string;
+    sherwani_length: string;
+    other_notes: string;
+  };
+  shirt: {
+    length: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    other_notes: string;
+  };
+  pant: {
+    length: string;
+    inseem: string;
+    waist: string;
+    hips: string;
+    bottom: string;
+    knee: string;
+    other_notes: string;
+  };
+  customerId?: string;
+  [key: string]: unknown;
+}
+
+interface PantFormProps {
+  form: UseFormReturn<FormValues>;
+}
+
+const PantForm = ({ form }: PantFormProps) => {
   return (
     <>
-      <div className="grid grid-flow-row-dense md:grid-cols-3 justify-items-end">
+      <div className="grid grid-flow-row-dense md:grid-cols-3 justify-items-between gap-2">
         <FormField
           control={form.control}
           name="pant.length"
@@ -26,7 +74,7 @@ const PantForm = ({ form, requiredFieldRule = null }: PantFormProps) => {
             <FormItem>
               <FormLabel>Pant Length</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -38,7 +86,7 @@ const PantForm = ({ form, requiredFieldRule = null }: PantFormProps) => {
             <FormItem>
               <FormLabel>Pant Inseem</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -50,7 +98,7 @@ const PantForm = ({ form, requiredFieldRule = null }: PantFormProps) => {
             <FormItem>
               <FormLabel>Waist</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -62,7 +110,7 @@ const PantForm = ({ form, requiredFieldRule = null }: PantFormProps) => {
             <FormItem>
               <FormLabel>Hips</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -74,7 +122,7 @@ const PantForm = ({ form, requiredFieldRule = null }: PantFormProps) => {
             <FormItem>
               <FormLabel>Bottom</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}
@@ -86,7 +134,7 @@ const PantForm = ({ form, requiredFieldRule = null }: PantFormProps) => {
             <FormItem>
               <FormLabel>Knee</FormLabel>
               <FormControl>
-                <Input {...field} className="w-10" />
+                <Input {...field} className="" />
               </FormControl>
             </FormItem>
           )}

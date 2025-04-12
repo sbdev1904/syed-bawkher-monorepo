@@ -36,10 +36,12 @@ const shirtService = {
   ) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/shirt-measurement/${encodeURIComponent(
-          customerId
-        )}/${encodeURIComponent(orderNo)}`,
-        measurementData,
+        `${BASE_URL}/api/shirt-measurement`,
+        {
+          ...measurementData,
+          customerId,
+          orderNo,
+        },
         {
           headers: {
             "Content-Type": "application/json",

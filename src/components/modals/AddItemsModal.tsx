@@ -53,7 +53,10 @@ interface Item {
 
 interface FormValues {
   items: Item[];
-  [key: string]: any;
+  jacket: Record<string, string | number>;
+  shirt: Record<string, string | number>;
+  pant: Record<string, string | number>;
+  [key: string]: unknown;
 }
 
 interface VisibilityState {
@@ -65,12 +68,20 @@ interface VisibilityState {
 const AddItemsModal = ({ isOpen, isCancel, orderNo }: { isOpen: boolean; isCancel: () => void; orderNo: string }) => {
   const form = useForm<FormValues>({
     defaultValues: {
-      items: []
+      items: [],
+      jacket: {},
+      shirt: {},
+      pant: {}
     }
   });
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<FormValues>({ items: [] });
+  const [formData, setFormData] = useState<FormValues>({
+    items: [],
+    jacket: {},
+    shirt: {},
+    pant: {}
+  });
   const [visibility, setVisibility] = useState<VisibilityState>({
     displayJacketForm: false,
     displayShirtForm: false,

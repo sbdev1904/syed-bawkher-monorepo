@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     ShoppingCart,
     Clock,
     CheckCircle,
     Search,
+    Loader2,
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import CreateOrderButton from "@/components/buttons/CreateOrderButton";
@@ -29,71 +30,91 @@ import { format } from "date-fns";
 
 interface Order {
     orderNo: string;
-    customer: string;
-    items: string[];
-    status: "In Production" | "Pending" | "Ready for Delivery";
-    dueDate: string;
-    priority: "high" | "medium" | "low";
+    customer: {
+        customer_id: number;
+        first_name: string | null;
+        last_name: string | null;
+    } | null;
+    items: {
+        item_id: number;
+        item_name: string | null;
+        item_type: "SHIRT" | "JACKET" | "PANT" | null;
+    }[];
+    date: string | null;
+}
+
+interface OrderStats {
+    total: number;
+    inProduction: number;
+    pending: number;
+    completed: number;
 }
 
 export default function OrdersPage() {
     const router = useRouter();
     const [searchText, setSearchText] = useState("");
     const [date, setDate] = useState<Date>();
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [stats, setStats] = useState<OrderStats>({
+        total: 0,
+        inProduction: 0,
+        pending: 0,
+        completed: 0,
+    });
 
-    // Mock data for orders
-    const orders: Order[] = [
-        {
-            orderNo: "ORD001",
-            customer: "John Doe",
-            items: ["Suit", "Shirt"],
-            status: "In Production",
-            dueDate: "2024-04-15",
-            priority: "high",
-        },
-        {
-            orderNo: "ORD002",
-            customer: "Jane Smith",
-            items: ["Dress", "Pants"],
-            status: "Pending",
-            dueDate: "2024-04-20",
-            priority: "medium",
-        },
-        {
-            orderNo: "ORD003",
-            customer: "Mike Johnson",
-            items: ["Jacket"],
-            status: "Ready for Delivery",
-            dueDate: "2024-04-10",
-            priority: "low",
-        },
-    ];
+    useEffect(() => {
+        fetchOrders();
+    }, []);
 
-    const getStatusColor = (status: Order["status"]) => {
-        switch (status) {
-            case "In Production":
-                return "bg-blue-500";
-            case "Pending":
-                return "bg-yellow-500";
-            case "Ready for Delivery":
-                return "bg-green-500";
-            default:
-                return "bg-gray-500";
+    const fetchOrders = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch('/api/orders');
+            if (!response.ok) {
+                throw new Error('Failed to fetch orders');
+            }
+            const data = await response.json();
+            setOrders(data);
+            calculateStats(data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'An error occurred');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const getPriorityColor = (priority: Order["priority"]) => {
-        switch (priority) {
-            case "high":
-                return "bg-red-500";
-            case "medium":
-                return "bg-yellow-500";
-            case "low":
-                return "bg-green-500";
-            default:
-                return "bg-gray-500";
-        }
+    const calculateStats = (ordersData: Order[]) => {
+        setStats({
+            total: ordersData.length,
+            inProduction: ordersData.filter(order => order.items.some(item => item.item_type === "SHIRT" || item.item_type === "JACKET")).length,
+            pending: ordersData.filter(order => !order.items.length).length,
+            completed: ordersData.filter(order => order.items.every(item => item.item_type)).length,
+        });
     };
+
+    // Filter orders based on search text and selected date
+    const filteredOrders = orders.filter(order => {
+        const searchMatch = searchText.toLowerCase() === '' ||
+            order.orderNo.toLowerCase().includes(searchText.toLowerCase()) ||
+            order.customer?.first_name?.toLowerCase().includes(searchText.toLowerCase()) ||
+            order.customer?.last_name?.toLowerCase().includes(searchText.toLowerCase());
+
+        const dateMatch = !date || new Date(order.date || '').toDateString() === date.toDateString();
+
+        return searchMatch && dateMatch;
+    });
+
+    if (error) {
+        return (
+            <DashboardLayout>
+                <div className="flex items-center justify-center h-full">
+                    <div className="text-red-500">Error: {error}</div>
+                </div>
+            </DashboardLayout>
+        );
+    }
 
     return (
         <DashboardLayout>
@@ -110,7 +131,7 @@ export default function OrdersPage() {
                             <ShoppingCart className="h-4 w-4 text-green-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">156</div>
+                            <div className="text-2xl font-bold">{stats.total}</div>
                         </CardContent>
                     </Card>
                     <Card>
@@ -119,7 +140,7 @@ export default function OrdersPage() {
                             <Clock className="h-4 w-4 text-blue-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">28</div>
+                            <div className="text-2xl font-bold">{stats.inProduction}</div>
                         </CardContent>
                     </Card>
                     <Card>
@@ -128,7 +149,7 @@ export default function OrdersPage() {
                             <Clock className="h-4 w-4 text-yellow-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">15</div>
+                            <div className="text-2xl font-bold">{stats.pending}</div>
                         </CardContent>
                     </Card>
                     <Card>
@@ -137,7 +158,7 @@ export default function OrdersPage() {
                             <CheckCircle className="h-4 w-4 text-green-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">113</div>
+                            <div className="text-2xl font-bold">{stats.completed}</div>
                         </CardContent>
                     </Card>
                 </div>
@@ -177,53 +198,54 @@ export default function OrdersPage() {
                                 </PopoverContent>
                             </Popover>
                         </div>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Order No</TableHead>
-                                    <TableHead>Customer</TableHead>
-                                    <TableHead>Items</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Due Date</TableHead>
-                                    <TableHead>Priority</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {orders.map((order) => (
-                                    <TableRow key={order.orderNo}>
-                                        <TableCell>
-                                            <Button
-                                                variant="link"
-                                                onClick={() => router.push(`/order/${order.orderNo}`)}
-                                            >
-                                                {order.orderNo}
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell>{order.customer}</TableCell>
-                                        <TableCell>
-                                            <div className="flex gap-1">
-                                                {order.items.map((item) => (
-                                                    <Badge key={item} variant="secondary">
-                                                        {item}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge className={cn("text-white", getStatusColor(order.status))}>
-                                                {order.status}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>{new Date(order.dueDate).toLocaleDateString()}</TableCell>
-                                        <TableCell>
-                                            <Badge className={cn("text-white", getPriorityColor(order.priority))}>
-                                                {order.priority.toUpperCase()}
-                                            </Badge>
-                                        </TableCell>
+                        {loading ? (
+                            <div className="flex items-center justify-center py-8">
+                                <Loader2 className="h-8 w-8 animate-spin" />
+                            </div>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Order No</TableHead>
+                                        <TableHead>Customer</TableHead>
+                                        <TableHead>Items</TableHead>
+                                        <TableHead>Date</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredOrders.map((order) => (
+                                        <TableRow key={order.orderNo}>
+                                            <TableCell>
+                                                <Button
+                                                    variant="link"
+                                                    onClick={() => router.push(`/order/${order.orderNo}`)}
+                                                >
+                                                    {order.orderNo}
+                                                </Button>
+                                            </TableCell>
+                                            <TableCell>
+                                                {order.customer ?
+                                                    `${order.customer.first_name || ''} ${order.customer.last_name || ''}`.trim() :
+                                                    'N/A'
+                                                }
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex gap-1">
+                                                    {order.items.map((item) => (
+                                                        <Badge key={item.item_id} variant="secondary">
+                                                            {item.item_name || item.item_type || 'Unknown'}
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                {order.date ? new Date(order.date).toLocaleDateString() : 'N/A'}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
                     </CardContent>
                 </Card>
             </div>

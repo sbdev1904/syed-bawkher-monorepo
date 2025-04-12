@@ -1,24 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { FileEdit } from "lucide-react";
-import { useRouter } from "next/navigation";
 import CreateOrderModal from "../modals/CreateOrderModal";
 
-interface CreateOrderButtonProps {
-  customerId?: string | null;
-}
-
-const CreateOrderButton = ({ customerId = null }: CreateOrderButtonProps) => {
-  const [isCreateOrderModalVisible, setIsCreateOrderModalVisible] =
-    useState(false);
-  const router = useRouter();
+const CreateOrderButton = () => {
+  const [isCreateOrderModalVisible, setIsCreateOrderModalVisible] = useState(false);
 
   const handleCreateOrder = () => {
     setIsCreateOrderModalVisible(true);
@@ -28,11 +15,6 @@ const CreateOrderButton = ({ customerId = null }: CreateOrderButtonProps) => {
     setIsCreateOrderModalVisible(false);
   };
 
-  const handleSuccess = (orderNo: string) => {
-    setIsCreateOrderModalVisible(false);
-    router.push(`/order/${orderNo}`);
-  };
-
   return (
     <>
       <Button
@@ -40,14 +22,13 @@ const CreateOrderButton = ({ customerId = null }: CreateOrderButtonProps) => {
         className="ml-2"
         onClick={handleCreateOrder}
       >
-        <FileEdit className="h-4 w-4" />
+        <FileEdit className="h-4 w-4 mr-2" />
         Create Order
       </Button>
       {isCreateOrderModalVisible && (
         <CreateOrderModal
           isOpen={isCreateOrderModalVisible}
           isCancel={handleCancel}
-          customerid={customerId}
         />
       )}
     </>

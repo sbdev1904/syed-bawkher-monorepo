@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { MinusCircle, Plus, Search } from "lucide-react";
+import { MinusCircle, Plus, Search, Loader2 } from "lucide-react";
 import fabricService from "../../services/fabricService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,7 +42,15 @@ interface Item {
 }
 
 interface FormValues {
+  orderNo: string;
+  date?: Date;
+  note?: string;
   items: Item[];
+  jacket?: Record<string, string | number>;
+  shirt?: Record<string, string | number>;
+  pant?: Record<string, string | number>;
+  customerId?: string;
+  [key: string]: unknown;
 }
 
 interface VisibilityState {
@@ -53,9 +61,15 @@ interface VisibilityState {
 
 interface AddItemsFormProps {
   form: UseFormReturn<FormValues>;
-  formData: FormValues;
-  setFormData: (data: FormValues) => void;
-  setVisibility: (visibility: VisibilityState) => void;
+  formData: {
+    items: Item[];
+  };
+  setFormData: (data: { items: Item[] }) => void;
+  setVisibility: React.Dispatch<React.SetStateAction<{
+    displayJacketForm: boolean;
+    displayShirtForm: boolean;
+    displayPantForm: boolean;
+  }>>;
 }
 
 const AddItemsForm: React.FC<AddItemsFormProps> = ({
@@ -70,23 +84,36 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
   const [liningOpen, setLiningOpen] = useState<{ [key: number]: boolean }>({});
   const [fabricSearchInput, setFabricSearchInput] = useState<string>("");
   const [liningSearchInput, setLiningSearchInput] = useState<string>("");
+  const [allFabrics, setAllFabrics] = useState<FabricOption[]>([]);
+  const [allLiningFabrics, setAllLiningFabrics] = useState<FabricOption[]>([]);
+  const [isLoadingFabrics, setIsLoadingFabrics] = useState<boolean>(false);
+  const [isLoadingLiningFabrics, setIsLoadingLiningFabrics] = useState<boolean>(false);
 
-  // Function to fetch fabrics based on search query
-  const fetchFabrics = async (query: string, setOptionsCallback: React.Dispatch<React.SetStateAction<FabricOption[]>>) => {
-    if (!query) {
-      setOptionsCallback([]); // Reset options if the query is empty
-      return;
-    }
+  // Function to fetch all fabrics
+  const fetchAllFabrics = async () => {
     try {
-      const results = await fabricService.searchFabrics(query);
+      const results = await fabricService.getAllFabrics();
       const options = results.map((fabric: any) => ({
         value: fabric.fabric_id,
         label: `${fabric.fabric_id} - ${fabric.fabric_brand} (${fabric.fabric_code})`,
       }));
-      setOptionsCallback(options);
+      return options;
     } catch (error) {
-      console.error("Failed to search fabrics:", error);
+      console.error("Failed to fetch fabrics:", error);
+      return [];
     }
+  };
+
+  // Function to fetch fabrics based on search query
+  const fetchFabrics = async (query: string, setOptionsCallback: React.Dispatch<React.SetStateAction<FabricOption[]>>, allItems: FabricOption[]) => {
+    if (!query) {
+      setOptionsCallback(allItems); // Show all fabrics when query is empty
+      return;
+    }
+    const filteredOptions = allItems.filter(item =>
+      item.label.toLowerCase().includes(query.toLowerCase())
+    );
+    setOptionsCallback(filteredOptions);
   };
 
   // Function to update visibility based on items
@@ -117,7 +144,6 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
                   onClick={() => {
                     const currentItems = form.getValues().items;
                     const newItems = currentItems.filter((_, i) => i !== index);
@@ -126,6 +152,9 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                   }}
                 >
                   <MinusCircle className="text-red-500" size={20} />
+                  <span className="text-xs text-slate-500">
+                    Remove
+                  </span>
                 </Button>
               </div>
 
@@ -181,7 +210,21 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                     <FormItem className="flex flex-col">
                       <Popover
                         open={fabricOpen[index]}
-                        onOpenChange={(open) => setFabricOpen({ ...fabricOpen, [index]: open })}
+                        onOpenChange={async (open) => {
+                          setFabricOpen({ ...fabricOpen, [index]: open });
+                          if (open && allFabrics.length === 0) {
+                            setIsLoadingFabrics(true);
+                            try {
+                              const fabrics = await fetchAllFabrics();
+                              setAllFabrics(fabrics);
+                              setFabricOptions(fabrics);
+                            } finally {
+                              setIsLoadingFabrics(false);
+                            }
+                          } else if (open) {
+                            setFabricOptions(allFabrics);
+                          }
+                        }}
                       >
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -204,12 +247,17 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                               value={fabricSearchInput}
                               onChange={(e) => {
                                 setFabricSearchInput(e.target.value);
-                                fetchFabrics(e.target.value, setFabricOptions);
+                                fetchFabrics(e.target.value, setFabricOptions, allFabrics);
                               }}
                             />
                           </div>
                           <div className="max-h-60 overflow-y-auto">
-                            {fabricOptions.length > 0 ? (
+                            {isLoadingFabrics ? (
+                              <div className="px-2 py-4 text-center text-sm text-gray-500 flex items-center justify-center">
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Loading fabrics...
+                              </div>
+                            ) : fabricOptions.length > 0 ? (
                               <div className="py-1">
                                 {fabricOptions.map((option) => (
                                   <div
@@ -247,7 +295,21 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                       <FormItem className="flex flex-col">
                         <Popover
                           open={liningOpen[index]}
-                          onOpenChange={(open) => setLiningOpen({ ...liningOpen, [index]: open })}
+                          onOpenChange={async (open) => {
+                            setLiningOpen({ ...liningOpen, [index]: open });
+                            if (open && allLiningFabrics.length === 0) {
+                              setIsLoadingLiningFabrics(true);
+                              try {
+                                const fabrics = await fetchAllFabrics();
+                                setAllLiningFabrics(fabrics);
+                                setLiningOptions(fabrics);
+                              } finally {
+                                setIsLoadingLiningFabrics(false);
+                              }
+                            } else if (open) {
+                              setLiningOptions(allLiningFabrics);
+                            }
+                          }}
                         >
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -270,12 +332,17 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                                 value={liningSearchInput}
                                 onChange={(e) => {
                                   setLiningSearchInput(e.target.value);
-                                  fetchFabrics(e.target.value, setLiningOptions);
+                                  fetchFabrics(e.target.value, setLiningOptions, allLiningFabrics);
                                 }}
                               />
                             </div>
                             <div className="max-h-60 overflow-y-auto">
-                              {liningOptions.length > 0 ? (
+                              {isLoadingLiningFabrics ? (
+                                <div className="px-2 py-4 text-center text-sm text-gray-500 flex items-center justify-center">
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Loading lining fabrics...
+                                </div>
+                              ) : liningOptions.length > 0 ? (
                                 <div className="py-1">
                                   {liningOptions.map((option) => (
                                     <div

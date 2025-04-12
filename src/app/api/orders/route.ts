@@ -11,7 +11,27 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orders = await prisma.orders.findMany();
+    const orders = await prisma.orders.findMany({
+      include: {
+        customer: {
+          select: {
+            customer_id: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+        items: {
+          select: {
+            item_id: true,
+            item_name: true,
+            item_type: true,
+          },
+        },
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
     return NextResponse.json(orders);
   } catch (error) {
     console.error("Failed to fetch orders:", error);
@@ -44,12 +64,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const orderDate = date || new Date().toISOString().split("T")[0];
+    // Ensure we have a full ISO DateTime string
+    const orderDate = date
+      ? new Date(date).toISOString()
+      : new Date().toISOString();
 
     const order = await prisma.orders.create({
       data: {
         orderNo,
-        customer_id: customerId,
+        customer_id: parseInt(customerId, 10),
         date: orderDate,
         onote: note,
       },
