@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { FormLabel } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
@@ -27,9 +27,9 @@ interface CustomerUser {
 }
 
 interface CustomerSearchResult {
-  customer_id: string;
-  first_name: string;
-  last_name: string;
+  customer_id: number;
+  first_name?: string;
+  last_name?: string;
 }
 
 const MergeUserForm = ({ targetCustomerID = null }: MergeUserFormProps) => {
@@ -53,7 +53,7 @@ const MergeUserForm = ({ targetCustomerID = null }: MergeUserFormProps) => {
     try {
       const results = await customerService.searchCustomers(query);
       setSearchResults(
-        results.filter((customer: CustomerSearchResult) => customer.customer_id !== targetCustomerID)
+        results.filter((customer) => customer.customer_id !== Number(targetCustomerID))
       );
     } catch (error) {
       toast({
@@ -66,8 +66,8 @@ const MergeUserForm = ({ targetCustomerID = null }: MergeUserFormProps) => {
   };
 
   const handleAddUserId = (user: CustomerSearchResult) => {
-    const userId = user.customer_id;
-    const userName = `${user.first_name} ${user.last_name}`;
+    const userId = user.customer_id.toString();
+    const userName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
     if (userId && !otherUserIds.some((u) => u.customer_id === userId)) {
       setOtherUserIds([
         ...otherUserIds,
@@ -132,7 +132,7 @@ const MergeUserForm = ({ targetCustomerID = null }: MergeUserFormProps) => {
                 className="p-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
                 onClick={() => handleAddUserId(item)}
               >
-                {`${item.customer_id} - ${item.first_name} ${item.last_name}`}
+                {`${item.customer_id} - ${item.first_name || ''} ${item.last_name || ''}`}
               </div>
             ))}
           </div>

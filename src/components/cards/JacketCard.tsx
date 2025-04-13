@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import jacketService from "../../services/jacketService";
 import EditMeasurementsButton from "../buttons/EditMeasurementsButton";
-import { Button } from "@/components/ui/button";
 
 interface Jacket {
   collar: string;

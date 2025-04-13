@@ -14,10 +14,34 @@ import { useForm } from "react-hook-form";
 import JacketForm from "../forms/JacketForm";
 import jacketService from "../../services/jacketService";
 
+interface JacketFields {
+  jacket_length: string;
+  natural_length: string;
+  back_length: string;
+  x_back: string;
+  half_shoulder: string;
+  to_sleeve: string;
+  chest: string;
+  waist: string;
+  collar: string;
+  waist_coat_length: string;
+  sherwani_length: string;
+  other_notes: string;
+}
+
+interface JacketMeasurement extends JacketFields {
+  measurement_id: string;
+}
+
+interface FormValues {
+  jacket: JacketMeasurement;
+  [key: string]: unknown;
+}
+
 interface UpdateJacketMeasurementModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  measurement: any;
+  measurement: JacketMeasurement;
 }
 
 const UpdateJacketMeasurementModal = ({
@@ -26,7 +50,7 @@ const UpdateJacketMeasurementModal = ({
   measurement
 }: UpdateJacketMeasurementModalProps) => {
   const { toast } = useToast();
-  const form = useForm({
+  const form = useForm<FormValues>({
     defaultValues: {
       jacket: measurement
     }
@@ -38,7 +62,7 @@ const UpdateJacketMeasurementModal = ({
     }
   }, [isOpen, measurement, form]);
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     try {
       const { jacket } = values;
       await jacketService.updateJacketMeasurement(

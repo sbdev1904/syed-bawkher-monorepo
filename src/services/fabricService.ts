@@ -1,5 +1,29 @@
 import axios from "axios";
 
+interface Fabric {
+  id?: string;
+  name: string;
+  description?: string;
+  price?: number;
+  quantity?: number;
+  color?: string;
+  pattern?: string;
+  material?: string;
+  imageUrl?: string;
+  // Add any other relevant fabric properties
+}
+
+interface FabricUpdateFields {
+  name?: string;
+  description?: string;
+  price?: number;
+  quantity?: number;
+  color?: string;
+  pattern?: string;
+  material?: string;
+  // Add any other updatable fabric properties
+}
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
 
@@ -42,7 +66,7 @@ const fabricService = {
   },
 
   // Create a new fabric
-  createFabric: async (fabric: any) => {
+  createFabric: async (fabric: Fabric) => {
     try {
       const response = await axios.post(`${BASE_URL}/api/fabrics`, fabric, {
         headers: {
@@ -57,7 +81,7 @@ const fabricService = {
   },
 
   // Update a fabric
-  updateFabric: async (fabricId: string, fields: any) => {
+  updateFabric: async (fabricId: string, fields: FabricUpdateFields) => {
     try {
       const response = await axios.put(
         `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}`,

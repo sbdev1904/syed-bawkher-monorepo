@@ -20,8 +20,8 @@ interface Order {
 interface Tailor {
   tailor_id: number;
   first_name: string;
-  last_name?: string;
-  specialization?: string;
+  last_name: string | null;
+  specialization: string | null;
   status: string;
 }
 
@@ -29,9 +29,9 @@ interface TailorAssignment {
   id: number;
   tailor: Tailor;
   status: string;
-  assigned_at: string;
-  due_date?: string;
-  notes?: string;
+  assigned_at: Date;
+  due_date: Date | null;
+  notes: string | null;
 }
 
 const OrderDetails = () => {
@@ -52,12 +52,16 @@ const OrderDetails = () => {
         setOrder(orderData);
 
         // Fetch available tailors
-        const tailors = await tailorService.getActiveTailors();
+        const tailors = await tailorService.getAllTailors();
         setAvailableTailors(tailors);
 
         // Fetch assigned tailors
         const assignments = await tailorAssignmentService.getTailorsByOrder(orderNo);
-        setAssignedTailors(assignments);
+        setAssignedTailors(assignments.map((assignment: TailorAssignment) => ({
+          ...assignment,
+          assigned_at: new Date(assignment.assigned_at),
+          due_date: assignment.due_date ? new Date(assignment.due_date) : null
+        })));
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
@@ -78,7 +82,11 @@ const OrderDetails = () => {
 
       // Refresh assigned tailors
       const assignments = await tailorAssignmentService.getTailorsByOrder(orderNo);
-      setAssignedTailors(assignments);
+      setAssignedTailors(assignments.map((assignment: TailorAssignment) => ({
+        ...assignment,
+        assigned_at: new Date(assignment.assigned_at),
+        due_date: assignment.due_date ? new Date(assignment.due_date) : null
+      })));
 
       // Reset form
       setSelectedTailor(null);
@@ -99,7 +107,11 @@ const OrderDetails = () => {
 
       // Refresh assigned tailors
       const assignments = await tailorAssignmentService.getTailorsByOrder(orderNo);
-      setAssignedTailors(assignments);
+      setAssignedTailors(assignments.map((assignment: TailorAssignment) => ({
+        ...assignment,
+        assigned_at: new Date(assignment.assigned_at),
+        due_date: assignment.due_date ? new Date(assignment.due_date) : null
+      })));
     } catch (error) {
       console.error("Failed to update status:", error);
     }
@@ -111,7 +123,11 @@ const OrderDetails = () => {
 
       // Refresh assigned tailors
       const assignments = await tailorAssignmentService.getTailorsByOrder(orderNo);
-      setAssignedTailors(assignments);
+      setAssignedTailors(assignments.map((assignment: TailorAssignment) => ({
+        ...assignment,
+        assigned_at: new Date(assignment.assigned_at),
+        due_date: assignment.due_date ? new Date(assignment.due_date) : null
+      })));
     } catch (error) {
       console.error("Failed to remove tailor:", error);
     }
@@ -209,11 +225,11 @@ const OrderDetails = () => {
                     </select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {new Date(assignment.assigned_at).toLocaleDateString()}
+                    {assignment.assigned_at.toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {assignment.due_date
-                      ? new Date(assignment.due_date).toLocaleDateString()
+                      ? assignment.due_date.toLocaleDateString()
                       : "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

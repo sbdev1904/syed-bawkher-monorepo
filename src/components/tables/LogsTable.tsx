@@ -34,7 +34,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Search, RefreshCw, Calendar as CalendarIcon } from "lucide-react";
-import LogDetailsModal from "../modals/LogDetailsModal";
+import LogDetailsModal, { LogData } from "../modals/LogDetailsModal";
 import type { LogEntry } from "@/lib/logs";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -50,7 +50,6 @@ interface LogsTableProps {
 
 const LogsTable: React.FC<LogsTableProps> = ({ initialLogs = [] }) => {
   const [logs, setLogs] = useState<LogEntry[]>(initialLogs);
-  const [loading, setLoading] = useState(false);
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [filters, setFilters] = useState({
@@ -197,9 +196,8 @@ const LogsTable: React.FC<LogsTableProps> = ({ initialLogs = [] }) => {
             variant="outline"
             className="flex items-center gap-1"
             onClick={() => filterLogs()}
-            disabled={loading}
           >
-            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+            <RefreshCw size={16} />
             Refresh
           </Button>
         </div>
@@ -331,7 +329,7 @@ const LogsTable: React.FC<LogsTableProps> = ({ initialLogs = [] }) => {
       <LogDetailsModal
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
-        logData={selectedLog}
+        logData={selectedLog as unknown as LogData | null}
       />
     </>
   );

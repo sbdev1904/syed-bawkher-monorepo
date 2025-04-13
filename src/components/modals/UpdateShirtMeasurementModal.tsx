@@ -15,10 +15,29 @@ import { useForm } from "react-hook-form";
 import ShirtForm from "../forms/ShirtForm";
 import shirtService from "../../services/shirtService";
 
+interface ShirtFields {
+  length: string;
+  half_shoulder: string;
+  to_sleeve: string;
+  chest: string;
+  waist: string;
+  collar: string;
+  other_notes: string;
+}
+
+interface ShirtMeasurement extends ShirtFields {
+  measurement_id: string;
+}
+
+interface FormValues {
+  shirt: ShirtMeasurement;
+  [key: string]: unknown;
+}
+
 interface UpdateShirtMeasurementModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  measurement: any;
+  measurement: ShirtMeasurement;
 }
 
 const UpdateShirtMeasurementModal = ({
@@ -27,7 +46,7 @@ const UpdateShirtMeasurementModal = ({
   measurement
 }: UpdateShirtMeasurementModalProps) => {
   const { toast } = useToast();
-  const form = useForm({
+  const form = useForm<FormValues>({
     defaultValues: {
       shirt: measurement
     }
@@ -39,7 +58,7 @@ const UpdateShirtMeasurementModal = ({
     }
   }, [isOpen, measurement, form]);
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     try {
       const { shirt } = values;
       await shirtService.updateShirtMeasurement(

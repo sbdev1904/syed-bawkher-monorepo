@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
-
+import { Prisma } from "@prisma/client";
 // Get a fabric order by ID
 export async function GET(
   req: NextRequest,
@@ -86,9 +86,12 @@ export async function PUT(
       message: "Fabric order updated successfully",
       order,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update fabric order:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json(
         { error: "Fabric order not found" },
         { status: 404 }
@@ -126,9 +129,12 @@ export async function DELETE(
     return NextResponse.json({
       message: "Fabric order deleted successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete fabric order:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json(
         { error: "Fabric order not found" },
         { status: 404 }

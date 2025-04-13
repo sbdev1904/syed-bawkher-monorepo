@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
-
+import { Prisma } from "@prisma/client";
 const s3Client = new S3Client({
   region: process.env.AWS_REGION!,
   credentials: {
@@ -86,9 +86,12 @@ export async function PUT(
       message: "Fabric updated successfully",
       fabric,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update fabric:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json({ error: "Fabric not found" }, { status: 404 });
     }
     return NextResponse.json(
@@ -147,9 +150,12 @@ export async function DELETE(
     return NextResponse.json({
       message: "Fabric deleted successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete fabric:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json({ error: "Fabric not found" }, { status: 404 });
     }
     return NextResponse.json(

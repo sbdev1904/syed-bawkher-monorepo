@@ -21,6 +21,15 @@ import {
 } from "@/components/ui/form";
 import { z } from "zod";
 
+// Import Item type
+interface Item {
+  item_name: string;
+  item_type: "jacket" | "shirt" | "pant";
+  fabric_id?: string;
+  lining_fabric_id?: string;
+  key: string;
+}
+
 export const orderDetailsSchema = z.object({
   orderNo: z.string().min(1, "Order number is required"),
   date: z.date().optional(),
@@ -29,22 +38,13 @@ export const orderDetailsSchema = z.object({
 
 export type OrderDetailsFormData = z.infer<typeof orderDetailsSchema>;
 
-interface FormValues {
-  orderNo: string;
-  date?: Date;
-  note?: string;
+interface FormValues extends OrderDetailsFormData {
   items: Item[];
   jacket?: Record<string, string | number>;
   shirt?: Record<string, string | number>;
   pant?: Record<string, string | number>;
   customerId?: string;
   [key: string]: unknown;
-}
-
-export interface OrderDetailsFormData {
-  orderNo: string;
-  date?: Date;
-  note?: string;
 }
 
 interface OrderDetailsFormProps {

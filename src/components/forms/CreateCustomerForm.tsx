@@ -12,7 +12,7 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 // Define the schema type for form values
-const customerSchema = z.object({
+export const customerSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   middle_name: z.string().optional(),
   last_name: z.string().min(1, "Last name is required"),
@@ -26,7 +26,7 @@ const customerSchema = z.object({
   add4: z.string().optional(),
 });
 
-type CustomerFormValues = z.infer<typeof customerSchema>;
+export type CustomerFormValues = z.infer<typeof customerSchema>;
 
 interface CreateCustomerFormProps {
   form: UseFormReturn<CustomerFormValues>;

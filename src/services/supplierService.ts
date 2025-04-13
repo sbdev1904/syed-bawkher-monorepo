@@ -1,5 +1,21 @@
 import axios from "axios";
 
+interface Supplier {
+  supplier_id: string;
+  supplier_name: string;
+  add1: string;
+  add2: string;
+  add3: string;
+  phone_number1: string;
+  phone_number2: string;
+  phone_number3: string;
+  email: string;
+  primary_contact_name1: string;
+  primary_contact_name2: string;
+  primary_contact_name3: string;
+  notes: string;
+}
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
 
@@ -7,7 +23,7 @@ const supplierService = {
   // Get all suppliers
   getAllSuppliers() {
     return axios
-      .get(`${BASE_URL}/api/suppliers`)
+      .get<Supplier[]>(`${BASE_URL}/api/suppliers`)
       .then((response) => response.data)
       .catch((error) => {
         console.error("Error fetching suppliers:", error);
@@ -18,7 +34,9 @@ const supplierService = {
   // Get a supplier by ID
   getSupplierById(supplierId: string) {
     return axios
-      .get(`${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`)
+      .get<Supplier>(
+        `${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`
+      )
       .then((response) => response.data)
       .catch((error) => {
         console.error("Error fetching supplier by ID:", error);
@@ -27,9 +45,9 @@ const supplierService = {
   },
 
   // Create a new supplier
-  createSupplier(supplier: any) {
+  createSupplier(supplier: Omit<Supplier, "id">) {
     return axios
-      .post(`${BASE_URL}/api/suppliers`, supplier, {
+      .post<Supplier>(`${BASE_URL}/api/suppliers`, supplier, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -42,9 +60,9 @@ const supplierService = {
   },
 
   // Update a supplier
-  updateSupplier(supplierId: string, fields: any) {
+  updateSupplier(supplierId: string, fields: Partial<Omit<Supplier, "id">>) {
     return axios
-      .put(
+      .put<Supplier>(
         `${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`,
         fields,
         {
@@ -63,7 +81,9 @@ const supplierService = {
   // Delete a supplier
   deleteSupplier(supplierId: string) {
     return axios
-      .delete(`${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`)
+      .delete<void>(
+        `${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`
+      )
       .then((response) => response.data)
       .catch((error) => {
         console.error("Error deleting supplier:", error);

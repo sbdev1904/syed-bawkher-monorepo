@@ -12,9 +12,47 @@ import UpdateJacketMeasurementModal from "../modals/UpdateJacketMeasurementModal
 import UpdatePantMeasurementModal from "../modals/UpdatePantMeasurementModal";
 import UpdateShirtMeasurementModal from "../modals/UpdateShirtMeasurementModal";
 
+interface JacketMeasurement {
+  measurement_id: string;
+  jacket_length: string;
+  natural_length: string;
+  back_length: string;
+  x_back: string;
+  half_shoulder: string;
+  to_sleeve: string;
+  chest: string;
+  waist: string;
+  collar: string;
+  waist_coat_length: string;
+  sherwani_length: string;
+  other_notes: string;
+}
+
+interface ShirtMeasurement {
+  measurement_id: string;
+  length: string;
+  half_shoulder: string;
+  to_sleeve: string;
+  chest: string;
+  waist: string;
+  collar: string;
+  other_notes: string;
+}
+
+interface PantMeasurement {
+  measurement_id: string;
+  length: string;
+  inseem: string;
+  waist: string;
+  hips: string;
+  bottom: string;
+  knee: string;
+  other_notes: string;
+}
+
 interface EditMeasurementsButtonProps {
   measurementType: "jacket" | "pant" | "shirt";
-  measurement: any;
+  measurement: JacketMeasurement | PantMeasurement | ShirtMeasurement;
 }
 
 const EditMeasurementsButton = ({ measurementType, measurement }: EditMeasurementsButtonProps) => {
@@ -36,7 +74,7 @@ const EditMeasurementsButton = ({ measurementType, measurement }: EditMeasuremen
           <UpdateJacketMeasurementModal
             isOpen={isEditMeasurementModalVisible}
             onCancel={handleCloseModal}
-            measurement={measurement}
+            measurement={measurement as JacketMeasurement}
           />
         );
       case "pant":
@@ -44,7 +82,7 @@ const EditMeasurementsButton = ({ measurementType, measurement }: EditMeasuremen
           <UpdatePantMeasurementModal
             isOpen={isEditMeasurementModalVisible}
             onCancel={handleCloseModal}
-            measurement={measurement}
+            measurement={measurement as PantMeasurement}
           />
         );
       case "shirt":
@@ -52,7 +90,7 @@ const EditMeasurementsButton = ({ measurementType, measurement }: EditMeasuremen
           <UpdateShirtMeasurementModal
             isOpen={isEditMeasurementModalVisible}
             onCancel={handleCloseModal}
-            measurement={measurement}
+            measurement={measurement as ShirtMeasurement}
           />
         );
       default:

@@ -27,20 +27,10 @@ export async function POST(req: NextRequest) {
     const sourceCustomerIds = customerIds.slice(1);
 
     // Start a transaction to handle the merge
-    await prisma.$transaction(async (tx: any) => {
+    await prisma.$transaction(async (tx) => {
       // Update all related records to point to the target customer
-      const relatedModels = [
-        "orders",
-        "measurements",
-        "FinalPantMeasurement",
-        "FinalShirtMeasurement",
-        "JacketMeasurement",
-        "PantMeasurement",
-        "ShirtMeasurement",
-      ];
-
-      for (const model of relatedModels) {
-        await tx[model].updateMany({
+      const updatePromises = [
+        tx.orders.updateMany({
           where: {
             customer_id: {
               in: sourceCustomerIds,
@@ -49,8 +39,71 @@ export async function POST(req: NextRequest) {
           data: {
             customer_id: targetCustomerId,
           },
-        });
-      }
+        }),
+        tx.finalJacketMeasurement.updateMany({
+          where: {
+            customer_id: {
+              in: sourceCustomerIds,
+            },
+          },
+          data: {
+            customer_id: targetCustomerId,
+          },
+        }),
+        tx.finalPantMeasurement.updateMany({
+          where: {
+            customer_id: {
+              in: sourceCustomerIds,
+            },
+          },
+          data: {
+            customer_id: targetCustomerId,
+          },
+        }),
+        tx.finalShirtMeasurement.updateMany({
+          where: {
+            customer_id: {
+              in: sourceCustomerIds,
+            },
+          },
+          data: {
+            customer_id: targetCustomerId,
+          },
+        }),
+        tx.jacketMeasurement.updateMany({
+          where: {
+            customer_id: {
+              in: sourceCustomerIds,
+            },
+          },
+          data: {
+            customer_id: targetCustomerId,
+          },
+        }),
+        tx.pantMeasurement.updateMany({
+          where: {
+            customer_id: {
+              in: sourceCustomerIds,
+            },
+          },
+          data: {
+            customer_id: targetCustomerId,
+          },
+        }),
+        tx.shirtMeasurement.updateMany({
+          where: {
+            customer_id: {
+              in: sourceCustomerIds,
+            },
+          },
+          data: {
+            customer_id: targetCustomerId,
+          },
+        }),
+      ];
+
+      // Execute all updates in parallel
+      await Promise.all(updatePromises);
 
       // Delete the source customers
       await tx.customer.deleteMany({

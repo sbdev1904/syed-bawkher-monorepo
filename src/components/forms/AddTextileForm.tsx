@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 // Create zod schema for validation
 const fabricFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
   fabric_code: z.string().min(1, "Fabric code is required"),
   description: z.string().min(1, "Description is required"),
   available_length: z.number().positive("Available length must be positive"),
@@ -31,6 +32,7 @@ const AddTextileForm = ({ onSuccess }: AddTextileFormProps) => {
   const form = useForm<FabricFormValues>({
     resolver: zodResolver(fabricFormSchema),
     defaultValues: {
+      name: "",
       fabric_code: "",
       description: "",
       available_length: 0,
@@ -66,6 +68,20 @@ const AddTextileForm = ({ onSuccess }: AddTextileFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter fabric name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="fabric_code"

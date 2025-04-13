@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 // Get a raw materials order by ID
 export async function GET(
@@ -73,9 +74,12 @@ export async function PUT(
       message: "Raw materials order updated successfully",
       order,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update raw materials order:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json(
         { error: "Raw materials order not found" },
         { status: 404 }
@@ -109,9 +113,12 @@ export async function DELETE(
     return NextResponse.json({
       message: "Raw materials order deleted successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete raw materials order:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json(
         { error: "Raw materials order not found" },
         { status: 404 }

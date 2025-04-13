@@ -58,7 +58,11 @@ const tailorFormSchema = z.object({
 
 type TailorFormValues = z.infer<typeof tailorFormSchema>;
 
-export function AddTailorForm() {
+interface AddTailorFormProps {
+    onSubmit: (values: TailorFormValues) => Promise<void>;
+}
+
+export function AddTailorForm({ onSubmit }: AddTailorFormProps) {
     const form = useForm<TailorFormValues>({
         resolver: zodResolver(tailorFormSchema),
         defaultValues: {
@@ -76,20 +80,9 @@ export function AddTailorForm() {
         },
     });
 
-    const onSubmit: SubmitHandler<TailorFormValues> = async (values) => {
+    const onSubmitHandler: SubmitHandler<TailorFormValues> = async (values) => {
         try {
-            const response = await fetch('/api/tailors', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(values),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create tailor');
-            }
-
+            await onSubmit(values);
 
             toast({
                 title: "Success!",
@@ -110,7 +103,7 @@ export function AddTailorForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmitHandler)} className="space-y-8">
                 <div className="grid grid-cols-2 gap-4">
                     <FormField
                         control={form.control}

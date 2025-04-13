@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 // Get a customer by ID
 export async function GET(
@@ -90,9 +91,12 @@ export async function PUT(
       message: "Customer updated successfully",
       customer,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to update customer:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json(
         { error: "Customer not found" },
         { status: 404 }
@@ -143,9 +147,12 @@ export async function DELETE(
     return NextResponse.json({
       message: "Customer deleted successfully",
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to delete customer:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json(
         { error: "Customer not found" },
         { status: 404 }

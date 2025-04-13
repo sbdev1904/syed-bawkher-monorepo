@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
-interface LogData {
+export interface LogData {
   timestamp: string | number;
   type: string;
   user: string;
   description: string;
-  details: any;
+  details: Record<string, unknown>;
   relatedId?: string;
 }
 

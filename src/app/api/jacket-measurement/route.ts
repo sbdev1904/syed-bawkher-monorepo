@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
 import { v4 as uuidv4 } from "uuid";
+import { Prisma } from "@prisma/client";
 
 // Create a new jacket measurement
 export async function POST(req: NextRequest) {
@@ -48,6 +49,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    console.log(measurement);
+
     return NextResponse.json(
       {
         message: "Jacket measurement created successfully",
@@ -88,9 +91,12 @@ export async function PUT(req: NextRequest) {
       message: "Jacket measurement updated successfully",
       measurement,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update jacket measurement:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json(
         { error: "Jacket measurement not found" },
         { status: 404 }

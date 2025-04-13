@@ -14,10 +14,29 @@ import { Form } from "@/components/ui/form";
 import PantForm from "../forms/PantForm";
 import pantService from "../../services/pantService";
 
+interface PantFields {
+  length: string;
+  inseem: string;
+  waist: string;
+  hips: string;
+  bottom: string;
+  knee: string;
+  other_notes: string;
+}
+
+interface PantMeasurement extends PantFields {
+  measurement_id: string;
+}
+
+interface FormValues {
+  pant: PantMeasurement;
+  [key: string]: unknown;
+}
+
 interface UpdatePantMeasurementModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  measurement: any;
+  measurement: PantMeasurement;
 }
 
 const UpdatePantMeasurementModal = ({
@@ -25,7 +44,7 @@ const UpdatePantMeasurementModal = ({
   onCancel,
   measurement
 }: UpdatePantMeasurementModalProps) => {
-  const form = useForm({
+  const form = useForm<FormValues>({
     defaultValues: {
       pant: measurement
     }
@@ -37,7 +56,7 @@ const UpdatePantMeasurementModal = ({
     }
   }, [isOpen, measurement, form]);
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     try {
       const { pant } = values;
       await pantService.updatePantMeasurement(measurement.measurement_id, pant);

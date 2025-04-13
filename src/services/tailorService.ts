@@ -1,7 +1,3 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
 interface CreateTailorInput {
   first_name: string;
   last_name: string;

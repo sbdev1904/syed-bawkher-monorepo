@@ -14,7 +14,7 @@ interface Item {
   key: string;
 }
 
-interface FormValues {
+export interface FormValues {
   orderNo: string;
   date?: Date;
   note?: string;

@@ -63,9 +63,6 @@ export async function POST(req: NextRequest) {
           lining_fabric_id,
         } = item;
 
-        // Create the item based on its type
-        const measurementField = `${item_type.toLowerCase()}_measurement_id`;
-
         const createdItem = await tx.items.create({
           data: {
             orderNo,

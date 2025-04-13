@@ -1,10 +1,40 @@
 import axios from "axios";
 
+interface BaseItem {
+  orderNo: string;
+  item_name: string;
+  fabric_id: string;
+  lining_fabric_id: string;
+}
+
+interface JacketItem extends BaseItem {
+  jacket_measurement_id: string;
+}
+
+interface ShirtItem extends BaseItem {
+  shirt_measurement_id: string;
+}
+
+interface PantItem extends BaseItem {
+  pant_measurement_id: string;
+}
+
+type Item = JacketItem | ShirtItem | PantItem;
+
+interface ItemFields {
+  item_name?: string;
+  fabric_id?: string;
+  lining_fabric_id?: string;
+  jacket_measurement_id?: string;
+  shirt_measurement_id?: string;
+  pant_measurement_id?: string;
+}
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
 
 const itemsService = {
-  createMultipleItems: async (orderNo: string, items: any) => {
+  createMultipleItems: async (orderNo: string, items: Item[]) => {
     try {
       const response = await axios.post(
         `${BASE_URL}/api/items`,
@@ -48,7 +78,7 @@ const itemsService = {
   },
 
   // Update an item
-  updateItem: async (itemId: string, fields: any) => {
+  updateItem: async (itemId: string, fields: ItemFields) => {
     try {
       const response = await axios.put(
         `${BASE_URL}/api/items/${encodeURIComponent(itemId)}`,

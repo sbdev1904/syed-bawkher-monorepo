@@ -160,9 +160,12 @@ export async function DELETE(
     return NextResponse.json({
       message: `Image for fabric ${fabricId} deleted successfully`,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete fabric image:", error);
-    if (error.message === "Image not found for the specified fabric") {
+    if (
+      error instanceof Error &&
+      error.message === "Image not found for the specified fabric"
+    ) {
       return NextResponse.json({ error: error.message }, { status: 404 });
     }
     return NextResponse.json(

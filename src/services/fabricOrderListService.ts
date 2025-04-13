@@ -1,12 +1,24 @@
 import axios from "axios";
 
+interface FabricOrder {
+  id?: string;
+  fabricId: string;
+  quantity: number;
+  status: string;
+  orderDate: string;
+  deliveryDate?: string;
+  notes?: string;
+}
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
 
 const fabricOrderListService = {
   getAllFabricOrders: async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/fabric-orders`);
+      const response = await axios.get<FabricOrder[]>(
+        `${BASE_URL}/api/fabric-orders`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching fabric orders:", error);
@@ -16,7 +28,7 @@ const fabricOrderListService = {
 
   getFabricOrderById: async (orderId: string) => {
     try {
-      const response = await axios.get(
+      const response = await axios.get<FabricOrder>(
         `${BASE_URL}/api/fabric-orders/${encodeURIComponent(orderId)}`
       );
       return response.data;
@@ -28,7 +40,7 @@ const fabricOrderListService = {
 
   getFabricOrdersByFabricCode: async (fabricId: string) => {
     try {
-      const response = await axios.get(
+      const response = await axios.get<FabricOrder[]>(
         `${BASE_URL}/api/fabric-orders/fabricId/${encodeURIComponent(fabricId)}`
       );
       return response.data;
@@ -38,9 +50,9 @@ const fabricOrderListService = {
     }
   },
 
-  createFabricOrder: async (orderData: any) => {
+  createFabricOrder: async (orderData: Omit<FabricOrder, "id">) => {
     try {
-      const response = await axios.post(
+      const response = await axios.post<FabricOrder>(
         `${BASE_URL}/api/fabric-orders`,
         orderData,
         {
@@ -56,9 +68,12 @@ const fabricOrderListService = {
     }
   },
 
-  updateFabricOrder: async (orderId: string, orderData: any) => {
+  updateFabricOrder: async (
+    orderId: string,
+    orderData: Partial<FabricOrder>
+  ) => {
     try {
-      const response = await axios.put(
+      const response = await axios.put<FabricOrder>(
         `${BASE_URL}/api/fabric-orders/${encodeURIComponent(orderId)}`,
         orderData,
         {
@@ -76,7 +91,7 @@ const fabricOrderListService = {
 
   deleteFabricOrder: async (orderId: string) => {
     try {
-      const response = await axios.delete(
+      const response = await axios.delete<{ success: boolean }>(
         `${BASE_URL}/api/fabric-orders/${encodeURIComponent(orderId)}`
       );
       return response.data;

@@ -30,10 +30,17 @@ export async function POST(req: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (e: any) {
+  } catch (e) {
+    if (e instanceof Error) {
+      console.log("Error while creating user :: ", e.message);
+      return NextResponse.json(
+        { message: "Failed", error: e.message },
+        { status: 500 }
+      );
+    }
     console.log("Error while creating user :: ", e);
     return NextResponse.json(
-      { message: "Failed", error: e.message },
+      { message: "Failed", error: "An unknown error occurred" },
       { status: 500 }
     );
   }

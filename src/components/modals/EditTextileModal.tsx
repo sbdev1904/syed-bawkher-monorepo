@@ -10,23 +10,38 @@ import { useToast } from "@/components/ui/use-toast";
 import EditTextileForm from "../forms/EditTextileForm";
 import fabricService from "../../services/fabricService";
 
+interface Fabric {
+  fabric_id: string;
+  description: string;
+  available_length: number;
+  fabric_code: string;
+  stock_location: string;
+  fabric_brand?: string | null;
+  image?: string | null;
+  barcode?: string | null;
+}
+
+interface UpdateFabricFields {
+  description?: string;
+  available_length?: number;
+  fabric_code?: string;
+  stock_location?: string;
+  fabric_brand?: string;
+  image?: string;
+  barcode?: string;
+}
+
 interface EditTextileModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  fabric: {
-    fabric_id: string;
-    description: string;
-    available_length: number;
-    fabric_code: string;
-    stock_location: string;
-  };
-  onUpdate: (updatedFabric: any) => void;
+  fabric: Fabric;
+  onUpdate: (updatedFabric: Fabric) => void;
 }
 
 const EditTextileModal = ({ open, onOpenChange, fabric, onUpdate }: EditTextileModalProps) => {
   const { toast } = useToast();
 
-  const handleFormSubmit = async (updatedFields: any) => {
+  const handleFormSubmit = async (updatedFields: UpdateFabricFields) => {
     try {
       await fabricService.updateFabric(fabric.fabric_id, updatedFields);
       const updatedFabric = await fabricService.getFabricById(fabric.fabric_id);

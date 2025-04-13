@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { Prisma } from "@prisma/client";
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION!,
@@ -103,9 +104,12 @@ export async function DELETE(
     return NextResponse.json({
       message: `Order ${orderNo} and all associated entities have been deleted successfully.`,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete order:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
     return NextResponse.json(

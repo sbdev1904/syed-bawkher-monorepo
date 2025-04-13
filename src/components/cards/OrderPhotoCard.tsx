@@ -1,12 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -19,8 +18,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
@@ -34,6 +32,11 @@ interface FileItem {
   url: string;
   originFileObj?: File;
   preview?: string;
+}
+
+interface PhotoUrl {
+  key: string;
+  url: string;
 }
 
 const getBase64 = (file: File): Promise<string> =>
@@ -57,14 +60,15 @@ const OrderPhotoCard = ({ orderNo }: { orderNo: string }) => {
     const fetchOrderPhotos = async () => {
       try {
         const photoUrls = await orderService.getOrderPhotos(orderNo);
-        const formattedFileList = photoUrls.map((url: any, index: number) => ({
+        const formattedFileList = photoUrls.map((url: PhotoUrl, index: number) => ({
           uid: `order-photo-${index}`,
           name: url.key,
           status: "done",
           url: url.url,
         }));
         setFileList(formattedFileList);
-      } catch (error) {
+      } catch (error: unknown) {
+        console.error('Failed to load order photos:', error);
         toast({
           variant: "destructive",
           title: "Error",
@@ -117,7 +121,8 @@ const OrderPhotoCard = ({ orderNo }: { orderNo: string }) => {
           url: presignedUrl.split("?")[0], // remove query params for the display URL
         },
       ]);
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Failed to upload file:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -148,7 +153,8 @@ const OrderPhotoCard = ({ orderNo }: { orderNo: string }) => {
       );
       setDeleteModalVisible(false);
       setFileToDelete(null);
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Failed to delete photo:', error);
       toast({
         variant: "destructive",
         title: "Error",
