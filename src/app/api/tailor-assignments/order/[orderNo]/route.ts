@@ -6,10 +6,10 @@ const prisma = new PrismaClient();
 // GET /api/tailor-assignments/order/[orderNo]
 export async function GET(
   request: Request,
-  { params }: { params: { orderNo: string } }
+  { params }: { params: Promise<{ orderNo: string }> }
 ) {
   try {
-    const { orderNo } = params;
+    const orderNo = (await params).orderNo;
 
     const assignments = await prisma.orderTailor.findMany({
       where: { orderNo },
