@@ -3,6 +3,7 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { v4 as uuidv4 } from "uuid";
 import supplierService from "../../services/supplierService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,7 +57,18 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
 
   const onSubmit = async (values: SupplierFormValues) => {
     try {
-      await supplierService.createSupplier(values);
+      const supplierData = {
+        ...values,
+        supplier_id: uuidv4(),
+        add2: values.add2 || "",
+        add3: values.add3 || "",
+        phone_number2: values.phone_number2 || "",
+        phone_number3: values.phone_number3 || "",
+        primary_contact_name2: values.primary_contact_name2 || "",
+        primary_contact_name3: values.primary_contact_name3 || "",
+        notes: values.notes || "",
+      };
+      await supplierService.createSupplier(supplierData);
       toast({
         title: "Success",
         description: "Supplier created successfully",

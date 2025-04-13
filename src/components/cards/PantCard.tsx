@@ -4,13 +4,14 @@ import pantService from "../../services/pantService";
 import EditMeasurementsButton from "../buttons/EditMeasurementsButton";
 
 interface PantMeasurement {
-  length?: string;
-  inseem?: string;
-  waist?: string;
-  hips?: string;
-  bottom?: string;
-  knee?: string;
-  other_notes?: string;
+  measurement_id: string;
+  length: string;
+  inseem: string;
+  waist: string;
+  hips: string;
+  bottom: string;
+  knee: string;
+  other_notes: string;
 }
 
 interface PantCardProps {

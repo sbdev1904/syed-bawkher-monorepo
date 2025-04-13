@@ -30,12 +30,13 @@ import { Spinner } from "@/components/ui/spinner";
 
 interface FabricData {
   fabric_id: string;
-  fabric_code: string;
   description: string;
   available_length: number;
-  fabric_brand: string;
+  fabric_code: string;
   stock_location: string;
-  image?: string;
+  fabric_brand?: string | null;
+  image?: string | null;
+  barcode?: string | null;
 }
 
 const FabricCard = ({ fabric }: { fabric: FabricData }) => {

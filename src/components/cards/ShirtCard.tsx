@@ -5,13 +5,14 @@ import EditMeasurementsButton from "../buttons/EditMeasurementsButton";
 import { Button } from "@/components/ui/button";
 
 interface ShirtMeasurement {
-  length?: string | number;
-  half_shoulder?: string | number;
-  to_sleeve?: string | number;
-  chest?: string | number;
-  waist?: string | number;
-  collar?: string | number;
-  other_notes?: string;
+  measurement_id: string;
+  length: string;
+  half_shoulder: string;
+  to_sleeve: string;
+  chest: string;
+  waist: string;
+  collar: string;
+  other_notes: string;
 }
 
 const ShirtCard = ({ orderNo }: { orderNo: string }) => {

@@ -16,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import customerService from "../../services/customerService";
+import { Customer } from "@prisma/client";
 
 interface MergeUserFormProps {
   targetCustomerID: string | null;
@@ -53,7 +54,10 @@ const MergeUserForm = ({ targetCustomerID = null }: MergeUserFormProps) => {
     try {
       const results = await customerService.searchCustomers(query);
       setSearchResults(
-        results.filter((customer) => customer.customer_id !== Number(targetCustomerID))
+        results.filter(
+          (customer: Customer) =>
+            customer.customer_id !== Number(targetCustomerID)
+        )
       );
     } catch (error) {
       toast({
@@ -126,7 +130,7 @@ const MergeUserForm = ({ targetCustomerID = null }: MergeUserFormProps) => {
 
         {searchResults.length > 0 && (
           <div className="rounded-md border border-gray-200 mt-2">
-            {searchResults.map(item => (
+            {searchResults.map((item) => (
               <div
                 key={item.customer_id}
                 className="p-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
