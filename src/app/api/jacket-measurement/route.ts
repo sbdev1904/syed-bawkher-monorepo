@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     const measurement = await prisma.jacketMeasurement.create({
       data: {
         measurement_id: measurementId,
-        customer_id: customerId,
+        customer_id: parseInt(customerId),
         orderNo,
         date: order.date,
         jacket_length: body.jacket_length,

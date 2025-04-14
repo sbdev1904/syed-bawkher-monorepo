@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 "use client";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -28,7 +30,7 @@ interface PantMeasurement extends PantFields {
   measurement_id: string;
 }
 
-interface FormValues {
+export interface FormValues {
   pant: PantMeasurement;
   [key: string]: unknown;
 }

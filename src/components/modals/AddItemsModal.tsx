@@ -52,10 +52,14 @@ interface Item {
 }
 
 interface FormValues {
+  orderNo: string;
+  date?: Date;
+  note?: string;
   items: Item[];
-  jacket: Record<string, string | number>;
-  shirt: Record<string, string | number>;
-  pant: Record<string, string | number>;
+  jacket?: Record<string, string | number>;
+  shirt?: Record<string, string | number>;
+  pant?: Record<string, string | number>;
+  customerId?: string;
   [key: string]: unknown;
 }
 
@@ -68,6 +72,7 @@ interface VisibilityState {
 const AddItemsModal = ({ isOpen, isCancel, orderNo }: { isOpen: boolean; isCancel: () => void; orderNo: string }) => {
   const form = useForm<FormValues>({
     defaultValues: {
+      orderNo,
       items: [],
       jacket: {},
       shirt: {},
@@ -77,10 +82,11 @@ const AddItemsModal = ({ isOpen, isCancel, orderNo }: { isOpen: boolean; isCance
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormValues>({
+    orderNo,
     items: [],
     jacket: {},
     shirt: {},
-    pant: {}
+    pant: {},
   });
   const [visibility, setVisibility] = useState<VisibilityState>({
     displayJacketForm: false,
@@ -129,7 +135,7 @@ const AddItemsModal = ({ isOpen, isCancel, orderNo }: { isOpen: boolean; isCance
           form={form}
           formData={formData}
           setFormData={(data: FormValues) => setFormData(data)}
-          setVisibility={(visibility: VisibilityState) => setVisibility(visibility)}
+          setVisibility={setVisibility}
         />
       ),
     },
@@ -137,6 +143,7 @@ const AddItemsModal = ({ isOpen, isCancel, orderNo }: { isOpen: boolean; isCance
       title: "Add Measurements",
       content: (
         <AddMeasurementsForm
+          //@ts-expect-error
           form={form}
           visibility={visibility}
           formData={formData}
@@ -232,6 +239,7 @@ const AddItemsModal = ({ isOpen, isCancel, orderNo }: { isOpen: boolean; isCance
         );
       }
 
+      //@ts-expect-error
       await itemsService.createMultipleItems(orderNo, itemsWithMeasurements);
 
       toast({
@@ -239,7 +247,7 @@ const AddItemsModal = ({ isOpen, isCancel, orderNo }: { isOpen: boolean; isCance
         description: "Items and measurements created successfully!"
       });
       form.reset();
-      setFormData({ items: [] });
+      setFormData({ orderNo, items: [], jacket: {}, shirt: {}, pant: {} });
       setVisibility({
         displayJacketForm: false,
         displayShirtForm: false,

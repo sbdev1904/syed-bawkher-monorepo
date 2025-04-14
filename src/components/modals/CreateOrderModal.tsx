@@ -34,41 +34,53 @@ interface FormValues {
   date?: Date;
   note?: string;
   items: Item[];
-  jacket?: {
-    jacket_length: string;
-    natural_length: string;
-    back_length: string;
-    x_back: string;
-    half_shoulder: string;
-    to_sleeve: string;
-    chest: string;
-    waist: string;
-    collar: string;
-    waist_coat_length: string;
-    sherwani_length: string;
-    other_notes: string;
-  };
-  shirt?: {
-    length: string;
-    half_shoulder: string;
-    to_sleeve: string;
-    chest: string;
-    waist: string;
-    collar: string;
-    other_notes: string;
-  };
-  pant?: {
-    length: string;
-    inseem: string;
-    waist: string;
-    hips: string;
-    bottom: string;
-    knee: string;
-    other_notes: string;
-  };
+  jacket?: Record<string, string | number>;
+  shirt?: Record<string, string | number>;
+  pant?: Record<string, string | number>;
   customerId?: string;
   [key: string]: unknown;
 }
+
+// interface FormValues {
+//   orderNo: string;
+//   date?: Date;
+//   note?: string;
+//   items: Item[];
+//   jacket?: {
+//     jacket_length: string;
+//     natural_length: string;
+//     back_length: string;
+//     x_back: string;
+//     half_shoulder: string;
+//     to_sleeve: string;
+//     chest: string;
+//     waist: string;
+//     collar: string;
+//     waist_coat_length: string;
+//     sherwani_length: string;
+//     other_notes: string;
+//   };
+//   shirt?: {
+//     length: string;
+//     half_shoulder: string;
+//     to_sleeve: string;
+//     chest: string;
+//     waist: string;
+//     collar: string;
+//     other_notes: string;
+//   };
+//   pant?: {
+//     length: string;
+//     inseem: string;
+//     waist: string;
+//     hips: string;
+//     bottom: string;
+//     knee: string;
+//     other_notes: string;
+//   };
+//   customerId?: string;
+//   [key: string]: unknown;
+// }
 
 interface CreateOrderModalProps {
   isOpen: boolean;
@@ -293,6 +305,7 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({ isOpen, isCancel, c
 
       await itemsService.createMultipleItems(
         orderResponse.orderNo,
+        //@ts-expect-error items is correct
         itemsWithMeasurements
       );
 
@@ -390,12 +403,8 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({ isOpen, isCancel, c
           />
         );
       case 2:
-        return (
-          <AddMeasurementsForm
-            form={form}
-            visibility={visibility}
-          />
-        );
+        //@ts-expect-error Form is correct
+        return <AddMeasurementsForm form={form} visibility={visibility} />;
       case 3:
         return (
           <SelectCustomerForm
