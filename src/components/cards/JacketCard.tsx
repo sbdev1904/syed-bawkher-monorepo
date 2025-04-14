@@ -4,6 +4,7 @@ import jacketService from "../../services/jacketService";
 import EditMeasurementsButton from "../buttons/EditMeasurementsButton";
 
 interface Jacket {
+  measurement_id: string;
   collar: string;
   chest: string;
   waist: string;

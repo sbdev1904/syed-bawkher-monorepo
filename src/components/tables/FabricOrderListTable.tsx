@@ -32,7 +32,15 @@ const FabricOrderListTable = ({ fabricId }: { fabricId: string }) => {
           fabricId
         );
         console.log("Fetched Orders:", data); // Log the fetched orders
-        setOrders(data);
+        const validatedData: FabricOrder[] = data.map((order: any) => ({
+          order_id: order.order_id,
+          description: order.description,
+          supplier_name: order.supplier_name,
+          meters: order.meters,
+          ordered_date: order.ordered_date,
+          ordered_for: order.ordered_for,
+        }));
+        setOrders(validatedData);
       } catch (error) {
         console.error("Failed to fetch fabric orders:", error);
       }

@@ -46,9 +46,19 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }: { onSuccess?: () => void; fabricId?: string }) => {
-  const [suppliers, setSuppliers] = useState<Array<{ supplier_id: string; supplier_name: string }>>([]);
-  const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(null);
+const AddFabricPurchaseOrderForm = ({
+  onSuccess,
+  fabricId,
+}: {
+  onSuccess?: () => void;
+  fabricId?: string;
+}) => {
+  const [suppliers, setSuppliers] = useState<
+    Array<{ supplier_id: string; supplier_name: string }>
+  >([]);
+  const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(
+    null
+  );
   const { toast } = useToast();
 
   // Initialize form
@@ -85,8 +95,15 @@ const AddFabricPurchaseOrderForm = ({ onSuccess, fabricId }: { onSuccess?: () =>
   const handleSubmit = async (values: FormValues) => {
     try {
       const formattedValues = {
-        ...values,
+        fabricId: values.fabric_id,
+        quantity: values.meters,
+        status: "PENDING",
+        orderDate: values.ordered_date
+          ? format(values.ordered_date, "yyyy-MM-dd")
+          : format(new Date(), "yyyy-MM-dd"),
+        notes: values.description,
         supplier_id: selectedSupplierId,
+        ordered_for: values.ordered_for,
       };
 
       await fabricOrderService.createFabricOrder(formattedValues);

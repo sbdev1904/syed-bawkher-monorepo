@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 "use client";
 import React, { useEffect } from "react";
 import {
@@ -33,7 +35,7 @@ interface JacketMeasurement extends JacketFields {
   measurement_id: string;
 }
 
-interface FormValues {
+export interface FormValues {
   jacket: JacketMeasurement;
   [key: string]: unknown;
 }

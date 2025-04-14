@@ -64,19 +64,21 @@ interface AddItemsFormProps {
   formData: {
     items: Item[];
   };
-  setFormData: (data: { items: Item[] }) => void;
-  setVisibility: React.Dispatch<React.SetStateAction<{
-    displayJacketForm: boolean;
-    displayShirtForm: boolean;
-    displayPantForm: boolean;
-  }>>;
+  setFormData: (data: FormValues) => void;
+  setVisibility: React.Dispatch<
+    React.SetStateAction<{
+      displayJacketForm: boolean;
+      displayShirtForm: boolean;
+      displayPantForm: boolean;
+    }>
+  >;
 }
 
 const AddItemsForm: React.FC<AddItemsFormProps> = ({
   form,
   formData,
   setFormData,
-  setVisibility
+  setVisibility,
 }) => {
   const [fabricOptions, setFabricOptions] = useState<FabricOption[]>([]);
   const [liningOptions, setLiningOptions] = useState<FabricOption[]>([]);
@@ -87,7 +89,8 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
   const [allFabrics, setAllFabrics] = useState<FabricOption[]>([]);
   const [allLiningFabrics, setAllLiningFabrics] = useState<FabricOption[]>([]);
   const [isLoadingFabrics, setIsLoadingFabrics] = useState<boolean>(false);
-  const [isLoadingLiningFabrics, setIsLoadingLiningFabrics] = useState<boolean>(false);
+  const [isLoadingLiningFabrics, setIsLoadingLiningFabrics] =
+    useState<boolean>(false);
 
   // Function to fetch all fabrics
   const fetchAllFabrics = async () => {
@@ -105,12 +108,16 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
   };
 
   // Function to fetch fabrics based on search query
-  const fetchFabrics = async (query: string, setOptionsCallback: React.Dispatch<React.SetStateAction<FabricOption[]>>, allItems: FabricOption[]) => {
+  const fetchFabrics = async (
+    query: string,
+    setOptionsCallback: React.Dispatch<React.SetStateAction<FabricOption[]>>,
+    allItems: FabricOption[]
+  ) => {
     if (!query) {
       setOptionsCallback(allItems); // Show all fabrics when query is empty
       return;
     }
-    const filteredOptions = allItems.filter(item =>
+    const filteredOptions = allItems.filter((item) =>
       item.label.toLowerCase().includes(query.toLowerCase())
     );
     setOptionsCallback(filteredOptions);
@@ -133,7 +140,7 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(() => { })} className="mt-10">
+      <form onSubmit={form.handleSubmit(() => {})} className="mt-10">
         <div className="space-y-5">
           {form.getValues().items?.map((item, index) => (
             <div
@@ -147,14 +154,12 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                   onClick={() => {
                     const currentItems = form.getValues().items;
                     const newItems = currentItems.filter((_, i) => i !== index);
-                    form.setValue('items', newItems);
+                    form.setValue("items", newItems);
                     updateVisibility(null, { items: newItems });
                   }}
                 >
                   <MinusCircle className="text-red-500" size={20} />
-                  <span className="text-xs text-slate-500">
-                    Remove
-                  </span>
+                  <span className="text-xs text-slate-500">Remove</span>
                 </Button>
               </div>
 
@@ -182,7 +187,10 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                       <Select
                         onValueChange={(value) => {
                           field.onChange(value);
-                          form.setValue(`items.${index}.item_type`, value as ItemType);
+                          form.setValue(
+                            `items.${index}.item_type`,
+                            value as ItemType
+                          );
                           updateVisibility(null, form.getValues());
                         }}
                         value={field.value}
@@ -233,7 +241,9 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                               className="w-full justify-between"
                             >
                               {field.value
-                                ? fabricOptions.find(option => option.value === field.value)?.label || field.value
+                                ? fabricOptions.find(
+                                    (option) => option.value === field.value
+                                  )?.label || field.value
                                 : "Enter fabric code"}
                             </Button>
                           </FormControl>
@@ -247,7 +257,11 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                               value={fabricSearchInput}
                               onChange={(e) => {
                                 setFabricSearchInput(e.target.value);
-                                fetchFabrics(e.target.value, setFabricOptions, allFabrics);
+                                fetchFabrics(
+                                  e.target.value,
+                                  setFabricOptions,
+                                  allFabrics
+                                );
                               }}
                             />
                           </div>
@@ -264,8 +278,14 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                                     key={option.value}
                                     className="px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
                                     onClick={() => {
-                                      form.setValue(`items.${index}.fabric_id`, option.value);
-                                      setFabricOpen({ ...fabricOpen, [index]: false });
+                                      form.setValue(
+                                        `items.${index}.fabric_id`,
+                                        option.value
+                                      );
+                                      setFabricOpen({
+                                        ...fabricOpen,
+                                        [index]: false,
+                                      });
                                     }}
                                   >
                                     {option.label}
@@ -318,7 +338,9 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                                 className="w-full justify-between"
                               >
                                 {field.value
-                                  ? liningOptions.find(option => option.value === field.value)?.label || field.value
+                                  ? liningOptions.find(
+                                      (option) => option.value === field.value
+                                    )?.label || field.value
                                   : "Enter lining code"}
                               </Button>
                             </FormControl>
@@ -332,7 +354,11 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                                 value={liningSearchInput}
                                 onChange={(e) => {
                                   setLiningSearchInput(e.target.value);
-                                  fetchFabrics(e.target.value, setLiningOptions, allLiningFabrics);
+                                  fetchFabrics(
+                                    e.target.value,
+                                    setLiningOptions,
+                                    allLiningFabrics
+                                  );
                                 }}
                               />
                             </div>
@@ -349,8 +375,14 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
                                       key={option.value}
                                       className="px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
                                       onClick={() => {
-                                        form.setValue(`items.${index}.lining_fabric_id`, option.value);
-                                        setLiningOpen({ ...liningOpen, [index]: false });
+                                        form.setValue(
+                                          `items.${index}.lining_fabric_id`,
+                                          option.value
+                                        );
+                                        setLiningOpen({
+                                          ...liningOpen,
+                                          [index]: false,
+                                        });
                                       }}
                                     >
                                       {option.label}
@@ -380,13 +412,13 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
             className="w-full"
             onClick={() => {
               const currentItems = form.getValues().items || [];
-              form.setValue('items', [
+              form.setValue("items", [
                 ...currentItems,
                 {
                   item_type: "jacket" as ItemType,
                   item_name: "",
-                  key: getUniqueKey()
-                }
+                  key: getUniqueKey(),
+                },
               ]);
               updateVisibility(null, form.getValues());
             }}

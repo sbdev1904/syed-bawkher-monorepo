@@ -23,11 +23,11 @@ const orderService = {
   },
 
   getOrder: async (orderNo: string) => {
-    const url = `${BASE_URL}/api/order/${encodeURIComponent(orderNo)}`;
+    const url = `${BASE_URL}/api/orders/${encodeURIComponent(orderNo)}`;
     try {
       const response = await axios.get(url);
       //console.log('Order'+ orderNo, response.data);
-      return response.data[0];
+      return response.data;
     } catch (error) {
       console.error("Error finding order:", error);
       throw error;

@@ -102,7 +102,7 @@ const OrderTable = ({ customerId }: { customerId: string }) => {
           ? "No orders match your search criteria. Try a different search term."
           : "Get started by creating your first order."}
       </p>
-      <CreateOrderButton customerId={customerId} />
+      <CreateOrderButton />
     </div>
   );
 
@@ -187,7 +187,7 @@ const OrderTable = ({ customerId }: { customerId: string }) => {
             <tfoot>
               <tr>
                 <td colSpan={4} className="p-4">
-                  <CreateOrderButton customerId={customerId} />
+                  <CreateOrderButton />
                 </td>
               </tr>
             </tfoot>
