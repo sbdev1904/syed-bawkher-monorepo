@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, } from "react";
+import React, { useEffect } from "react";
 import customerService from "../../services/customerService";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -16,7 +16,7 @@ import {
   FormItem,
   FormLabel,
   FormControl,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,9 +43,13 @@ const customerSchema = z.object({
   add4: z.string().optional(),
 });
 
-type CustomerFormValues = z.infer<typeof customerSchema>;
+export type CustomerFormValues = z.infer<typeof customerSchema>;
 
-const CreateCustomerModal = ({ isOpen, isCancel, customerid = null }: CreateCustomerModalProps) => {
+const CreateCustomerModal = ({
+  isOpen,
+  isCancel,
+  customerid = null,
+}: CreateCustomerModalProps) => {
   const { toast } = useToast();
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerSchema),
@@ -115,7 +119,8 @@ const CreateCustomerModal = ({ isOpen, isCancel, customerid = null }: CreateCust
       console.error("Failed to process customer:", error);
       toast({
         title: "Error",
-        description: "Failed to process customer. Please check your input and try again.",
+        description:
+          "Failed to process customer. Please check your input and try again.",
         variant: "destructive",
       });
     }
@@ -125,11 +130,16 @@ const CreateCustomerModal = ({ isOpen, isCancel, customerid = null }: CreateCust
     <Dialog open={isOpen} onOpenChange={(open) => !open && isCancel()}>
       <DialogContent className="sm:max-w-[900px]">
         <DialogHeader>
-          <DialogTitle>{customerid ? "Edit Customer" : "Create Customer"}</DialogTitle>
+          <DialogTitle>
+            {customerid ? "Edit Customer" : "Create Customer"}
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                 <h2 className="text-gray-600 text-lg font-medium">Name</h2>
@@ -298,9 +308,7 @@ const CreateCustomerModal = ({ isOpen, isCancel, customerid = null }: CreateCust
               <Button type="button" variant="outline" onClick={isCancel}>
                 Cancel
               </Button>
-              <Button type="submit">
-                {customerid ? "Update" : "Create"}
-              </Button>
+              <Button type="submit">{customerid ? "Update" : "Create"}</Button>
             </DialogFooter>
           </form>
         </Form>

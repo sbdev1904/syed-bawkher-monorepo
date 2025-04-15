@@ -23,7 +23,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 
 interface Supplier {
-  supplier_id: string;
+  supplier_id: number;
   supplier_name: string;
   add1: string;
   add2: string;
@@ -42,7 +42,9 @@ const SupplierListTable = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
+    null
+  );
   const { toast } = useToast();
 
   useEffect(() => {
@@ -72,7 +74,9 @@ const SupplierListTable = () => {
         title: "Success",
         description: "Supplier deleted successfully",
       });
-      setSuppliers(suppliers.filter((s) => s.supplier_id !== supplier.supplier_id));
+      setSuppliers(
+        suppliers.filter((s) => s.supplier_id !== supplier.supplier_id)
+      );
     } catch (error) {
       toast({
         variant: "destructive",
@@ -84,8 +88,6 @@ const SupplierListTable = () => {
       setSelectedSupplier(null);
     }
   };
-
-
 
   if (loading) {
     return <div className="flex justify-center p-4">Loading...</div>;
@@ -128,8 +130,10 @@ const SupplierListTable = () => {
               <TableCell>{supplier.notes}</TableCell>
               <TableCell>
                 <div className="flex space-x-2">
-
-                  <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                  <Dialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                  >
                     <DialogTrigger asChild>
                       <Button
                         variant="destructive"
@@ -143,7 +147,9 @@ const SupplierListTable = () => {
                         <DialogHeader>
                           <DialogTitle>Delete Supplier</DialogTitle>
                           <DialogDescription>
-                            Are you sure you want to delete &quot;{selectedSupplier.supplier_name}&quot; from the supplier list?
+                            Are you sure you want to delete &quot;
+                            {selectedSupplier.supplier_name}&quot; from the
+                            supplier list?
                           </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>

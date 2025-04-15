@@ -11,7 +11,7 @@ import EditTextileForm from "../forms/EditTextileForm";
 import fabricService from "../../services/fabricService";
 
 interface Fabric {
-  fabric_id: string;
+  fabric_id: number;
   description: string;
   available_length: number;
   fabric_code: string;
@@ -38,7 +38,12 @@ interface EditTextileModalProps {
   onUpdate: (updatedFabric: Fabric) => void;
 }
 
-const EditTextileModal = ({ open, onOpenChange, fabric, onUpdate }: EditTextileModalProps) => {
+const EditTextileModal = ({
+  open,
+  onOpenChange,
+  fabric,
+  onUpdate,
+}: EditTextileModalProps) => {
   const { toast } = useToast();
 
   const handleFormSubmit = async (updatedFields: UpdateFabricFields) => {

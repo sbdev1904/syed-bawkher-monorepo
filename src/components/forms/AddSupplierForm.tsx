@@ -8,7 +8,14 @@ import supplierService from "../../services/supplierService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 
@@ -52,7 +59,7 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
       primary_contact_name2: "",
       primary_contact_name3: "",
       notes: "",
-    }
+    },
   });
 
   const onSubmit = async (values: SupplierFormValues) => {
@@ -78,11 +85,12 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
         onSuccess(); // Close the modal or perform other success actions
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast({
         title: "Error",
         description: `Failed to create supplier: ${errorMessage}`,
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -143,7 +151,10 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
                   <FormItem>
                     <FormLabel>Address 3</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter additional address" {...field} />
+                      <Input
+                        placeholder="Enter additional address"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -157,7 +168,10 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
                   <FormItem>
                     <FormLabel>Phone Number 1</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter primary phone number" {...field} />
+                      <Input
+                        placeholder="Enter primary phone number"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -171,7 +185,10 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
                   <FormItem>
                     <FormLabel>Phone Number 2</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter secondary phone number" {...field} />
+                      <Input
+                        placeholder="Enter secondary phone number"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -188,7 +205,10 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
                   <FormItem>
                     <FormLabel>Phone Number 3</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter additional phone number" {...field} />
+                      <Input
+                        placeholder="Enter additional phone number"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -202,7 +222,11 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="Enter email address" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="Enter email address"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -216,7 +240,10 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
                   <FormItem>
                     <FormLabel>Primary Contact Name 1</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter primary contact name" {...field} />
+                      <Input
+                        placeholder="Enter primary contact name"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -230,7 +257,10 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
                   <FormItem>
                     <FormLabel>Primary Contact Name 2</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter secondary contact name" {...field} />
+                      <Input
+                        placeholder="Enter secondary contact name"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -244,7 +274,10 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
                   <FormItem>
                     <FormLabel>Primary Contact Name 3</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter additional contact name" {...field} />
+                      <Input
+                        placeholder="Enter additional contact name"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -275,7 +308,9 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
           </div>
 
           <div className="mt-6 flex justify-end">
-            <Button type="submit" className="w-[200px]">Add Supplier</Button>
+            <Button type="submit" className="w-[200px]">
+              Add Supplier
+            </Button>
           </div>
         </Card>
       </form>

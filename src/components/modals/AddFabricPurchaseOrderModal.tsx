@@ -11,13 +11,13 @@ import AddFabricPurchaseOrderForm from "../forms/AddFabricPurchaseOrderForm";
 interface AddFabricPurchaseOrderModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  fabricId: string;
+  fabricId: number;
 }
 
 const AddFabricPurchaseOrderModal = ({
   isOpen,
   onCancel,
-  fabricId
+  fabricId,
 }: AddFabricPurchaseOrderModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>

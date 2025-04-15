@@ -12,10 +12,12 @@ import {
 import AddFabricPurchaseOrderModal from "../modals/AddFabricPurchaseOrderModal";
 
 interface AddFabricPurchaseOrderButtonProps {
-  fabricId: string;
+  fabricId: number;
 }
 
-const AddFabricPurchaseOrderButton = ({ fabricId }: AddFabricPurchaseOrderButtonProps) => {
+const AddFabricPurchaseOrderButton = ({
+  fabricId,
+}: AddFabricPurchaseOrderButtonProps) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showModal = () => {
@@ -33,7 +35,11 @@ const AddFabricPurchaseOrderButton = ({ fabricId }: AddFabricPurchaseOrderButton
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button type="primary" icon={<FileEdit size={16} />} onClick={showModal}>
+            <Button
+              type="primary"
+              icon={<FileEdit size={16} />}
+              onClick={showModal}
+            >
               Fabric Purchase Order
             </Button>
           </TooltipTrigger>

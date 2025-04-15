@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 "use client";
 import React, { useEffect } from "react";
 import {
@@ -7,7 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -31,7 +29,7 @@ interface JacketFields {
   other_notes: string;
 }
 
-interface JacketMeasurement extends JacketFields {
+export interface JacketMeasurement extends JacketFields {
   measurement_id: string;
 }
 
@@ -49,13 +47,13 @@ interface UpdateJacketMeasurementModalProps {
 const UpdateJacketMeasurementModal = ({
   isOpen,
   onCancel,
-  measurement
+  measurement,
 }: UpdateJacketMeasurementModalProps) => {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     defaultValues: {
-      jacket: measurement
-    }
+      jacket: measurement,
+    },
   });
 
   useEffect(() => {
@@ -73,7 +71,7 @@ const UpdateJacketMeasurementModal = ({
       );
       toast({
         title: "Success",
-        description: "Jacket measurement updated successfully"
+        description: "Jacket measurement updated successfully",
       });
       onCancel();
       // Refresh data instead of reloading the page
@@ -83,7 +81,7 @@ const UpdateJacketMeasurementModal = ({
       toast({
         title: "Error",
         description: "Failed to update jacket measurement",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -97,7 +95,11 @@ const UpdateJacketMeasurementModal = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <JacketForm form={form} />
+            {
+              //@ts-expect-error interface mismatch not a problem
+
+              <JacketForm form={form} />
+            }
 
             <DialogFooter className="mt-6">
               <Button type="submit">Update</Button>

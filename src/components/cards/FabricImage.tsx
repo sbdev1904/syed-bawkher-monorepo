@@ -16,14 +16,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import fabricService from "../../services/fabricService";
 import axios from "axios";
+import Image from "next/image";
 
 interface FabricImageProps {
-  fabricId: string;
+  fabricId: number;
   imageUrl: string | null;
   onImageUploadSuccess: () => void;
 }
 
-const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }: FabricImageProps) => {
+const FabricImage = ({
+  fabricId,
+  imageUrl,
+  onImageUploadSuccess,
+}: FabricImageProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -66,7 +71,7 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }: FabricImagePr
     } finally {
       setLoading(false);
       // Clear the input
-      event.target.value = '';
+      event.target.value = "";
     }
   };
 
@@ -95,7 +100,6 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }: FabricImagePr
     }
   };
 
-
   return (
     <div>
       {!imageUrl && (
@@ -119,9 +123,12 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }: FabricImagePr
       {imageUrl && (
         <div className="relative">
           <div className="w-[150px] h-auto mt-2 overflow-hidden rounded-md">
-            <img src={imageUrl} alt="Fabric" className="w-full h-auto" />
+            <Image src={imageUrl} alt="Fabric" className="w-full h-auto" />
           </div>
-          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+          >
             <AlertDialogTrigger asChild>
               <Button
                 variant="ghost"
@@ -135,7 +142,8 @@ const FabricImage = ({ fabricId, imageUrl, onImageUploadSuccess }: FabricImagePr
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the image.
+                  This action cannot be undone. This will permanently delete the
+                  image.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

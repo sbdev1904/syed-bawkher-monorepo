@@ -24,6 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { UseFormReturn } from "react-hook-form";
+import { Fabric } from "@prisma/client";
 
 // Types
 type FabricOption = {
@@ -53,11 +54,11 @@ interface FormValues {
   [key: string]: unknown;
 }
 
-interface VisibilityState {
-  displayJacketForm: boolean;
-  displayShirtForm: boolean;
-  displayPantForm: boolean;
-}
+// interface VisibilityState {
+//   displayJacketForm: boolean;
+//   displayShirtForm: boolean;
+//   displayPantForm: boolean;
+// }
 
 interface AddItemsFormProps {
   form: UseFormReturn<FormValues>;
@@ -74,12 +75,7 @@ interface AddItemsFormProps {
   >;
 }
 
-const AddItemsForm: React.FC<AddItemsFormProps> = ({
-  form,
-  formData,
-  setFormData,
-  setVisibility,
-}) => {
+const AddItemsForm: React.FC<AddItemsFormProps> = ({ form, setVisibility }) => {
   const [fabricOptions, setFabricOptions] = useState<FabricOption[]>([]);
   const [liningOptions, setLiningOptions] = useState<FabricOption[]>([]);
   const [fabricOpen, setFabricOpen] = useState<{ [key: number]: boolean }>({});
@@ -96,7 +92,7 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
   const fetchAllFabrics = async () => {
     try {
       const results = await fabricService.getAllFabrics();
-      const options = results.map((fabric: any) => ({
+      const options = results.map((fabric: Fabric) => ({
         value: fabric.fabric_id,
         label: `${fabric.fabric_id} - ${fabric.fabric_brand} (${fabric.fabric_code})`,
       }));
@@ -124,12 +120,14 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({
   };
 
   // Function to update visibility based on items
-  const updateVisibility = (_: any, allValues: any) => {
+  const updateVisibility = (_: null, allValues: { items: Item[] }) => {
     const items = allValues.items || [];
     setVisibility({
-      displayJacketForm: items.some((item: any) => item.item_type === "jacket"),
-      displayShirtForm: items.some((item: any) => item.item_type === "shirt"),
-      displayPantForm: items.some((item: any) => item.item_type === "pant"),
+      displayJacketForm: items.some(
+        (item: Item) => item.item_type === "jacket"
+      ),
+      displayShirtForm: items.some((item: Item) => item.item_type === "shirt"),
+      displayPantForm: items.some((item: Item) => item.item_type === "pant"),
     });
   };
 

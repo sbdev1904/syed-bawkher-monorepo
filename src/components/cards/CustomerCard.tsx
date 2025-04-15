@@ -19,7 +19,7 @@ const CustomerCard = ({
   phRes: string;
   mobile: string;
   email: string;
-  customer_id: string;
+  customer_id: number;
 }) => {
   const router = useRouter();
 

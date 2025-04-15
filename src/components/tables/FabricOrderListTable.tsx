@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/table";
 
 interface FabricOrder {
+  fabric_id: number;
+  supplier_id: number;
   order_id: string;
   description: string;
   supplier_name: string;
@@ -21,7 +23,7 @@ interface FabricOrder {
   ordered_for: string;
 }
 
-const FabricOrderListTable = ({ fabricId }: { fabricId: string }) => {
+const FabricOrderListTable = ({ fabricId }: { fabricId: number }) => {
   const [orders, setOrders] = useState<FabricOrder[]>([]);
 
   useEffect(() => {
@@ -32,15 +34,7 @@ const FabricOrderListTable = ({ fabricId }: { fabricId: string }) => {
           fabricId
         );
         console.log("Fetched Orders:", data); // Log the fetched orders
-        const validatedData: FabricOrder[] = data.map((order: any) => ({
-          order_id: order.order_id,
-          description: order.description,
-          supplier_name: order.supplier_name,
-          meters: order.meters,
-          ordered_date: order.ordered_date,
-          ordered_for: order.ordered_for,
-        }));
-        setOrders(validatedData);
+        setOrders(data);
       } catch (error) {
         console.error("Failed to fetch fabric orders:", error);
       }
@@ -74,12 +68,22 @@ const FabricOrderListTable = ({ fabricId }: { fabricId: string }) => {
                 key={order.order_id}
                 className="border-b border-slate-600 hover:bg-slate-700"
               >
-                <TableCell className="text-slate-300">{order.order_id}</TableCell>
-                <TableCell className="text-slate-300">{order.description}</TableCell>
-                <TableCell className="text-slate-300">{order.supplier_name}</TableCell>
+                <TableCell className="text-slate-300">
+                  {order.order_id}
+                </TableCell>
+                <TableCell className="text-slate-300">
+                  {order.description}
+                </TableCell>
+                <TableCell className="text-slate-300">
+                  {order.supplier_name}
+                </TableCell>
                 <TableCell className="text-slate-300">{order.meters}</TableCell>
-                <TableCell className="text-slate-300">{moment(order.ordered_date).format("MMM D, YYYY")}</TableCell>
-                <TableCell className="text-slate-300">{order.ordered_for}</TableCell>
+                <TableCell className="text-slate-300">
+                  {moment(order.ordered_date).format("MMM D, YYYY")}
+                </TableCell>
+                <TableCell className="text-slate-300">
+                  {order.ordered_for}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

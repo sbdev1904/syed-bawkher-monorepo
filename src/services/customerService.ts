@@ -1,3 +1,4 @@
+import { CustomerFormValues } from "@/components/modals/CreateCustomerModal";
 import axios from "axios";
 
 const BASE_URL =
@@ -42,7 +43,7 @@ const customerService = {
     }
   },
 
-  createCustomer: async (customer: any) => {
+  createCustomer: async (customer: CustomerFormValues) => {
     const url = `${BASE_URL}/api/customers`;
     try {
       const response = await axios.post(url, customer);
@@ -53,7 +54,10 @@ const customerService = {
     }
   },
 
-  updateCustomer: async (customer_id: string, customerData: any) => {
+  updateCustomer: async (
+    customer_id: string,
+    customerData: CustomerFormValues
+  ) => {
     const url = `${BASE_URL}/api/customers/${customer_id}`;
     try {
       const response = await axios.put(url, customerData);
