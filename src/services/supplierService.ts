@@ -1,7 +1,7 @@
 import axios from "axios";
 
 interface Supplier {
-  supplier_id: string;
+  supplier_id: number;
   supplier_name: string;
   add1: string;
   add2: string;
@@ -32,7 +32,7 @@ const supplierService = {
   },
 
   // Get a supplier by ID
-  getSupplierById(supplierId: string) {
+  getSupplierById(supplierId: number) {
     return axios
       .get<Supplier>(
         `${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`
@@ -45,7 +45,7 @@ const supplierService = {
   },
 
   // Create a new supplier
-  createSupplier(supplier: Omit<Supplier, "id">) {
+  createSupplier(supplier: Omit<Supplier, "supplier_id">) {
     return axios
       .post<Supplier>(`${BASE_URL}/api/suppliers`, supplier, {
         headers: {
@@ -60,7 +60,7 @@ const supplierService = {
   },
 
   // Update a supplier
-  updateSupplier(supplierId: string, fields: Partial<Omit<Supplier, "id">>) {
+  updateSupplier(supplierId: number, fields: Partial<Omit<Supplier, "id">>) {
     return axios
       .put<Supplier>(
         `${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`,
@@ -79,7 +79,7 @@ const supplierService = {
   },
 
   // Delete a supplier
-  deleteSupplier(supplierId: string) {
+  deleteSupplier(supplierId: number) {
     return axios
       .delete<void>(
         `${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`

@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 "use client";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -9,7 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -26,7 +24,7 @@ interface PantFields {
   other_notes: string;
 }
 
-interface PantMeasurement extends PantFields {
+export interface PantMeasurement extends PantFields {
   measurement_id: string;
 }
 
@@ -44,12 +42,12 @@ interface UpdatePantMeasurementModalProps {
 const UpdatePantMeasurementModal = ({
   isOpen,
   onCancel,
-  measurement
+  measurement,
 }: UpdatePantMeasurementModalProps) => {
   const form = useForm<FormValues>({
     defaultValues: {
-      pant: measurement
-    }
+      pant: measurement,
+    },
   });
 
   useEffect(() => {
@@ -85,7 +83,10 @@ const UpdatePantMeasurementModal = ({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <PantForm form={form} />
+            {
+              //@ts-expect-error interface mismatch not a problem
+              <PantForm form={form} />
+            }
             <DialogFooter className="mt-4">
               <Button type="submit">Save changes</Button>
             </DialogFooter>

@@ -40,7 +40,7 @@ const fabricService = {
   },
 
   // Get a fabric by ID
-  getFabricById: async (fabricId: string) => {
+  getFabricById: async (fabricId: number) => {
     try {
       const response = await axios.get(
         `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}`
@@ -81,7 +81,7 @@ const fabricService = {
   },
 
   // Update a fabric
-  updateFabric: async (fabricId: string, fields: FabricUpdateFields) => {
+  updateFabric: async (fabricId: number, fields: FabricUpdateFields) => {
     try {
       const response = await axios.put(
         `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}`,
@@ -100,7 +100,7 @@ const fabricService = {
   },
 
   // Delete a fabric
-  deleteFabric: async (fabricId: string) => {
+  deleteFabric: async (fabricId: number) => {
     try {
       const response = await axios.delete(
         `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}`
@@ -113,7 +113,7 @@ const fabricService = {
   },
 
   // Gets the presigned URL for uploading an image for a fabric to the S3 bucket
-  getPresignedUrl: async (fabricId: string, filename: string) => {
+  getPresignedUrl: async (fabricId: number, filename: string) => {
     try {
       const response = await axios.post(
         `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}/upload-image`,
@@ -132,7 +132,7 @@ const fabricService = {
   },
 
   // Gets the image URL for a fabric
-  getFabricImageUrl: async (fabricId: string) => {
+  getFabricImageUrl: async (fabricId: number) => {
     try {
       const response = await axios.get(
         `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}/image`
@@ -145,7 +145,7 @@ const fabricService = {
   },
 
   // Deletes the image for a fabric
-  deleteFabricImage: async (fabricId: string) => {
+  deleteFabricImage: async (fabricId: number) => {
     try {
       const response = await axios.delete(
         `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}/image`

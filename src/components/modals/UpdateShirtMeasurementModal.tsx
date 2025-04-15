@@ -1,4 +1,3 @@
-//@ts-nocheck
 "use client";
 
 import React, { useEffect } from "react";
@@ -7,7 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -26,7 +25,7 @@ interface ShirtFields {
   other_notes: string;
 }
 
-interface ShirtMeasurement extends ShirtFields {
+export interface ShirtMeasurement extends ShirtFields {
   measurement_id: string;
 }
 
@@ -44,13 +43,13 @@ interface UpdateShirtMeasurementModalProps {
 const UpdateShirtMeasurementModal = ({
   isOpen,
   onCancel,
-  measurement
+  measurement,
 }: UpdateShirtMeasurementModalProps) => {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     defaultValues: {
-      shirt: measurement
-    }
+      shirt: measurement,
+    },
   });
 
   useEffect(() => {
@@ -68,7 +67,7 @@ const UpdateShirtMeasurementModal = ({
       );
       toast({
         title: "Success",
-        description: "Shirt measurement updated successfully"
+        description: "Shirt measurement updated successfully",
       });
       onCancel();
       // Refresh data instead of reloading the page
@@ -78,7 +77,7 @@ const UpdateShirtMeasurementModal = ({
       toast({
         title: "Error",
         description: "Failed to update shirt measurement",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -92,7 +91,11 @@ const UpdateShirtMeasurementModal = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <ShirtForm form={form} />
+            {
+              //@ts-expect-error interface mismatch not a problem
+
+              <ShirtForm form={form} />
+            }
 
             <DialogFooter className="mt-6">
               <Button type="submit">Update</Button>

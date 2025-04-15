@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ShirtMeasurement } from "@/components/modals/UpdateShirtMeasurementModal";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
@@ -32,7 +33,7 @@ const shirtService = {
   createShirtMeasurement: async (
     customerId: string,
     orderNo: string,
-    measurementData: any
+    measurementData: ShirtMeasurement
   ) => {
     try {
       const response = await axios.post(
@@ -57,7 +58,7 @@ const shirtService = {
   },
   updateShirtMeasurement: async (
     measurementId: string,
-    measurementData: any
+    measurementData: ShirtMeasurement
   ) => {
     try {
       const response = await axios.put(

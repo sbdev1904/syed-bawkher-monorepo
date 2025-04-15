@@ -36,7 +36,7 @@ import supplierService from "../../services/supplierService";
 
 // Define the form schema
 const formSchema = z.object({
-  fabric_id: z.string().min(1, "Fabric ID is required"),
+  fabric_id: z.number().min(0, "Fabric ID is required"),
   description: z.string().min(1, "Description is required"),
   supplier_name: z.string().min(1, "Please select a supplier"),
   meters: z.coerce.number().min(0, "Meters must be 0 or greater"),
@@ -51,12 +51,12 @@ const AddFabricPurchaseOrderForm = ({
   fabricId,
 }: {
   onSuccess?: () => void;
-  fabricId?: string;
+  fabricId?: number;
 }) => {
   const [suppliers, setSuppliers] = useState<
-    Array<{ supplier_id: string; supplier_name: string }>
+    Array<{ supplier_id: number; supplier_name: string }>
   >([]);
-  const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(
+  const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(
     null
   );
   const { toast } = useToast();
@@ -65,7 +65,7 @@ const AddFabricPurchaseOrderForm = ({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fabric_id: fabricId || "",
+      fabric_id: fabricId || 0,
       description: "",
       supplier_name: "",
       meters: 0,
@@ -80,7 +80,8 @@ const AddFabricPurchaseOrderForm = ({
         const supplierList = await supplierService.getAllSuppliers();
         setSuppliers(supplierList);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Failed to load suppliers";
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to load suppliers";
         toast({
           variant: "destructive",
           title: "Error",
@@ -95,14 +96,15 @@ const AddFabricPurchaseOrderForm = ({
   const handleSubmit = async (values: FormValues) => {
     try {
       const formattedValues = {
-        fabricId: values.fabric_id,
-        quantity: values.meters,
-        status: "PENDING",
-        orderDate: values.ordered_date
+        fabric_id: values.fabric_id,
+        meters: values.meters,
+        order_id: "",
+        description: values.description,
+        ordered_date: values.ordered_date
           ? format(values.ordered_date, "yyyy-MM-dd")
           : format(new Date(), "yyyy-MM-dd"),
-        notes: values.description,
-        supplier_id: selectedSupplierId,
+        supplier_id: selectedSupplierId!,
+        supplier_name: values.supplier_name,
         ordered_for: values.ordered_for,
       };
 
@@ -119,7 +121,10 @@ const AddFabricPurchaseOrderForm = ({
         onSuccess();
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to create fabric order";
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to create fabric order";
       toast({
         variant: "destructive",
         title: "Error",
@@ -129,7 +134,9 @@ const AddFabricPurchaseOrderForm = ({
   };
 
   const handleSupplierChange = (value: string) => {
-    const selectedSupplier = suppliers.find(supplier => supplier.supplier_name === value);
+    const selectedSupplier = suppliers.find(
+      (supplier) => supplier.supplier_name === value
+    );
     if (selectedSupplier) {
       setSelectedSupplierId(selectedSupplier.supplier_id);
     }
@@ -163,7 +170,10 @@ const AddFabricPurchaseOrderForm = ({
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder="Enter purchase order description" {...field} />
+                <Input
+                  placeholder="Enter purchase order description"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

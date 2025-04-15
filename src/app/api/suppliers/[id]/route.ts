@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 // Get a supplier by ID
 export async function GET(
@@ -81,9 +82,12 @@ export async function PUT(
       message: "Supplier updated successfully",
       supplier,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update supplier:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json(
         { error: "Supplier not found" },
         { status: 404 }
@@ -124,9 +128,12 @@ export async function DELETE(
     return NextResponse.json({
       message: "Supplier deleted successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete supplier:", error);
-    if (error.code === "P2025") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return NextResponse.json(
         { error: "Supplier not found" },
         { status: 404 }

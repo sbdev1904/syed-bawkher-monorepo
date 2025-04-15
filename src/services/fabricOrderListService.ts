@@ -1,13 +1,14 @@
 import axios from "axios";
 
 interface FabricOrder {
-  id?: string;
-  fabricId: string;
-  quantity: number;
-  status: string;
-  orderDate: string;
-  deliveryDate?: string;
-  notes?: string;
+  fabric_id: number;
+  supplier_id: number;
+  order_id: string;
+  description: string;
+  supplier_name: string;
+  meters: number;
+  ordered_date: string;
+  ordered_for: string;
 }
 
 const BASE_URL =
@@ -38,7 +39,7 @@ const fabricOrderListService = {
     }
   },
 
-  getFabricOrdersByFabricCode: async (fabricId: string) => {
+  getFabricOrdersByFabricCode: async (fabricId: number) => {
     try {
       const response = await axios.get<FabricOrder[]>(
         `${BASE_URL}/api/fabric-orders/fabricId/${encodeURIComponent(fabricId)}`
@@ -50,7 +51,7 @@ const fabricOrderListService = {
     }
   },
 
-  createFabricOrder: async (orderData: Omit<FabricOrder, "id">) => {
+  createFabricOrder: async (orderData: Omit<FabricOrder, "order_id">) => {
     try {
       const response = await axios.post<FabricOrder>(
         `${BASE_URL}/api/fabric-orders`,

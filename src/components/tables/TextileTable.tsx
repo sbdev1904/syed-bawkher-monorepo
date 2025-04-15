@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
 interface Fabric {
-  fabric_id: string;
+  fabric_id: number;
   fabric_code: string;
   description: string;
   available_length: string;
@@ -37,7 +37,10 @@ const TextileTable = () => {
     try {
       const fabrics = await fabricService.getAllFabrics();
       setData(
-        fabrics.map((fabric: Fabric, index: number) => ({ ...fabric, key: index.toString() }))
+        fabrics.map((fabric: Fabric, index: number) => ({
+          ...fabric,
+          key: index.toString(),
+        }))
       );
     } catch (error) {
       console.error("Failed to fetch fabrics:", error);
@@ -49,7 +52,7 @@ const TextileTable = () => {
     fetchData();
   }, []);
 
-  const handleView = (fabricId: string) => {
+  const handleView = (fabricId: number) => {
     router.push(`/fabric/${fabricId}`);
   };
 
@@ -59,7 +62,10 @@ const TextileTable = () => {
       try {
         const results = await fabricService.searchFabrics(searchQuery);
         setData(
-          results.map((fabric: Fabric, index: number) => ({ ...fabric, key: index.toString() }))
+          results.map((fabric: Fabric, index: number) => ({
+            ...fabric,
+            key: index.toString(),
+          }))
         );
       } catch (error) {
         console.error("Failed to search fabrics:", error);

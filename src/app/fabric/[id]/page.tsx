@@ -8,7 +8,9 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 
 const FabricDetails = () => {
   const pathname = usePathname();
-  const fabricId = pathname.split("/")[2];
+  const fabricIdString = pathname.split("/")[2];
+  const fabricId = parseInt(fabricIdString);
+
   const [fabric, setFabric] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

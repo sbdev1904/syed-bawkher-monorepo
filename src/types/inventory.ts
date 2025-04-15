@@ -43,7 +43,7 @@ export interface InventoryItem {
   minStockLevel: number;
   bunchId?: string;
   suppliers: {
-    supplierId: string;
+    supplierId: number;
     price: number;
     leadTime: number; // in days
     minimumOrderQuantity: number;

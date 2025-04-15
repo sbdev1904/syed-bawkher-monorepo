@@ -17,8 +17,8 @@ interface Item {
   item_id: string;
   item_name: string;
   item_type: string;
-  fabric_id: string;
-  lining_fabric_id: string;
+  fabric_id: number;
+  lining_fabric_id: number;
 }
 
 const ItemsTable = ({ orderNo }: { orderNo: string }) => {

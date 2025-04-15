@@ -6,10 +6,11 @@ import { message } from "@/lib/toast-utils";
 import customerService from "../../services/customerService";
 import CustomerList from "../list/CustomerList";
 import { SearchInput } from "../ui/search-input";
+import { Customer } from "@prisma/client";
 
 const FindCustomerByOrderNo = () => {
   const [loading, setLoading] = useState(false);
-  const [customers, setCustomers] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
 
   const handleSearch = async (value: string) => {
     if (!value.trim()) return;

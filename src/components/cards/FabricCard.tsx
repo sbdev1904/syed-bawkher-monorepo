@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import fabricService from "../../services/fabricService";
-import { Barcode, Edit, Trash2, } from "lucide-react";
+import { Barcode, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +29,7 @@ import BarcodeComponent from "react-barcode";
 import { Spinner } from "@/components/ui/spinner";
 
 interface FabricData {
-  fabric_id: string;
+  fabric_id: number;
   description: string;
   available_length: number;
   fabric_code: string;
@@ -123,7 +123,9 @@ const FabricCard = ({ fabric }: { fabric: FabricData }) => {
           <div className="flex flex-col">
             <div className="flex flex-row space-x-5">
               <div className="flex flex-col space-y-0 mb-2">
-                <div className="text-lg font-bold text-white">{fabricData.fabric_code}</div>
+                <div className="text-lg font-bold text-white">
+                  {fabricData.fabric_code}
+                </div>
                 <div className="text-sm font-extrabold text-gray-400">
                   {fabricData.description}
                 </div>
@@ -150,7 +152,11 @@ const FabricCard = ({ fabric }: { fabric: FabricData }) => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" onClick={onPrintClick}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={onPrintClick}
+                        >
                           <Barcode className="h-4 w-4 text-green-400 hover:text-green-300" />
                         </Button>
                       </TooltipTrigger>
@@ -168,10 +174,12 @@ const FabricCard = ({ fabric }: { fabric: FabricData }) => {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the
-                          fabric and all associated data.
+                          This action cannot be undone. This will permanently
+                          delete the fabric and all associated data.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -200,14 +208,16 @@ const FabricCard = ({ fabric }: { fabric: FabricData }) => {
               <strong className="text-white">ID:</strong> {fabricData.fabric_id}
             </div>
             <div className="text-md mb-2 text-gray-300">
-              <strong className="text-white">Available Length:</strong> {fabricData.available_length}{" "}
-              meters
+              <strong className="text-white">Available Length:</strong>{" "}
+              {fabricData.available_length} meters
             </div>
             <div className="text-md mb-2 text-gray-300">
-              <strong className="text-white">Brand:</strong> {fabricData.fabric_brand}
+              <strong className="text-white">Brand:</strong>{" "}
+              {fabricData.fabric_brand}
             </div>
             <div className="text-md mb-2 text-gray-300">
-              <strong className="text-white">Stock Location:</strong> {fabricData.stock_location}
+              <strong className="text-white">Stock Location:</strong>{" "}
+              {fabricData.stock_location}
             </div>
             <div className="text-md mb-2 flex flex-row">
               <div ref={contentRef}>

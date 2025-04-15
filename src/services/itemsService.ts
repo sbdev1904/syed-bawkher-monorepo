@@ -3,8 +3,8 @@ import axios from "axios";
 interface BaseItem {
   orderNo: string;
   item_name: string;
-  fabric_id: string;
-  lining_fabric_id: string;
+  fabric_id: number;
+  lining_fabric_id: number;
 }
 
 interface JacketItem extends BaseItem {
@@ -113,8 +113,8 @@ const itemsService = {
     orderNo: string,
     item_name: string,
     jacket_measurement_id: string,
-    fabric_id: string,
-    lining_fabric_id: string
+    fabric_id: number,
+    lining_fabric_id: number
   ) => {
     try {
       const response = await axios.post(
@@ -143,8 +143,8 @@ const itemsService = {
     orderNo: string,
     item_name: string,
     shirt_measurement_id: string,
-    fabric_id: string,
-    lining_fabric_id: string
+    fabric_id: number,
+    lining_fabric_id: number
   ) => {
     try {
       const response = await axios.post(
@@ -173,8 +173,8 @@ const itemsService = {
     orderNo: string,
     item_name: string,
     pant_measurement_id: string,
-    fabric_id: string,
-    lining_fabric_id: string
+    fabric_id: number,
+    lining_fabric_id: number
   ) => {
     try {
       const response = await axios.post(
