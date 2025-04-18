@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/tooltip";
 import AddSupplierModal from "../modals/AddSupplierModal";
 
-const AddSupplierButton = () => {
+interface AddSupplierButtonProps {
+  onSuccess?: () => void;
+}
+
+const AddSupplierButton = ({ onSuccess }: AddSupplierButtonProps) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showModal = () => {
@@ -20,6 +24,9 @@ const AddSupplierButton = () => {
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    if (onSuccess) {
+      onSuccess();
+    }
   };
 
   return (
@@ -36,7 +43,7 @@ const AddSupplierButton = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Add New Textile</p>
+            <p>Add New Supplier</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

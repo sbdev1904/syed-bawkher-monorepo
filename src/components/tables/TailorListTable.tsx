@@ -103,7 +103,7 @@ const TailorListTable = () => {
                     </div>
                 ) : (
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="bg-slate-900">
                             <TableRow>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Specialization</TableHead>
@@ -116,7 +116,7 @@ const TailorListTable = () => {
                                 <TableHead>Actions</TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody>
+                        <TableBody className="bg-slate-800">
                             {tailors.map((tailor) => (
                                 <TableRow key={tailor.tailor_id}>
                                     <TableCell>

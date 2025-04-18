@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -43,6 +43,7 @@ interface AddSupplierFormProps {
 
 const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SupplierFormValues>({
     resolver: zodResolver(supplierFormSchema),
@@ -63,6 +64,7 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
   });
 
   const onSubmit = async (values: SupplierFormValues) => {
+    setIsLoading(true);
     try {
       const supplierData = {
         ...values,
@@ -92,6 +94,8 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
         description: `Failed to create supplier: ${errorMessage}`,
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -308,8 +312,34 @@ const AddSupplierForm = ({ onSuccess }: AddSupplierFormProps) => {
           </div>
 
           <div className="mt-6 flex justify-end">
-            <Button type="submit" className="w-[200px]">
-              Add Supplier
+            <Button type="submit" className="w-[200px]" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <svg
+                    className="mr-2 h-4 w-4 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Adding Supplier...
+                </>
+              ) : (
+                "Add Supplier"
+              )}
             </Button>
           </div>
         </Card>

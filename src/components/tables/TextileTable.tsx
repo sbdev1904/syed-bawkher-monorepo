@@ -80,12 +80,12 @@ const TextileTable = () => {
   return (
     <div>
       <div className="flex mb-4">
-        <div className="relative flex-1">
+        <div className="relative flex-1 bg-slate-900 rounded-md">
           <Input
             placeholder="Search fabrics"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pr-10"
+            className="pr-10 "
           />
           <Button
             variant="ghost"
@@ -100,7 +100,7 @@ const TextileTable = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <Table className="bg-slate-800 rounded-lg shadow-lg min-w-[1300px]">
+        <Table className="bg-slate-800 rounded-md shadow-lg min-w-[1300px]">
           <TableHeader>
             <TableRow>
               <TableHead>Fabric Id</TableHead>
@@ -140,7 +140,7 @@ const TextileTable = () => {
                     <Button
                       variant="link"
                       onClick={() => handleView(record.fabric_id)}
-                      className="p-0"
+                      className="p-3 text-white bg-slate-900"
                     >
                       View
                     </Button>

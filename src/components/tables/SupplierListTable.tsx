@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import supplierService from "../../services/supplierService";
 
 import {
@@ -38,34 +38,40 @@ interface Supplier {
   notes: string;
 }
 
-const SupplierListTable = () => {
+export interface SupplierListTableRef {
+  refreshData: () => Promise<void>;
+}
+
+const SupplierListTable = forwardRef<SupplierListTableRef>((_, ref) => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
-    null
-  );
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchSuppliers = async () => {
-      setLoading(true);
-      try {
-        const supplierList = await supplierService.getAllSuppliers();
-        setSuppliers(supplierList);
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load suppliers: " + (error as Error).message,
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchSuppliers = async () => {
+    setLoading(true);
+    try {
+      const supplierList = await supplierService.getAllSuppliers();
+      setSuppliers(supplierList);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load suppliers: " + (error as Error).message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useImperativeHandle(ref, () => ({
+    refreshData: fetchSuppliers
+  }));
+
+  useEffect(() => {
     fetchSuppliers();
-  }, [toast]);
+  }, []);
 
   const handleDelete = async (supplier: Supplier) => {
     try {
@@ -94,9 +100,9 @@ const SupplierListTable = () => {
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="border">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-slate-900">
           <TableRow>
             <TableHead>Supplier Name</TableHead>
             <TableHead>Address 1</TableHead>
@@ -113,7 +119,7 @@ const SupplierListTable = () => {
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="bg-slate-800">
           {suppliers.map((supplier) => (
             <TableRow key={supplier.supplier_id}>
               <TableCell>{supplier.supplier_name}</TableCell>
@@ -180,6 +186,8 @@ const SupplierListTable = () => {
       </Table>
     </div>
   );
-};
+});
+
+SupplierListTable.displayName = 'SupplierListTable';
 
 export default SupplierListTable;

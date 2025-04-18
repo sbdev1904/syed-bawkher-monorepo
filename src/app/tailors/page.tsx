@@ -9,10 +9,8 @@ const TailorDetails = () => {
     return (
         <DashboardLayout>
             <div className="flex flex-col space-y-2">
-                <div className="">
+                <div className="flex flex-row justify-between mb-5">
                     <div className="text-3xl font-bold">Tailor Management</div>
-                </div>
-                <div className="flex flex-row space-x-2">
                     <AddTailorButton />
                 </div>
                 <div>
