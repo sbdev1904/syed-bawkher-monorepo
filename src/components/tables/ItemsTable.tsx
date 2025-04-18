@@ -60,8 +60,12 @@ const ItemsTable = ({ orderNo }: { orderNo: string }) => {
 
   return (
     <div className="items-table">
-      <Table className="bg-slate-100 rounded-lg">
-        <TableHeader>
+      <h1 className="text-lg font-semibold">Items</h1>
+      <div className="pt-2">
+        <AddItemsButton orderNo={orderNo} />
+      </div>
+      <Table className="bg-slate-800 rounded-lg">
+        <TableHeader className="bg-slate-900">
           <TableRow>
             <TableHead>Item Name</TableHead>
             <TableHead>Item Type</TableHead>
@@ -78,20 +82,13 @@ const ItemsTable = ({ orderNo }: { orderNo: string }) => {
               <TableCell>{item.fabric_id}</TableCell>
               <TableCell>{item.lining_fabric_id}</TableCell>
               <TableCell>
-                <Button variant="link" className="text-blue-600 p-0">
+                <Button variant="link" className="bg-slate-900 text-white p-3">
                   View
                 </Button>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
-        <tfoot>
-          <tr>
-            <td colSpan={5}>
-              <AddItemsButton orderNo={orderNo} />
-            </td>
-          </tr>
-        </tfoot>
       </Table>
     </div>
   );

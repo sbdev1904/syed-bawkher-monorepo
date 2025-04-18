@@ -10,7 +10,10 @@ import PantCard from "@/components/cards/PantCard";
 import ShirtCard from "@/components/cards/ShirtCard";
 import OrderPhotoCard from "@/components/cards/OrderPhotoCard";
 import ItemsTable from "@/components/tables/ItemsTable";
-
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 interface Order {
   orderNo: string;
   note?: string;
@@ -134,8 +137,8 @@ const OrderDetails = () => {
   };
 
   return (
-    <>
-      <div className="text-xl font-bold">{orderNo}</div>
+    <DashboardLayout>
+      <div className="text-xl font-bold">Order #{orderNo}</div>
       <div className="flex flex-row pt-10 space-x-5">
         <JacketCard orderNo={orderNo} />
         <PantCard orderNo={orderNo} />
@@ -147,47 +150,48 @@ const OrderDetails = () => {
         <h2 className="text-lg font-semibold mb-4">Assign Tailors</h2>
 
         {/* Assignment Form */}
-        <div className="bg-white p-4 rounded-lg shadow mb-4">
+        <div className="bg-slate-800 p-4 rounded-lg shadow mb-4">
           <div className="grid grid-cols-4 gap-4">
-            <select
-              className="border rounded p-2"
-              value={selectedTailor || ""}
-              onChange={(e) => setSelectedTailor(Number(e.target.value))}
-            >
-              <option value="">Select Tailor</option>
-              {availableTailors.map((tailor) => (
-                <option key={tailor.tailor_id} value={tailor.tailor_id}>
-                  {tailor.first_name} {tailor.last_name} ({tailor.specialization})
-                </option>
-              ))}
-            </select>
-            <input
+            <Select value={selectedTailor?.toString() || ""} onValueChange={(value) => setSelectedTailor(Number(value))}>
+              <SelectTrigger className="bg-slate-900 w-full">
+                <SelectValue placeholder="Select Tailor" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableTailors.map((tailor) => (
+                  <SelectItem key={tailor.tailor_id} value={tailor.tailor_id.toString()}>
+                    {tailor.first_name} {tailor.last_name} ({tailor.specialization})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
               type="date"
               className="border rounded p-2"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
             />
-            <input
+            <Input
               type="text"
               placeholder="Notes"
               className="border rounded p-2"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
-            <button
-              className="bg-blue-500 text-white rounded px-4 py-2"
+            <Button
+              variant="outline"
+              className="bg-slate-900 text-white rounded px-4 py-2"
               onClick={handleAssignTailor}
             >
               Assign Tailor
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Assigned Tailors List */}
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-slate-800 rounded-lg shadow">
           <table className="min-w-full">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-slate-900">
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tailor
                 </th>
@@ -212,17 +216,19 @@ const OrderDetails = () => {
                     {assignment.tailor.first_name} {assignment.tailor.last_name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <select
-                      className="border rounded p-1"
+                    <Select
                       value={assignment.status}
-                      onChange={(e) =>
-                        handleUpdateStatus(assignment.tailor.tailor_id, e.target.value)
-                      }
+                      onValueChange={(value) => handleUpdateStatus(assignment.tailor.tailor_id, value)}
                     >
-                      <option value="ASSIGNED">Assigned</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="COMPLETED">Completed</option>
-                    </select>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ASSIGNED">Assigned</SelectItem>
+                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                        <SelectItem value="COMPLETED">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {assignment.assigned_at.toLocaleDateString()}
@@ -248,8 +254,8 @@ const OrderDetails = () => {
       </div>
 
       <div className="pt-10">
-        <div>Order Notes</div>
-        <div>
+        <div className="text-lg font-semibold">Order Notes</div>
+        <div className="text-sm text-gray-400">
           {order ? order.note || "No additional notes" : "Loading notes..."}
         </div>
       </div>
@@ -259,7 +265,7 @@ const OrderDetails = () => {
       <div className="pt-2">
         <ItemsTable orderNo={orderNo} />
       </div>
-    </>
+    </DashboardLayout>
   );
 };
 

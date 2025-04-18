@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Wrench, Clock, CheckCircle2, User, LucideIcon } from "lucide-react";
+import { Clock, User } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult, DroppableProvided, DraggableProvided, DraggableStateSnapshot } from "@hello-pangea/dnd";
+
+
 
 interface ProductionItem {
   id: string;
@@ -203,17 +205,6 @@ export default function ProductionPage() {
     }
   };
 
-  const StatCard = ({ title, value, icon: Icon, className }: { title: string; value: number; icon: LucideIcon; className?: string }) => (
-    <div className={`bg-[#0C1222] rounded-lg p-6 ${className}`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <h2 className="text-3xl font-bold text-white mt-1">{value}</h2>
-        </div>
-        <Icon className="h-5 w-5 text-muted-foreground" />
-      </div>
-    </div>
-  );
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -300,33 +291,6 @@ export default function ProductionPage() {
     <DashboardLayout>
       <div className="space-y-8">
         <h1 className="text-2xl font-bold text-white">Production Management</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-screen-xl mx-4">
-          <StatCard
-            title="In Production"
-            value={columns.reduce((acc, col) => col.status !== "delivered" ? acc + col.items.length : acc, 0)}
-            icon={Wrench}
-            className="hover:bg-[#141B2D] transition-colors duration-200"
-          />
-          <StatCard
-            title="Pattern Cutting"
-            value={columns.find(col => col.status === "pattern_cutting_pending")?.items.length || 0}
-            icon={Clock}
-            className="hover:bg-[#141B2D] transition-colors duration-200"
-          />
-          <StatCard
-            title="Final Fitting"
-            value={columns.find(col => col.status === "final_fitting_pending")?.items.length || 0}
-            icon={Clock}
-            className="hover:bg-[#141B2D] transition-colors duration-200"
-          />
-          <StatCard
-            title="Delivered Today"
-            value={columns.find(col => col.status === "delivered")?.items.length || 0}
-            icon={CheckCircle2}
-            className="hover:bg-[#141B2D] transition-colors duration-200"
-          />
-        </div>
 
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="relative w-full">
