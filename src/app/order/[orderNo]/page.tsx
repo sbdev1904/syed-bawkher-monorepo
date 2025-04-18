@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import orderService from "@/services/orderService";
 import tailorService from "@/services/tailorService";
 import tailorAssignmentService from "@/services/tailorAssignmentService";
+import productionService from "@/services/productionService";
+import { useToast } from "@/components/ui/use-toast";
+import type { ProductionStatus } from "@prisma/client";
 import JacketCard from "@/components/cards/JacketCard";
 import PantCard from "@/components/cards/PantCard";
 import ShirtCard from "@/components/cards/ShirtCard";
@@ -14,10 +17,15 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 interface Order {
   orderNo: string;
   note?: string;
   date?: string;
+  production?: {
+    status: ProductionStatus;
+    notes?: string;
+  };
 }
 
 interface Tailor {
@@ -46,13 +54,21 @@ const OrderDetails = () => {
   const [selectedTailor, setSelectedTailor] = useState<number | null>(null);
   const [dueDate, setDueDate] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch order details
         const orderData = await orderService.getOrder(orderNo);
-        setOrder(orderData);
+
+        // Fetch production status
+        const productionData = await productionService.getProductionStatus(orderNo);
+
+        setOrder({
+          ...orderData,
+          production: productionData,
+        });
 
         // Fetch available tailors
         const tailors = await tailorService.getAllTailors();
@@ -71,6 +87,51 @@ const OrderDetails = () => {
     };
     fetchData();
   }, [orderNo]);
+
+  const handleInitializeProduction = async () => {
+    try {
+      const production = await productionService.initializeProduction(orderNo);
+      setOrder(prev => prev ? {
+        ...prev,
+        production,
+      } : null);
+      toast({
+        title: "Success",
+        description: "Production tracking initialized successfully!",
+      });
+    } catch (error) {
+      console.error("Failed to initialize production:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to initialize production tracking.",
+      });
+    }
+  };
+
+  const handleUpdateProductionStatus = async (status: ProductionStatus) => {
+    try {
+      const production = await productionService.updateProductionStatus({
+        orderNo,
+        status,
+      });
+      setOrder(prev => prev ? {
+        ...prev,
+        production,
+      } : null);
+      toast({
+        title: "Success",
+        description: "Production status updated successfully!",
+      });
+    } catch (error) {
+      console.error("Failed to update production status:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update production status.",
+      });
+    }
+  };
 
   const handleAssignTailor = async () => {
     if (!selectedTailor) return;
@@ -139,6 +200,45 @@ const OrderDetails = () => {
   return (
     <DashboardLayout>
       <div className="text-xl font-bold">Order #{orderNo}</div>
+
+      {/* Production Status Section */}
+      <div className="mt-4">
+        {!order?.production ? (
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">No production tracking</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleInitializeProduction}
+            >
+              Initialize Production
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-4">
+            <span className="text-sm">Production Status:</span>
+            <Select
+              value={order.production.status}
+              onValueChange={(value) => handleUpdateProductionStatus(value as ProductionStatus)}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PATTERN_CUTTING_PENDING">Pattern Cutting</SelectItem>
+                <SelectItem value="TAILOR_ASSIGNMENT_PENDING">Tailor Assignment</SelectItem>
+                <SelectItem value="BASE_SUIT_PRODUCTION">Base Production</SelectItem>
+                <SelectItem value="TRIAL_PENDING">Trial Pending</SelectItem>
+                <SelectItem value="FINAL_PRODUCTION">Final Production</SelectItem>
+                <SelectItem value="FINAL_FITTING_PENDING">Final Fitting</SelectItem>
+                <SelectItem value="DELIVERY_PENDING">Delivery Pending</SelectItem>
+                <SelectItem value="DELIVERED">Delivered</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </div>
+
       <div className="flex flex-row pt-10 space-x-5">
         <JacketCard orderNo={orderNo} />
         <PantCard orderNo={orderNo} />

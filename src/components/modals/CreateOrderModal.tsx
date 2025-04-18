@@ -5,6 +5,7 @@ import itemsService from "../../services/itemsService";
 import jacketService from "../../services/jacketService";
 import shirtService from "../../services/shirtService";
 import pantService from "../../services/pantService";
+import productionService from "@/services/productionService";
 import moment from "moment";
 import OrderDetailsForm, {
   OrderDetailsFormData,
@@ -322,6 +323,9 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
         itemsWithMeasurements
       );
 
+      // Initialize production status
+      await productionService.initializeProduction(orderResponse.orderNo);
+
       toast({
         title: "Success",
         description: "Order, measurements, and items created successfully!",
@@ -369,9 +373,8 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
       toast({
         variant: "destructive",
         title: "Error",
-        description: `Failed to create order: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`,
+        description: `Failed to create order: ${error instanceof Error ? error.message : "Unknown error"
+          }`,
       });
       console.error("Error in creating order:", error);
       return;

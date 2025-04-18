@@ -195,6 +195,7 @@ model Orders {
   ShirtMeasurement       ShirtMeasurement[]
   OrderPhotos            OrderPhotos[]
   tailors               OrderTailor[]
+  production            OrderProduction?
 }
 
 model Items {
@@ -307,6 +308,28 @@ model LogEntry {
   action    String
   timestamp DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
+}
+
+enum ProductionStatus {
+  PATTERN_CUTTING_PENDING
+  TAILOR_ASSIGNMENT_PENDING
+  BASE_SUIT_PRODUCTION
+  TRIAL_PENDING
+  FINAL_PRODUCTION
+  FINAL_FITTING_PENDING
+  DELIVERY_PENDING
+  DELIVERED
+}
+
+model OrderProduction {
+  id          Int             @id @default(autoincrement())
+  order       Orders          @relation(fields: [orderNo], references: [orderNo])
+  orderNo     String         @unique
+  status      ProductionStatus @default(PATTERN_CUTTING_PENDING)
+  updatedAt   DateTime       @updatedAt
+  notes       String?
+  
+  @@index([orderNo])
 }
 
 enum Role {
