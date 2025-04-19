@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
 import productionService from "@/services/productionService";
 
-interface RouteParams {
-  params: {
-    orderNo: string;
-  };
+interface RouteContext {
+  params: Promise<{ orderNo: string }>;
 }
 
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(
+  request: Request,
+  context: RouteContext
+): Promise<Response> {
   try {
-    const { orderNo } = params;
+    const { orderNo } = await context.params;
     const production = await productionService.getProductionStatus(orderNo);
 
     if (!production) {
@@ -29,9 +30,12 @@ export async function GET(request: Request, { params }: RouteParams) {
   }
 }
 
-export async function PATCH(request: Request, { params }: RouteParams) {
+export async function PATCH(
+  request: Request,
+  context: RouteContext
+): Promise<Response> {
   try {
-    const { orderNo } = params;
+    const { orderNo } = await context.params;
     const { status, notes } = await request.json();
 
     if (!status) {
