@@ -35,7 +35,7 @@ import { format } from "date-fns";
 export default function Home() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { isLoading, error, stats, recentOrders, upcomingDeliveries, refetch } = useDashboard();
+  const { isLoading, error, stats, recentOrders, upcomingDeliveries } = useDashboard();
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -179,8 +179,8 @@ export default function Home() {
                         <TableCell>{order.customer.name}</TableCell>
                         <TableCell>
                           <div className="flex gap-1">
-                            {order.items.map((item) => (
-                              <Badge key={item.name} variant="secondary">
+                            {order.items.map((item, index) => (
+                              <Badge key={`${order.orderNo}-${item.name}-${index}`} variant="secondary">
                                 {item.name}
                               </Badge>
                             ))}
