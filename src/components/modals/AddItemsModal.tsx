@@ -31,25 +31,22 @@ const CustomStepper = ({
       {steps.map((step, index) => (
         <div key={index} className="flex flex-col items-center">
           <div
-            className={`w-8 h-8 rounded-full grid place-content-center text-sm font-medium ${
-              index <= currentStep
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground"
-            }`}
+            className={`w-8 h-8 rounded-full grid place-content-center text-sm font-medium ${index <= currentStep
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground"
+              }`}
           >
             {index + 1}
           </div>
           <div className="mt-2 text-sm font-medium">{step.title}</div>
           {index < steps.length - 1 && (
             <div
-              className={`absolute top-4 left-0 right-0 h-[2px] ${
-                index < currentStep ? "bg-primary" : "bg-muted"
-              }`}
+              className={`absolute top-4 left-0 right-0 h-[2px] ${index < currentStep ? "bg-primary" : "bg-muted"
+                }`}
               style={{
                 left: `calc(${(index * 100) / (steps.length - 1)}% + ${16}px)`,
-                right: `calc(${
-                  100 - ((index + 1) * 100) / (steps.length - 1)
-                }% + ${16}px)`,
+                right: `calc(${100 - ((index + 1) * 100) / (steps.length - 1)
+                  }% + ${16}px)`,
               }}
             />
           )}
@@ -73,9 +70,38 @@ interface FormValues {
   date?: Date;
   note?: string;
   items: Item[];
-  jacket?: Record<string, string | number>;
-  shirt?: Record<string, string | number>;
-  pant?: Record<string, string | number>;
+  jacket: {
+    jacket_length: string;
+    natural_length: string;
+    back_length: string;
+    x_back: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    waist_coat_length: string;
+    sherwani_length: string;
+    other_notes: string;
+  };
+  shirt: {
+    length: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    other_notes: string;
+  };
+  pant: {
+    length: string;
+    inseem: string;
+    waist: string;
+    hips: string;
+    bottom: string;
+    knee: string;
+    other_notes: string;
+  };
   customerId?: string;
   [key: string]: unknown;
 }
@@ -99,9 +125,38 @@ const AddItemsModal = ({
     defaultValues: {
       orderNo,
       items: [],
-      jacket: {},
-      shirt: {},
-      pant: {},
+      jacket: {
+        jacket_length: "",
+        natural_length: "",
+        back_length: "",
+        x_back: "",
+        half_shoulder: "",
+        to_sleeve: "",
+        chest: "",
+        waist: "",
+        collar: "",
+        waist_coat_length: "",
+        sherwani_length: "",
+        other_notes: "",
+      },
+      shirt: {
+        length: "",
+        half_shoulder: "",
+        to_sleeve: "",
+        chest: "",
+        waist: "",
+        collar: "",
+        other_notes: "",
+      },
+      pant: {
+        length: "",
+        inseem: "",
+        waist: "",
+        hips: "",
+        bottom: "",
+        knee: "",
+        other_notes: "",
+      },
     },
   });
   const { toast } = useToast();
@@ -109,9 +164,38 @@ const AddItemsModal = ({
   const [formData, setFormData] = useState<FormValues>({
     orderNo,
     items: [],
-    jacket: {},
-    shirt: {},
-    pant: {},
+    jacket: {
+      jacket_length: "",
+      natural_length: "",
+      back_length: "",
+      x_back: "",
+      half_shoulder: "",
+      to_sleeve: "",
+      chest: "",
+      waist: "",
+      collar: "",
+      waist_coat_length: "",
+      sherwani_length: "",
+      other_notes: "",
+    },
+    shirt: {
+      length: "",
+      half_shoulder: "",
+      to_sleeve: "",
+      chest: "",
+      waist: "",
+      collar: "",
+      other_notes: "",
+    },
+    pant: {
+      length: "",
+      inseem: "",
+      waist: "",
+      hips: "",
+      bottom: "",
+      knee: "",
+      other_notes: "",
+    },
   });
   const [visibility, setVisibility] = useState<VisibilityState>({
     displayJacketForm: false,
@@ -168,11 +252,8 @@ const AddItemsModal = ({
       title: "Add Measurements",
       content: (
         <AddMeasurementsForm
-          //@ts-expect-error interface mismatch not a problem
           form={form}
           visibility={visibility}
-          formData={formData}
-          setFormData={(data: FormValues) => setFormData(data)}
         />
       ),
     },
@@ -275,8 +356,78 @@ const AddItemsModal = ({
         title: "Success",
         description: "Items and measurements created successfully!",
       });
-      form.reset();
-      setFormData({ orderNo, items: [], jacket: {}, shirt: {}, pant: {} });
+      form.reset({
+        orderNo,
+        items: [],
+        jacket: {
+          jacket_length: "",
+          natural_length: "",
+          back_length: "",
+          x_back: "",
+          half_shoulder: "",
+          to_sleeve: "",
+          chest: "",
+          waist: "",
+          collar: "",
+          waist_coat_length: "",
+          sherwani_length: "",
+          other_notes: "",
+        },
+        shirt: {
+          length: "",
+          half_shoulder: "",
+          to_sleeve: "",
+          chest: "",
+          waist: "",
+          collar: "",
+          other_notes: "",
+        },
+        pant: {
+          length: "",
+          inseem: "",
+          waist: "",
+          hips: "",
+          bottom: "",
+          knee: "",
+          other_notes: "",
+        },
+      });
+      setFormData({
+        orderNo,
+        items: [],
+        jacket: {
+          jacket_length: "",
+          natural_length: "",
+          back_length: "",
+          x_back: "",
+          half_shoulder: "",
+          to_sleeve: "",
+          chest: "",
+          waist: "",
+          collar: "",
+          waist_coat_length: "",
+          sherwani_length: "",
+          other_notes: "",
+        },
+        shirt: {
+          length: "",
+          half_shoulder: "",
+          to_sleeve: "",
+          chest: "",
+          waist: "",
+          collar: "",
+          other_notes: "",
+        },
+        pant: {
+          length: "",
+          inseem: "",
+          waist: "",
+          hips: "",
+          bottom: "",
+          knee: "",
+          other_notes: "",
+        },
+      });
       setVisibility({
         displayJacketForm: false,
         displayShirtForm: false,
@@ -297,7 +448,7 @@ const AddItemsModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && isCancel()}>
-      <DialogContent className="sm:max-w-[700px]">
+      <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
           <DialogTitle>Add Items</DialogTitle>
         </DialogHeader>

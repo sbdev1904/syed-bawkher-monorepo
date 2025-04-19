@@ -40,9 +40,38 @@ export type OrderDetailsFormData = z.infer<typeof orderDetailsSchema>;
 
 interface FormValues extends OrderDetailsFormData {
   items: Item[];
-  jacket?: Record<string, string | number>;
-  shirt?: Record<string, string | number>;
-  pant?: Record<string, string | number>;
+  jacket: {
+    jacket_length: string;
+    natural_length: string;
+    back_length: string;
+    x_back: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    waist_coat_length: string;
+    sherwani_length: string;
+    other_notes: string;
+  };
+  shirt: {
+    length: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    other_notes: string;
+  };
+  pant: {
+    length: string;
+    inseem: string;
+    waist: string;
+    hips: string;
+    bottom: string;
+    knee: string;
+    other_notes: string;
+  };
   customerId?: string;
   [key: string]: unknown;
 }

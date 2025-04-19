@@ -47,9 +47,38 @@ interface FormValues {
   date?: Date;
   note?: string;
   items: Item[];
-  jacket?: Record<string, string | number>;
-  shirt?: Record<string, string | number>;
-  pant?: Record<string, string | number>;
+  jacket: {
+    jacket_length: string;
+    natural_length: string;
+    back_length: string;
+    x_back: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    waist_coat_length: string;
+    sherwani_length: string;
+    other_notes: string;
+  };
+  shirt: {
+    length: string;
+    half_shoulder: string;
+    to_sleeve: string;
+    chest: string;
+    waist: string;
+    collar: string;
+    other_notes: string;
+  };
+  pant: {
+    length: string;
+    inseem: string;
+    waist: string;
+    hips: string;
+    bottom: string;
+    knee: string;
+    other_notes: string;
+  };
   customerId?: string;
   [key: string]: unknown;
 }
@@ -138,7 +167,7 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({ form, setVisibility }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(() => {})} className="mt-10">
+      <form onSubmit={form.handleSubmit(() => { })} className="mt-10">
         <div className="space-y-5">
           {form.getValues().items?.map((item, index) => (
             <div
@@ -240,8 +269,8 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({ form, setVisibility }) => {
                             >
                               {field.value
                                 ? fabricOptions.find(
-                                    (option) => option.value === field.value
-                                  )?.label || field.value
+                                  (option) => option.value === field.value
+                                )?.label || field.value
                                 : "Enter fabric code"}
                             </Button>
                           </FormControl>
@@ -337,8 +366,8 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({ form, setVisibility }) => {
                               >
                                 {field.value
                                   ? liningOptions.find(
-                                      (option) => option.value === field.value
-                                    )?.label || field.value
+                                    (option) => option.value === field.value
+                                  )?.label || field.value
                                   : "Enter lining code"}
                               </Button>
                             </FormControl>
@@ -410,14 +439,51 @@ const AddItemsForm: React.FC<AddItemsFormProps> = ({ form, setVisibility }) => {
             className="w-full"
             onClick={() => {
               const currentItems = form.getValues().items || [];
-              form.setValue("items", [
-                ...currentItems,
-                {
-                  item_type: "jacket" as ItemType,
-                  item_name: "",
-                  key: getUniqueKey(),
-                },
-              ]);
+              const newItem = {
+                item_type: "jacket" as ItemType,
+                item_name: "",
+                key: getUniqueKey(),
+              };
+              form.setValue("items", [...currentItems, newItem]);
+
+              // Initialize measurements based on item type
+              if (newItem.item_type === "jacket" && !form.getValues().jacket) {
+                form.setValue("jacket", {
+                  jacket_length: "",
+                  natural_length: "",
+                  back_length: "",
+                  x_back: "",
+                  half_shoulder: "",
+                  to_sleeve: "",
+                  chest: "",
+                  waist: "",
+                  collar: "",
+                  waist_coat_length: "",
+                  sherwani_length: "",
+                  other_notes: "",
+                });
+              } else if (newItem.item_type === "shirt" && !form.getValues().shirt) {
+                form.setValue("shirt", {
+                  length: "",
+                  half_shoulder: "",
+                  to_sleeve: "",
+                  chest: "",
+                  waist: "",
+                  collar: "",
+                  other_notes: "",
+                });
+              } else if (newItem.item_type === "pant" && !form.getValues().pant) {
+                form.setValue("pant", {
+                  length: "",
+                  inseem: "",
+                  waist: "",
+                  hips: "",
+                  bottom: "",
+                  knee: "",
+                  other_notes: "",
+                });
+              }
+
               updateVisibility(null, form.getValues());
             }}
           >

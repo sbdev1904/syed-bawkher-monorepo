@@ -60,9 +60,11 @@ const ItemsTable = ({ orderNo }: { orderNo: string }) => {
 
   return (
     <div className="items-table">
-      <h1 className="text-lg font-semibold">Items</h1>
-      <div className="pt-2">
-        <AddItemsButton orderNo={orderNo} />
+      <div className="flex justify-between items-center my-3">
+        <h1 className="text-xl font-semibold">Items</h1>
+        <div className="pt-2">
+          <AddItemsButton orderNo={orderNo} />
+        </div>
       </div>
       <Table className="bg-slate-800 rounded-lg">
         <TableHeader className="bg-slate-900">
