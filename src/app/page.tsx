@@ -10,6 +10,7 @@ import {
   Sun,
   Moon,
   Sunrise,
+  AlertCircle,
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import CreateCustomerButton from "@/components/buttons/CreateCustomerButton";
@@ -28,18 +29,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-
-interface RecentOrder {
-  key: string;
-  orderNo: string;
-  customer: string;
-  items: string[];
-  status: string;
-}
+import { useDashboard } from "@/hooks/useDashboard";
+import { format } from "date-fns";
 
 export default function Home() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { isLoading, error, stats, recentOrders, upcomingDeliveries, refetch } = useDashboard();
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -47,12 +43,23 @@ export default function Home() {
     }
   }, [status, router]);
 
-  if (status === "loading") {
+  if (status === "loading" || isLoading) {
     return <div>Loading...</div>;
   }
 
   if (!session) {
     return null;
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <div className="flex items-center space-x-2 text-red-500">
+          <AlertCircle className="h-5 w-5" />
+          <span>Error loading dashboard data. Please try again later.</span>
+        </div>
+      </div>
+    );
   }
 
   const getGreeting = () => {
@@ -63,31 +70,6 @@ export default function Home() {
   };
 
   const { text: greeting, icon: GreetingIcon } = getGreeting();
-
-  // Mock data for recent orders
-  const recentOrders: RecentOrder[] = [
-    {
-      key: "1",
-      orderNo: "ORD001",
-      customer: "John Doe",
-      items: ["Suit", "Shirt"],
-      status: "In Production",
-    },
-    {
-      key: "2",
-      orderNo: "ORD002",
-      customer: "Jane Smith",
-      items: ["Dress", "Pants"],
-      status: "Pending",
-    },
-    {
-      key: "3",
-      orderNo: "ORD003",
-      customer: "Mike Johnson",
-      items: ["Jacket"],
-      status: "Ready for Delivery",
-    },
-  ];
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
@@ -134,7 +116,7 @@ export default function Home() {
               <User className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">156</div>
+              <div className="text-2xl font-bold">{stats?.totalCustomers || 0}</div>
             </CardContent>
           </Card>
           <Card>
@@ -143,7 +125,7 @@ export default function Home() {
               <ShoppingCart className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">28</div>
+              <div className="text-2xl font-bold">{stats?.activeOrders || 0}</div>
             </CardContent>
           </Card>
           <Card>
@@ -152,7 +134,7 @@ export default function Home() {
               <Scissors className="h-4 w-4 text-yellow-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">15</div>
+              <div className="text-2xl font-bold">{stats?.inProduction || 0}</div>
             </CardContent>
           </Card>
           <Card>
@@ -161,7 +143,7 @@ export default function Home() {
               <Package className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">8</div>
+              <div className="text-2xl font-bold">{stats?.lowStockItems || 0}</div>
             </CardContent>
           </Card>
         </div>
@@ -185,7 +167,7 @@ export default function Home() {
                   </TableHeader>
                   <TableBody>
                     {recentOrders.map((order) => (
-                      <TableRow key={order.key}>
+                      <TableRow key={order.id}>
                         <TableCell>
                           <Button
                             variant="link"
@@ -194,12 +176,12 @@ export default function Home() {
                             {order.orderNo}
                           </Button>
                         </TableCell>
-                        <TableCell>{order.customer}</TableCell>
+                        <TableCell>{order.customer.name}</TableCell>
                         <TableCell>
                           <div className="flex gap-1">
                             {order.items.map((item) => (
-                              <Badge key={item} variant="secondary">
-                                {item}
+                              <Badge key={item.name} variant="secondary">
+                                {item.name}
                               </Badge>
                             ))}
                           </div>
@@ -224,18 +206,14 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
-                  <li className="flex justify-between items-center">
-                    <span>ORD001 - John Doe</span>
-                    <Badge variant="secondary">Today</Badge>
-                  </li>
-                  <li className="flex justify-between items-center">
-                    <span>ORD005 - Alice Brown</span>
-                    <Badge variant="secondary">Tomorrow</Badge>
-                  </li>
-                  <li className="flex justify-between items-center">
-                    <span>ORD008 - Bob Wilson</span>
-                    <Badge variant="secondary">In 2 days</Badge>
-                  </li>
+                  {upcomingDeliveries.map((delivery) => (
+                    <li key={delivery.id} className="flex justify-between items-center">
+                      <span>{delivery.orderNo} - {delivery.customer.name}</span>
+                      <Badge variant="secondary">
+                        {format(new Date(delivery.deliveryDate), 'MMM d')}
+                      </Badge>
+                    </li>
+                  ))}
                 </ul>
               </CardContent>
             </Card>

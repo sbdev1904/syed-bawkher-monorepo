@@ -52,7 +52,7 @@ const PantCard: React.FC<PantCardProps> = ({ orderNo }) => {
 
   return (
     <>
-      <div className="flex flex-col bg-slate-700 rounded-lg shadow-lg text-white justify-between">
+      <div className="bg-slate-700 rounded-lg p-3 border border-slate-600 flex flex-col justify-between">
         <div className="text-lg text-gray-300 px-2 pt-2">Pant Measurements</div>
         <div className="flex flex-col p-2">
           <div className="flex flex-row space-x-2">
