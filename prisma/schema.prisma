@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Customer {
@@ -193,6 +194,8 @@ model Orders {
   PantMeasurement        PantMeasurement[]
   ShirtMeasurement       ShirtMeasurement[]
   OrderPhotos            OrderPhotos[]
+  tailors               OrderTailor[]
+  production            OrderProduction?
 }
 
 model Items {
@@ -243,6 +246,39 @@ model Supplier {
   RawMaterialsOrderList RawMaterialsOrderList[]
 }
 
+model Tailor {
+  tailor_id            Int       @id @default(autoincrement())
+  first_name           String
+  last_name            String?
+  specialization       String?   // e.g., "Shirt", "Jacket", "Pant"
+  experience_years     Int?
+  joining_date         DateTime  @default(now())
+  address              String?
+  phone_number         String?
+  email                String?   @unique
+  emergency_contact    String?
+  status               String    @default("ACTIVE") // ACTIVE, INACTIVE, ON_LEAVE
+  hourly_rate          Decimal?  @db.Decimal(10, 2)
+  notes                String?
+  orders              OrderTailor[]
+}
+
+model OrderTailor {
+  id          Int      @id @default(autoincrement())
+  order       Orders   @relation(fields: [orderNo], references: [orderNo])
+  orderNo     String
+  tailor      Tailor   @relation(fields: [tailor_id], references: [tailor_id])
+  tailor_id   Int
+  assigned_at DateTime @default(now())
+  status      String   @default("ASSIGNED") // ASSIGNED, IN_PROGRESS, COMPLETED
+  due_date    DateTime?
+  notes       String?
+
+  @@unique([orderNo, tailor_id])
+  @@index([orderNo])
+  @@index([tailor_id])
+}
+
 model RawMaterialsOrderList {
   order_id          Int       @id @default(autoincrement())
   product_name      String?
@@ -272,6 +308,28 @@ model LogEntry {
   action    String
   timestamp DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
+}
+
+enum ProductionStatus {
+  PATTERN_CUTTING_PENDING
+  TAILOR_ASSIGNMENT_PENDING
+  BASE_SUIT_PRODUCTION
+  TRIAL_PENDING
+  FINAL_PRODUCTION
+  FINAL_FITTING_PENDING
+  DELIVERY_PENDING
+  DELIVERED
+}
+
+model OrderProduction {
+  id          Int             @id @default(autoincrement())
+  order       Orders          @relation(fields: [orderNo], references: [orderNo])
+  orderNo     String         @unique
+  status      ProductionStatus @default(PATTERN_CUTTING_PENDING)
+  updatedAt   DateTime       @updatedAt
+  notes       String?
+  
+  @@index([orderNo])
 }
 
 enum Role {

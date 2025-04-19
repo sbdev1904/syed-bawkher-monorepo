@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Use npm install --legacy-peer-deps
+- Always check if a lib or package exists before attempting to install it
