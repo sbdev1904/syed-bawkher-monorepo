@@ -1,299 +1,359 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Package,
-  AlertTriangle,
-  ShoppingBag,
-  Plus,
-  Search,
-  RefreshCw,
-} from "lucide-react";
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
+import locationService, { Location, Rack } from "@/services/locationService";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-
-interface InventoryItem {
-  id: string;
-  name: string;
-  category: "fabric" | "accessory" | "packaging";
-  type: string;
-  color?: string;
-  supplier: string;
-  stockLevel: number;
-  minStockLevel: number;
-  reorderPoint: number;
-  unitPrice: number;
-  location: string;
-  lastRestocked: string;
-}
+import { Plus, Package, MapPin, Grid } from "lucide-react";
+import BunchManager from "@/components/inventory/BunchManager";
 
 export default function InventoryPage() {
-  const [searchText, setSearchText] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const { toast } = useToast();
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null
+  );
+  const [selectedRack, setSelectedRack] = useState<Rack | null>(null);
+  const [isAddLocationOpen, setIsAddLocationOpen] = useState(false);
+  const [isAddRackOpen, setIsAddRackOpen] = useState(false);
+  const [newLocationData, setNewLocationData] = useState({
+    name: "",
+    description: "",
+  });
+  const [newRackData, setNewRackData] = useState({
+    name: "",
+    description: "",
+    capacity: 100,
+  });
 
-  // Mock data for inventory items
-  const inventoryItems: InventoryItem[] = [
-    {
-      id: "FAB001",
-      name: "Premium Wool",
-      category: "fabric",
-      type: "Wool",
-      color: "Navy",
-      supplier: "WoolCo Ltd",
-      stockLevel: 150,
-      minStockLevel: 100,
-      reorderPoint: 120,
-      unitPrice: 45.99,
-      location: "A-12",
-      lastRestocked: "2024-03-20",
-    },
-    {
-      id: "FAB002",
-      name: "Cotton Shirting",
-      category: "fabric",
-      type: "Cotton",
-      color: "White",
-      supplier: "TextilePro",
-      stockLevel: 80,
-      minStockLevel: 100,
-      reorderPoint: 120,
-      unitPrice: 15.99,
-      location: "B-03",
-      lastRestocked: "2024-03-15",
-    },
-    {
-      id: "ACC001",
-      name: "Buttons",
-      category: "accessory",
-      type: "Button",
-      color: "Gold",
-      supplier: "AccessoryCo",
-      stockLevel: 1000,
-      minStockLevel: 500,
-      reorderPoint: 750,
-      unitPrice: 0.50,
-      location: "C-15",
-      lastRestocked: "2024-03-25",
-    },
-    {
-      id: "PKG001",
-      name: "Suit Bags",
-      category: "packaging",
-      type: "Bag",
-      supplier: "PackagingPro",
-      stockLevel: 200,
-      minStockLevel: 150,
-      reorderPoint: 175,
-      unitPrice: 2.99,
-      location: "D-01",
-      lastRestocked: "2024-03-18",
-    },
-  ];
+  // Fetch locations
+  const {
+    data: locations,
+    isLoading,
+    refetch: refetchLocations,
+  } = useQuery({
+    queryKey: ["locations"],
+    queryFn: locationService.getAllLocations,
+  });
 
-  const getStockStatus = (item: InventoryItem) => {
-    if (item.stockLevel <= item.minStockLevel) return "destructive";
-    if (item.stockLevel <= item.reorderPoint) return "warning";
-    return "default";
-  };
+  // Fetch racks for selected location
+  const {
+    data: racks,
+    isLoading: isLoadingRacks,
+    refetch: refetchRacks,
+  } = useQuery({
+    queryKey: ["racks", selectedLocation?.id],
+    queryFn: () =>
+      selectedLocation
+        ? locationService.getRacksByLocation(selectedLocation.id)
+        : null,
+    enabled: !!selectedLocation,
+  });
 
-  const getCategoryColor = (category: InventoryItem["category"]) => {
-    switch (category) {
-      case "fabric":
-        return "bg-blue-500";
-      case "accessory":
-        return "bg-green-500";
-      case "packaging":
-        return "bg-orange-500";
-      default:
-        return "bg-gray-500";
+  const handleAddLocation = async () => {
+    try {
+      await locationService.createLocation(newLocationData);
+      toast({
+        title: "Success",
+        description: "Location created successfully",
+      });
+      setIsAddLocationOpen(false);
+      setNewLocationData({ name: "", description: "" });
+      refetchLocations();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to create location: ${error}`,
+      });
     }
   };
 
+  const handleAddRack = async () => {
+    if (!selectedLocation) return;
+    try {
+      await locationService.createRack({
+        ...newRackData,
+        location_id: selectedLocation.id,
+      });
+      toast({
+        title: "Success",
+        description: "Rack created successfully",
+      });
+      setIsAddRackOpen(false);
+      setNewRackData({ name: "", description: "", capacity: 100 });
+      refetchRacks();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to create rack: ${error}`,
+      });
+    }
+  };
+
+  const handleRackSelect = (rack: Rack) => {
+    setSelectedRack(rack === selectedRack ? null : rack);
+  };
+
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Inventory Management</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Sync Stock
+    <div className="container mx-auto py-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Inventory Management</h1>
+        <Dialog open={isAddLocationOpen} onOpenChange={setIsAddLocationOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Location
             </Button>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Item
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="text-sm font-medium">Total Items</div>
-              <Package className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{inventoryItems.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="text-sm font-medium">Low Stock Items</div>
-              <AlertTriangle className="h-4 w-4 text-yellow-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {inventoryItems.filter((item) => item.stockLevel <= item.minStockLevel).length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="text-sm font-medium">Need Reorder</div>
-              <ShoppingBag className="h-4 w-4 text-purple-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {inventoryItems.filter(
-                  (item) =>
-                    item.stockLevel > item.minStockLevel && item.stockLevel <= item.reorderPoint
-                ).length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="text-sm font-medium">Total Value</div>
-              <Package className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${inventoryItems
-                  .reduce((sum, item) => sum + item.stockLevel * item.unitPrice, 0)
-                  .toFixed(2)}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="mb-4 flex space-x-4">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Location</DialogTitle>
+              <DialogDescription>
+                Create a new location for inventory storage
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
                 <Input
-                  placeholder="Search inventory..."
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  className="pl-8 w-[300px]"
+                  id="name"
+                  value={newLocationData.name}
+                  onChange={(e) =>
+                    setNewLocationData({
+                      ...newLocationData,
+                      name: e.target.value,
+                    })
+                  }
+                  placeholder="Enter location name"
                 />
               </div>
-              <Select
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Filter by category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fabric">Fabric</SelectItem>
-                  <SelectItem value="accessory">Accessory</SelectItem>
-                  <SelectItem value="packaging">Packaging</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="grid gap-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={newLocationData.description}
+                  onChange={(e) =>
+                    setNewLocationData({
+                      ...newLocationData,
+                      description: e.target.value,
+                    })
+                  }
+                  placeholder="Enter location description"
+                />
+              </div>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Color</TableHead>
-                  <TableHead>Stock Level</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Unit Price</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Last Restocked</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {inventoryItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.id}</TableCell>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>
-                      <Badge className={cn("text-white", getCategoryColor(item.category))}>
-                        {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{item.type}</TableCell>
-                    <TableCell>
-                      {item.color && (
-                        <Badge variant="outline">{item.color}</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="w-[200px]">
-                              <Progress
-                                value={(item.stockLevel / item.reorderPoint) * 100}
-                                className={cn(
-                                  getStockStatus(item) === "destructive" && "text-red-500",
-                                  getStockStatus(item) === "warning" && "text-yellow-500"
-                                )}
-                              />
-                              <div className="text-xs text-muted-foreground mt-1">
-                                {item.stockLevel} / {item.reorderPoint}
-                              </div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Min: {item.minStockLevel}</p>
-                            <p>Reorder: {item.reorderPoint}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </TableCell>
-                    <TableCell>{item.location}</TableCell>
-                    <TableCell>${item.unitPrice.toFixed(2)}</TableCell>
-                    <TableCell>{item.supplier}</TableCell>
-                    <TableCell>{new Date(item.lastRestocked).toLocaleDateString()}</TableCell>
-                  </TableRow>
+            <Button onClick={handleAddLocation}>Create Location</Button>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Locations List */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Locations</CardTitle>
+            <CardDescription>
+              Select a location to view its racks
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div>Loading locations...</div>
+            ) : (
+              <div className="space-y-4">
+                {locations?.map((location: Location) => (
+                  <Button
+                    key={location.id}
+                    variant={
+                      selectedLocation?.id === location.id
+                        ? "default"
+                        : "outline"
+                    }
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setSelectedLocation(location);
+                      setSelectedRack(null);
+                    }}
+                  >
+                    <MapPin className="mr-2 h-4 w-4" />
+                    {location.name}
+                  </Button>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Racks List */}
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Racks</CardTitle>
+                <CardDescription>
+                  {selectedLocation
+                    ? `Racks in ${selectedLocation.name}`
+                    : "Select a location to view racks"}
+                </CardDescription>
+              </div>
+              {selectedLocation && (
+                <Dialog open={isAddRackOpen} onOpenChange={setIsAddRackOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Rack
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Rack</DialogTitle>
+                      <DialogDescription>
+                        Create a new rack in {selectedLocation.name}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="rackName">Name</Label>
+                        <Input
+                          id="rackName"
+                          value={newRackData.name}
+                          onChange={(e) =>
+                            setNewRackData({
+                              ...newRackData,
+                              name: e.target.value,
+                            })
+                          }
+                          placeholder="Enter rack name"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="rackDescription">Description</Label>
+                        <Textarea
+                          id="rackDescription"
+                          value={newRackData.description}
+                          onChange={(e) =>
+                            setNewRackData({
+                              ...newRackData,
+                              description: e.target.value,
+                            })
+                          }
+                          placeholder="Enter rack description"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="capacity">Capacity</Label>
+                        <Input
+                          id="capacity"
+                          type="number"
+                          value={newRackData.capacity}
+                          onChange={(e) =>
+                            setNewRackData({
+                              ...newRackData,
+                              capacity: parseInt(e.target.value),
+                            })
+                          }
+                          placeholder="Enter rack capacity"
+                        />
+                      </div>
+                    </div>
+                    <Button onClick={handleAddRack}>Create Rack</Button>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            {!selectedLocation ? (
+              <div className="text-center text-muted-foreground">
+                Select a location to view its racks
+              </div>
+            ) : isLoadingRacks ? (
+              <div>Loading racks...</div>
+            ) : (
+              <div className="space-y-4">
+                {racks?.map((rack: Rack) => (
+                  <Card
+                    key={rack.id}
+                    className={`cursor-pointer transition-colors ${
+                      selectedRack?.id === rack.id
+                        ? "border-primary"
+                        : "hover:border-primary/50"
+                    }`}
+                    onClick={() => handleRackSelect(rack)}
+                  >
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <Grid className="mr-2 h-4 w-4" />
+                          <CardTitle className="text-lg">{rack.name}</CardTitle>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Utilization</span>
+                          <span>
+                            {rack.current_utilization}/{rack.capacity}
+                          </span>
+                        </div>
+                        <Progress
+                          value={
+                            (rack.current_utilization / rack.capacity) * 100
+                          }
+                        />
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Package className="mr-2 h-4 w-4" />
+                          {rack.bunches.length} bunches
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Bunch Manager */}
+        <Card>
+          <CardContent className="p-6">
+            {selectedRack ? (
+              <BunchManager
+                rack={selectedRack}
+                onUpdate={() => {
+                  refetchRacks();
+                }}
+              />
+            ) : (
+              <div className="text-center text-muted-foreground">
+                Select a rack to manage bunches and items
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
