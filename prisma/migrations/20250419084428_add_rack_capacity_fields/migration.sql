@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Rack" ADD COLUMN     "capacity" INTEGER NOT NULL DEFAULT 100,
+ADD COLUMN     "currentUtilization" INTEGER NOT NULL DEFAULT 0;
