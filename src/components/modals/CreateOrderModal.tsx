@@ -10,7 +10,7 @@ import moment from "moment";
 import OrderDetailsForm, {
   OrderDetailsFormData,
 } from "../forms/OrderDetailsForm";
-import AddMeasurementsForm from "../forms/AddMeasurementsForm";
+import AddMeasurementsForm, { FormValues } from "../forms/AddMeasurementsForm";
 import AddItemsForm from "../forms/AddItemsForm";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -32,59 +32,6 @@ interface Item {
   key: string;
 }
 
-interface FormValues {
-  orderNo: string;
-  date?: Date;
-  note?: string;
-  items: Item[];
-  jacket?: Record<string, string | number>;
-  shirt?: Record<string, string | number>;
-  pant?: Record<string, string | number>;
-  customerId?: string;
-  [key: string]: unknown;
-}
-
-// interface FormValues {
-//   orderNo: string;
-//   date?: Date;
-//   note?: string;
-//   items: Item[];
-//   jacket?: {
-//     jacket_length: string;
-//     natural_length: string;
-//     back_length: string;
-//     x_back: string;
-//     half_shoulder: string;
-//     to_sleeve: string;
-//     chest: string;
-//     waist: string;
-//     collar: string;
-//     waist_coat_length: string;
-//     sherwani_length: string;
-//     other_notes: string;
-//   };
-//   shirt?: {
-//     length: string;
-//     half_shoulder: string;
-//     to_sleeve: string;
-//     chest: string;
-//     waist: string;
-//     collar: string;
-//     other_notes: string;
-//   };
-//   pant?: {
-//     length: string;
-//     inseem: string;
-//     waist: string;
-//     hips: string;
-//     bottom: string;
-//     knee: string;
-//     other_notes: string;
-//   };
-//   customerId?: string;
-//   [key: string]: unknown;
-// }
-
 interface CreateOrderModalProps {
   isOpen: boolean;
   isCancel: () => void;
@@ -103,50 +50,13 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
   isCancel,
   customerid,
 }) => {
-  const form = useForm<FormValues>({
-    defaultValues: {
-      orderNo: "",
-      items: [],
-      customerId: customerid,
-      jacket: {
-        jacket_length: "",
-        natural_length: "",
-        back_length: "",
-        x_back: "",
-        half_shoulder: "",
-        to_sleeve: "",
-        chest: "",
-        waist: "",
-        collar: "",
-        waist_coat_length: "",
-        sherwani_length: "",
-        other_notes: "",
-      },
-      shirt: {
-        length: "",
-        half_shoulder: "",
-        to_sleeve: "",
-        chest: "",
-        waist: "",
-        collar: "",
-        other_notes: "",
-      },
-      pant: {
-        length: "",
-        inseem: "",
-        waist: "",
-        hips: "",
-        bottom: "",
-        knee: "",
-        other_notes: "",
-      },
-    },
-  });
+  const form = useForm<FormValues>();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormValues>({
     orderNo: "",
+    date: undefined,
+    note: "",
     items: [],
-    customerId: customerid,
     jacket: {
       jacket_length: "",
       natural_length: "",
@@ -179,6 +89,7 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
       knee: "",
       other_notes: "",
     },
+    customerId: customerid,
   });
   const [visibility, setVisibility] = useState({
     displayJacketForm: false,
@@ -187,6 +98,49 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
   });
 
   const { toast } = useToast();
+
+  // Initialize form with default values
+  React.useEffect(() => {
+    form.reset({
+      orderNo: "",
+      date: undefined,
+      note: "",
+      items: [],
+      jacket: {
+        jacket_length: "",
+        natural_length: "",
+        back_length: "",
+        x_back: "",
+        half_shoulder: "",
+        to_sleeve: "",
+        chest: "",
+        waist: "",
+        collar: "",
+        waist_coat_length: "",
+        sherwani_length: "",
+        other_notes: "",
+      },
+      shirt: {
+        length: "",
+        half_shoulder: "",
+        to_sleeve: "",
+        chest: "",
+        waist: "",
+        collar: "",
+        other_notes: "",
+      },
+      pant: {
+        length: "",
+        inseem: "",
+        waist: "",
+        hips: "",
+        bottom: "",
+        knee: "",
+        other_notes: "",
+      },
+      customerId: customerid,
+    });
+  }, [form, customerid]);
 
   const handleNext = async () => {
     if (currentStep === steps.length - 1) {
@@ -333,8 +287,9 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
       form.reset();
       setFormData({
         orderNo: "",
+        date: undefined,
+        note: "",
         items: [],
-        customerId: customerid,
         jacket: {
           jacket_length: "",
           natural_length: "",
@@ -367,6 +322,7 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
           knee: "",
           other_notes: "",
         },
+        customerId: customerid,
       });
       isCancel();
     } catch (error) {
@@ -421,8 +377,12 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
           />
         );
       case 2:
-        //@ts-expect-error Form is correct
-        return <AddMeasurementsForm form={form} visibility={visibility} />;
+        return (
+          <AddMeasurementsForm
+            form={form}
+            visibility={visibility}
+          />
+        );
       case 3:
         return (
           <SelectCustomerForm
@@ -445,10 +405,11 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
     <Dialog
       open={isOpen}
       onOpenChange={() => {
-        setFormData({
+        form.reset({
           orderNo: "",
+          date: undefined,
+          note: "",
           items: [],
-          customerId: customerid,
           jacket: {
             jacket_length: "",
             natural_length: "",
@@ -481,6 +442,46 @@ const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
             knee: "",
             other_notes: "",
           },
+          customerId: customerid,
+        });
+        setFormData({
+          orderNo: "",
+          date: undefined,
+          note: "",
+          items: [],
+          jacket: {
+            jacket_length: "",
+            natural_length: "",
+            back_length: "",
+            x_back: "",
+            half_shoulder: "",
+            to_sleeve: "",
+            chest: "",
+            waist: "",
+            collar: "",
+            waist_coat_length: "",
+            sherwani_length: "",
+            other_notes: "",
+          },
+          shirt: {
+            length: "",
+            half_shoulder: "",
+            to_sleeve: "",
+            chest: "",
+            waist: "",
+            collar: "",
+            other_notes: "",
+          },
+          pant: {
+            length: "",
+            inseem: "",
+            waist: "",
+            hips: "",
+            bottom: "",
+            knee: "",
+            other_notes: "",
+          },
+          customerId: customerid,
         });
         isCancel();
       }}
