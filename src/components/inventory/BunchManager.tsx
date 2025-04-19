@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Bunch, InventoryItem, Rack } from "@/services/locationService";
+import { Bunch, Rack } from "@/services/locationService";
+import { InventoryItem } from "@prisma/client";
 import bunchService from "@/services/bunchService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,10 +27,18 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { Package, Plus, Trash2 } from "lucide-react";
+import { InventoryItemType } from "@prisma/client";
 
 interface BunchManagerProps {
   rack: Rack;
   onUpdate: () => void;
+}
+
+interface ItemData {
+  name: string;
+  type: InventoryItemType;
+  quantity: number;
+  unit: string;
 }
 
 export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
@@ -41,9 +50,9 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
     name: "",
     description: "",
   });
-  const [newItemData, setNewItemData] = useState({
+  const [newItemData, setNewItemData] = useState<ItemData>({
     name: "",
-    type: "",
+    type: InventoryItemType.FABRIC,
     quantity: 0,
     unit: "",
   });
@@ -92,7 +101,12 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
         description: "Item added successfully",
       });
       setIsAddItemsOpen(false);
-      setNewItemData({ name: "", type: "", quantity: 0, unit: "" });
+      setNewItemData({
+        name: "",
+        type: InventoryItemType.FABRIC,
+        quantity: 0,
+        unit: "",
+      });
       refetchBunches();
     } catch (error) {
       toast({
@@ -103,9 +117,9 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
     }
   };
 
-  const handleDeleteItem = async (bunch_id: number, item_id: number) => {
+  const handleDeleteItem = async (bunch_id: number, item_id: string) => {
     try {
-      await bunchService.addItemsToBunch(bunch_id, [{ id: item_id }]);
+      await bunchService.deleteItemsFromBunch(bunch_id, [item_id]);
       toast({
         title: "Success",
         description: "Item removed successfully",
@@ -222,18 +236,27 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
                           <Select
                             value={newItemData.type}
                             onValueChange={(value) =>
-                              setNewItemData({ ...newItemData, type: value })
+                              setNewItemData({
+                                ...newItemData,
+                                type: value as InventoryItemType,
+                              })
                             }
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Select item type" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="fabric">Fabric</SelectItem>
-                              <SelectItem value="accessory">
-                                Accessory
+                              <SelectItem value={InventoryItemType.FABRIC}>
+                                Fabric
                               </SelectItem>
-                              <SelectItem value="packaging">
+                              <SelectItem
+                                value={InventoryItemType.RAW_MATERIAL}
+                              >
+                                Raw Material
+                              </SelectItem>
+                              <SelectItem
+                                value={InventoryItemType.PACKAGING_MATERIAL}
+                              >
                                 Packaging
                               </SelectItem>
                             </SelectContent>
@@ -282,19 +305,19 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
                 <div className="space-y-4">
                   {bunch.items.map((item: InventoryItem) => (
                     <div
-                      key={item.id}
+                      key={item.item_id}
                       className="flex items-center justify-between p-2 bg-secondary rounded-lg"
                     >
                       <div>
-                        <div className="font-medium">{item.name}</div>
+                        <div className="font-medium">{item.item_name}</div>
                         <div className="text-sm text-muted-foreground">
-                          {item.quantity} {item.unit} - {item.type}
+                          {item.quantity} - {item.item_type}
                         </div>
                       </div>
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDeleteItem(bunch.id, item.id)}
+                        onClick={() => handleDeleteItem(bunch.id, item.item_id)}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>

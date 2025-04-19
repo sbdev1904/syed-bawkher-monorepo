@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
 
 // Add items to a bunch
 export async function POST(
@@ -22,6 +23,7 @@ export async function POST(
 
     const { items } = await req.json();
     console.log(items);
+
     if (!Array.isArray(items)) {
       console.log("Items is not an array");
       return NextResponse.json(
@@ -43,56 +45,26 @@ export async function POST(
       return NextResponse.json({ error: "Bunch not found" }, { status: 404 });
     }
 
-    // Calculate total quantity of new items
-    const totalNewQuantity = items.reduce(
-      (sum, item) => sum + (item.quantity || 0),
-      0
-    );
-
-    console.log("Total new quantity", totalNewQuantity);
-
-    const currentQuantity = bunch.items.reduce(
-      (sum, item) => sum + (item.quantity || 0),
-      0
-    );
-
-    console.log("Current quantity", currentQuantity);
-
-    const totalQuantity = currentQuantity + totalNewQuantity;
-
-    console.log("Total quantity", totalQuantity);
-
-    // Check if adding these items would exceed rack capacity
-    if (totalQuantity > bunch.rack.capacity) {
-      console.log("Total quantity exceeds rack capacity");
-      return NextResponse.json(
-        {
-          error: "Adding these items would exceed rack capacity",
-          current_utilization: currentQuantity,
-          capacity: bunch.rack.capacity,
-          requestedQuantity: totalNewQuantity,
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate each item has required fields
-    for (const item of items) {
-      console.log("Item", item);
-      if (!item.name || !item.type || !item.quantity || !item.unit) {
-        console.log("Item is missing required fields");
-        return NextResponse.json(
-          {
-            error: "Each item must have name, type, quantity, and unit",
-            invalidItem: item,
-          },
-          { status: 400 }
-        );
-      }
-    }
-
     // Add items to the bunch and update rack utilization
     const updatedBunch = await prisma.$transaction(async (tx) => {
+      // Calculate total quantity of new items
+      const totalNewQuantity = items.reduce(
+        (sum, item) => sum + (item.quantity || 0),
+        0
+      );
+
+      const currentQuantity = bunch.items.reduce(
+        (sum, item) => sum + (item.quantity || 0),
+        0
+      );
+
+      const totalQuantity = currentQuantity + totalNewQuantity;
+
+      // Check if adding these items would exceed rack capacity
+      if (totalQuantity > bunch.rack.capacity) {
+        throw new Error("Adding these items would exceed rack capacity");
+      }
+
       // Update rack utilization
       await tx.rack.update({
         where: { id: bunch.rack_id },
@@ -107,6 +79,7 @@ export async function POST(
         data: {
           items: {
             create: items.map((item) => ({
+              item_id: uuidv4(),
               item_name: item.name,
               item_type: item.type,
               quantity: item.quantity,
@@ -184,37 +157,69 @@ export async function PUT(
     }
 
     // Update each item
-    const updatePromises = items.map((item) =>
-      prisma.items.update({
-        where: { item_id: item.id },
-        data: {
-          item_name: item.name,
-          item_type: item.type,
-          quantity: item.quantity,
-          unit_id: item.unit_id,
-          ...(item.supplier_id && {
-            suppliers: {
-              upsert: {
-                where: {
-                  item_id_supplier_id: {
-                    item_id: item.id,
+    const updatedBunch = await prisma.$transaction(async (tx) => {
+      // Update each item
+      const updatePromises = items.map((item) =>
+        tx.inventoryItem.update({
+          where: { item_id: item.id },
+          data: {
+            item_name: item.name,
+            item_type: item.type,
+            quantity: item.quantity,
+            unit_id: item.unit_id,
+            ...(item.supplier_id && {
+              suppliers: {
+                upsert: {
+                  where: {
+                    item_id_supplier_id: {
+                      item_id: item.id,
+                      supplier_id: item.supplier_id,
+                    },
+                  },
+                  create: {
                     supplier_id: item.supplier_id,
                   },
+                  update: {},
                 },
-                create: {
-                  supplier_id: item.supplier_id,
-                },
-                update: {},
               },
-            },
-          }),
+            }),
+          },
+        })
+      );
+
+      await Promise.all(updatePromises);
+
+      // Get the updated bunch with all items
+      const updatedBunch = await tx.bunch.findUnique({
+        where: { id: bunch_id },
+        include: {
+          items: true,
+          rack: true,
         },
-      })
-    );
+      });
 
-    await Promise.all(updatePromises);
+      if (!updatedBunch) {
+        throw new Error("Bunch not found after update");
+      }
 
-    const updatedBunch = await prisma.bunch.findUnique({
+      // Calculate new utilization based on all items
+      const newUtilization = updatedBunch.items.reduce(
+        (sum, item) => sum + (item.quantity || 0),
+        0
+      );
+
+      // Update rack utilization
+      await tx.rack.update({
+        where: { id: updatedBunch.rack_id },
+        data: {
+          current_utilization: newUtilization,
+        },
+      });
+
+      return updatedBunch;
+    });
+
+    const finalBunch = await prisma.bunch.findUnique({
       where: { id: bunch_id },
       include: {
         items: {
@@ -237,7 +242,7 @@ export async function PUT(
 
     return NextResponse.json({
       message: "Items updated successfully",
-      bunch: updatedBunch,
+      bunch: finalBunch,
     });
   } catch (error) {
     console.error("Failed to update items in bunch:", error);
@@ -281,11 +286,41 @@ export async function DELETE(
     }
 
     // Delete the specified items
-    await prisma.inventoryItem.deleteMany({
-      where: {
-        item_id: { in: item_ids },
-        bunch_id: bunch_id,
-      },
+    await prisma.$transaction(async (tx) => {
+      // Delete the items
+      await tx.inventoryItem.deleteMany({
+        where: {
+          item_id: { in: item_ids },
+          bunch_id: bunch_id,
+        },
+      });
+
+      // Get the updated bunch with remaining items
+      const updatedBunch = await tx.bunch.findUnique({
+        where: { id: bunch_id },
+        include: {
+          items: true,
+          rack: true,
+        },
+      });
+
+      if (!updatedBunch) {
+        throw new Error("Bunch not found after deletion");
+      }
+
+      // Calculate new utilization based on remaining items
+      const newUtilization = updatedBunch.items.reduce(
+        (sum, item) => sum + (item.quantity || 0),
+        0
+      );
+
+      // Update rack utilization
+      await tx.rack.update({
+        where: { id: updatedBunch.rack_id },
+        data: {
+          current_utilization: newUtilization,
+        },
+      });
     });
 
     const updatedBunch = await prisma.bunch.findUnique({

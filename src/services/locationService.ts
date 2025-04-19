@@ -1,4 +1,5 @@
 import axios from "axios";
+import { InventoryItem } from "@prisma/client";
 
 export interface Location {
   id: number;
@@ -26,17 +27,6 @@ export interface Bunch {
   name: string;
   rack_id: number;
   items: InventoryItem[];
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface InventoryItem {
-  id: number;
-  name: string;
-  type: string;
-  quantity: number;
-  unit: string;
-  bunch_id: number;
   created_at: Date;
   updated_at: Date;
 }

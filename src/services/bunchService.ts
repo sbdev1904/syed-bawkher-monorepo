@@ -1,5 +1,5 @@
 import axios from "axios";
-import { InventoryItem } from "./locationService";
+import { InventoryItem } from "@prisma/client";
 
 const bunchService = {
   // Get all bunches in a rack
@@ -33,6 +33,7 @@ const bunchService = {
     bunch_id: number,
     items: Partial<InventoryItem>[]
   ) => {
+    console.log("Adding items to bunch:", items);
     try {
       const response = await axios.post(`/api/bunches/${bunch_id}/items`, {
         items,
@@ -53,6 +54,19 @@ const bunchService = {
       return response.data;
     } catch (error) {
       console.error("Error moving bunch:", error);
+      throw error;
+    }
+  },
+
+  // Delete items from a bunch
+  deleteItemsFromBunch: async (bunch_id: number, item_ids: string[]) => {
+    try {
+      const response = await axios.delete(`/api/bunches/${bunch_id}/items`, {
+        data: { item_ids },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting items from bunch:", error);
       throw error;
     }
   },
