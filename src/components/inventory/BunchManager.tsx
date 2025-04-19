@@ -26,8 +26,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { Package, Plus, Trash2 } from "lucide-react";
+import { Package, Plus, Trash2, Search, Grid, List } from "lucide-react";
 import { InventoryItemType } from "@prisma/client";
+import DraggableBunch from "./DraggableBunch";
+import { DragDropContext, Droppable } from "@hello-pangea/dnd";
+import type { DropResult } from "@hello-pangea/dnd";
 
 interface BunchManagerProps {
   rack: Rack;
@@ -46,6 +49,9 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
   const [isAddBunchOpen, setIsAddBunchOpen] = useState(false);
   const [isAddItemsOpen, setIsAddItemsOpen] = useState(false);
   const [selectedBunch, setSelectedBunch] = useState<Bunch | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  const [sortBy, setSortBy] = useState<"name" | "createdAt">("name");
   const [newBunchData, setNewBunchData] = useState({
     name: "",
     description: "",
@@ -57,8 +63,6 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
     unit: "",
   });
 
-  console.log(isAddItemsOpen);
-  console.log(newItemData);
   // Fetch bunches for the rack
   const {
     data: bunches,
@@ -92,20 +96,20 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
     }
   };
 
-  const handleAddItem = async () => {
-    if (!selectedBunch) return;
+  const handleAddItem = async (
+    bunchId: number,
+    itemData: {
+      name: string;
+      type: InventoryItemType;
+      quantity: number;
+      unit: string;
+    }
+  ) => {
     try {
-      await bunchService.addItemsToBunch(selectedBunch.id, [newItemData]);
+      await bunchService.addItemsToBunch(bunchId, [itemData]);
       toast({
         title: "Success",
         description: "Item added successfully",
-      });
-      setIsAddItemsOpen(false);
-      setNewItemData({
-        name: "",
-        type: InventoryItemType.FABRIC,
-        quantity: 0,
-        unit: "",
       });
       refetchBunches();
     } catch (error) {
@@ -134,201 +138,219 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Bunches in {rack.name}</h2>
-        <Dialog open={isAddBunchOpen} onOpenChange={setIsAddBunchOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Bunch
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Bunch</DialogTitle>
-              <DialogDescription>
-                Create a new bunch in {rack.name}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={newBunchData.name}
-                  onChange={(e) =>
-                    setNewBunchData({ ...newBunchData, name: e.target.value })
-                  }
-                  placeholder="Enter bunch name"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={newBunchData.description}
-                  onChange={(e) =>
-                    setNewBunchData({
-                      ...newBunchData,
-                      description: e.target.value,
-                    })
-                  }
-                  placeholder="Enter bunch description"
-                />
-              </div>
-            </div>
-            <Button onClick={handleAddBunch}>Create Bunch</Button>
-          </DialogContent>
-        </Dialog>
-      </div>
+  const handleMoveBunch = async (bunchId: number, newRackId: number) => {
+    try {
+      await bunchService.moveBunch(bunchId, newRackId);
+      toast({
+        title: "Success",
+        description: "Bunch moved successfully",
+      });
+      refetchBunches();
+      onUpdate();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to move bunch: ${error}`,
+      });
+    }
+  };
 
-      {isLoading ? (
-        <div>Loading bunches...</div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {bunches?.map((bunch: Bunch) => (
-            <Card key={bunch.id}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Package className="mr-2 h-4 w-4" />
-                    <CardTitle>{bunch.name}</CardTitle>
-                  </div>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setSelectedBunch(bunch);
-                          setIsAddItemsOpen(true);
-                        }}
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Item
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Add New Item</DialogTitle>
-                        <DialogDescription>
-                          Add a new item to {bunch.name}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="itemName">Name</Label>
-                          <Input
-                            id="itemName"
-                            value={newItemData.name}
-                            onChange={(e) =>
-                              setNewItemData({
-                                ...newItemData,
-                                name: e.target.value,
-                              })
-                            }
-                            placeholder="Enter item name"
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="itemType">Type</Label>
-                          <Select
-                            value={newItemData.type}
-                            onValueChange={(value) =>
-                              setNewItemData({
-                                ...newItemData,
-                                type: value as InventoryItemType,
-                              })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select item type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value={InventoryItemType.FABRIC}>
-                                Fabric
-                              </SelectItem>
-                              <SelectItem
-                                value={InventoryItemType.RAW_MATERIAL}
-                              >
-                                Raw Material
-                              </SelectItem>
-                              <SelectItem
-                                value={InventoryItemType.PACKAGING_MATERIAL}
-                              >
-                                Packaging
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="quantity">Quantity</Label>
-                          <Input
-                            id="quantity"
-                            type="number"
-                            value={newItemData.quantity}
-                            onChange={(e) =>
-                              setNewItemData({
-                                ...newItemData,
-                                quantity: parseInt(e.target.value),
-                              })
-                            }
-                            placeholder="Enter quantity"
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="unit">Unit</Label>
-                          <Select
-                            value={newItemData.unit}
-                            onValueChange={(value) =>
-                              setNewItemData({ ...newItemData, unit: value })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select unit" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="meters">Meters</SelectItem>
-                              <SelectItem value="pieces">Pieces</SelectItem>
-                              <SelectItem value="rolls">Rolls</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <Button onClick={handleAddItem}>Add Item</Button>
-                    </DialogContent>
-                  </Dialog>
+  const handleDeleteBunch = async (bunchId: number) => {
+    try {
+      await bunchService.deleteBunch(bunchId);
+      toast({
+        title: "Success",
+        description: "Bunch deleted successfully",
+      });
+      refetchBunches();
+      onUpdate();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to delete bunch: ${error}`,
+      });
+    }
+  };
+
+  const onDragEnd = async (result: DropResult) => {
+    const { source, destination } = result;
+
+    // If dropped outside a droppable area or in the same position
+    if (
+      !destination ||
+      (source.droppableId === destination.droppableId &&
+        source.index === destination.index)
+    ) {
+      return;
+    }
+
+    // Get the bunch that was moved
+    const movedBunch = bunches?.find(
+      (bunch: Bunch) => bunch.id.toString() === result.draggableId
+    );
+
+    if (!movedBunch) return;
+
+    // If moving to a different rack
+    if (source.droppableId !== destination.droppableId) {
+      try {
+        await handleMoveBunch(movedBunch.id, parseInt(destination.droppableId));
+        toast({
+          title: "Success",
+          description: `Bunch "${movedBunch.name}" moved successfully`,
+        });
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: `Failed to move bunch: ${error}`,
+        });
+      }
+    }
+  };
+
+  const filteredBunches = bunches
+    ?.filter((bunch: Bunch) =>
+      bunch.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a: Bunch, b: Bunch) => {
+      if (sortBy === "name") {
+        return a.name.localeCompare(b.name);
+      } else {
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      }
+    });
+
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold">Bunches in {rack.name}</h2>
+          <Dialog open={isAddBunchOpen} onOpenChange={setIsAddBunchOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Bunch
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Bunch</DialogTitle>
+                <DialogDescription>
+                  Create a new bunch in {rack.name}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    value={newBunchData.name}
+                    onChange={(e) =>
+                      setNewBunchData({ ...newBunchData, name: e.target.value })
+                    }
+                    placeholder="Enter bunch name"
+                  />
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {bunch.items.map((item: InventoryItem) => (
-                    <div
-                      key={item.item_id}
-                      className="flex items-center justify-between p-2 bg-secondary rounded-lg"
-                    >
-                      <div>
-                        <div className="font-medium">{item.item_name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {item.quantity} - {item.item_type}
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteItem(bunch.id, item.item_id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  ))}
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={newBunchData.description}
+                    onChange={(e) =>
+                      setNewBunchData({
+                        ...newBunchData,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="Enter bunch description"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+              <Button onClick={handleAddBunch}>Create Bunch</Button>
+            </DialogContent>
+          </Dialog>
         </div>
-      )}
-    </div>
+
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search bunches..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          <Select
+            value={sortBy}
+            onValueChange={(value) => setSortBy(value as "name" | "createdAt")}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">Name</SelectItem>
+              <SelectItem value="createdAt">Date Created</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={viewMode === "grid" ? "default" : "outline"}
+              size="icon"
+              onClick={() => setViewMode("grid")}
+            >
+              <Grid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === "list" ? "default" : "outline"}
+              size="icon"
+              onClick={() => setViewMode("list")}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div>Loading bunches...</div>
+        ) : (
+          <Droppable droppableId={rack.id.toString()}>
+            {(provided, snapshot) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className={`grid gap-6 ${
+                  viewMode === "grid"
+                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                    : "grid-cols-1"
+                } ${
+                  snapshot.isDraggingOver ? "bg-muted/50 rounded-lg p-4" : ""
+                }`}
+              >
+                {filteredBunches?.map((bunch: Bunch, index: number) => (
+                  <DraggableBunch
+                    key={bunch.id}
+                    bunch={bunch}
+                    index={index}
+                    onDelete={(bunchId) => {
+                      handleDeleteBunch(bunchId);
+                    }}
+                    onMove={handleMoveBunch}
+                    onAddItem={handleAddItem}
+                    onDeleteItem={handleDeleteItem}
+                  />
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        )}
+      </div>
+    </DragDropContext>
   );
 }
