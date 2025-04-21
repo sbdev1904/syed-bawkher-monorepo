@@ -3,10 +3,8 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Bunch, Rack } from "@/services/locationService";
-import { InventoryItem } from "@prisma/client";
 import bunchService from "@/services/bunchService";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { Package, Plus, Trash2, Search, Grid, List } from "lucide-react";
+import { Plus, Search, Grid, List } from "lucide-react";
 import { InventoryItemType } from "@prisma/client";
 import DraggableBunch from "./DraggableBunch";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
@@ -37,18 +35,18 @@ interface BunchManagerProps {
   onUpdate: () => void;
 }
 
-interface ItemData {
-  name: string;
-  type: InventoryItemType;
-  quantity: number;
-  unit: string;
-}
+// interface ItemData {
+//   name: string;
+//   type: InventoryItemType;
+//   quantity: number;
+//   unit: string;
+// }
 
 export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
   const { toast } = useToast();
   const [isAddBunchOpen, setIsAddBunchOpen] = useState(false);
-  const [isAddItemsOpen, setIsAddItemsOpen] = useState(false);
-  const [selectedBunch, setSelectedBunch] = useState<Bunch | null>(null);
+  // const [isAddItemsOpen, setIsAddItemsOpen] = useState(false);
+  // const [selectedBunch, setSelectedBunch] = useState<Bunch | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [sortBy, setSortBy] = useState<"name" | "createdAt">("name");
@@ -56,12 +54,12 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
     name: "",
     description: "",
   });
-  const [newItemData, setNewItemData] = useState<ItemData>({
-    name: "",
-    type: InventoryItemType.FABRIC,
-    quantity: 0,
-    unit: "",
-  });
+  // const [newItemData, setNewItemData] = useState<ItemData>({
+  //   name: "",
+  //   type: InventoryItemType.FABRIC,
+  //   quantity: 0,
+  //   unit: "",
+  // });
 
   // Fetch bunches for the rack
   const {
@@ -324,13 +322,11 @@ export default function BunchManager({ rack, onUpdate }: BunchManagerProps) {
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`grid gap-6 ${
-                  viewMode === "grid"
-                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                    : "grid-cols-1"
-                } ${
-                  snapshot.isDraggingOver ? "bg-muted/50 rounded-lg p-4" : ""
-                }`}
+                className={`grid gap-6 ${viewMode === "grid"
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                  : "grid-cols-1"
+                  } ${snapshot.isDraggingOver ? "bg-muted/50 rounded-lg p-4" : ""
+                  }`}
               >
                 {filteredBunches?.map((bunch: Bunch, index: number) => (
                   <DraggableBunch

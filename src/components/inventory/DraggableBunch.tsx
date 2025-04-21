@@ -45,7 +45,7 @@ const DraggableBunch: React.FC<DraggableBunchProps> = ({
   bunch,
   index,
   onDelete,
-  onMove,
+  // onMove,
   onAddItem,
   onDeleteItem,
 }) => {
@@ -75,9 +75,8 @@ const DraggableBunch: React.FC<DraggableBunchProps> = ({
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`transition-all duration-200 ${
-            snapshot.isDragging ? "opacity-50" : ""
-          }`}
+          className={`transition-all duration-200 ${snapshot.isDragging ? "opacity-50" : ""
+            }`}
         >
           <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
