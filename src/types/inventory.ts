@@ -10,14 +10,14 @@ export interface Location {
 export interface Rack {
   id: string;
   name: string;
-  locationId: string;
+  location_id: string;
   capacity: number;
   currentOccupancy: number;
 }
 
 export interface Bunch {
   id: string;
-  rackId: string;
+  rack_id: string;
   items: string[]; // Array of item IDs
 }
 
@@ -41,15 +41,15 @@ export interface InventoryItem {
   quantity: number;
   unit: UnitType;
   minStockLevel: number;
-  bunchId?: string;
+  bunch_id?: string;
   suppliers: {
-    supplierId: number;
+    supplier_id: number;
     price: number;
     leadTime: number; // in days
     minimumOrderQuantity: number;
     lastOrderDate?: string;
   }[];
   tags: string[];
-  createdAt: string;
+  created_at: string;
   updatedAt: string;
 }

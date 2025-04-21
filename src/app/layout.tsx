@@ -5,8 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 // import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Providers } from "@/components/providers";
-import { Toaster } from "@/components/ui/toaster"
-
+import { Toaster } from "@/components/ui/toaster";
+import QueryProvider from "@/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,21 +33,23 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
       >
-        <Providers>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={false}
-            forcedTheme="dark"
-            disableTransitionOnChange
-          >
-            <div className="relative flex min-h-screen flex-col">
-              {/* <Header /> */}
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-          </ThemeProvider>
-        </Providers>
+        <QueryProvider>
+          <Providers>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem={false}
+              forcedTheme="dark"
+              disableTransitionOnChange
+            >
+              <div className="relative flex min-h-screen flex-col">
+                {/* <Header /> */}
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+            </ThemeProvider>
+          </Providers>
+        </QueryProvider>
         <Toaster />
       </body>
     </html>
