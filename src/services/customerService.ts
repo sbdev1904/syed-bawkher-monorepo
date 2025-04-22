@@ -1,14 +1,9 @@
 import { CustomerFormValues } from "@/components/modals/CreateCustomerModal";
 import axios from "axios";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
-
 const customerService = {
   searchCustomers: async (search: string) => {
-    const url = `${BASE_URL}/api/customers/search?query=${encodeURIComponent(
-      search
-    )}`; // Correct variable name used
+    const url = `/api/customers/search?query=${encodeURIComponent(search)}`; // Correct variable name used
     try {
       const response = await axios.get(url);
       return response.data;
@@ -19,7 +14,7 @@ const customerService = {
   },
 
   findById: async (customer_id: string) => {
-    const url = `${BASE_URL}/api/customers/${customer_id}`;
+    const url = `/api/customers/${customer_id}`;
     try {
       const response = await axios.get(url);
       return response.data;
@@ -30,9 +25,7 @@ const customerService = {
   },
 
   findByOrderNo: async (orderNo: string) => {
-    const url = `${BASE_URL}/api/customers/order/${encodeURIComponent(
-      orderNo
-    )}`;
+    const url = `/api/customers/order/${encodeURIComponent(orderNo)}`;
     try {
       const response = await axios.get(url);
       console.log("Customer by order number:", response.data);
@@ -44,7 +37,7 @@ const customerService = {
   },
 
   createCustomer: async (customer: CustomerFormValues) => {
-    const url = `${BASE_URL}/api/customers`;
+    const url = `/api/customers`;
     try {
       const response = await axios.post(url, customer);
       return response.data;
@@ -58,7 +51,7 @@ const customerService = {
     customer_id: string,
     customerData: CustomerFormValues
   ) => {
-    const url = `${BASE_URL}/api/customers/${customer_id}`;
+    const url = `/api/customers/${customer_id}`;
     try {
       const response = await axios.put(url, customerData);
       return response.data;
@@ -69,7 +62,7 @@ const customerService = {
   },
 
   mergeCustomers: async (customerIds: string[]) => {
-    const url = `${BASE_URL}/api/customers/merge`;
+    const url = `/api/customers/merge`;
     const data = { customerIds };
     try {
       const response = await axios.post(url, data, {

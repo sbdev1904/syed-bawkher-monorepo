@@ -30,29 +30,29 @@ const tailorFormSchema = z.object({
     }),
     last_name: z.string().min(2, {
         message: "Last name must be at least 2 characters.",
-    }),
+    }).optional(),
     specialization: z.string().min(2, {
         message: "Specialization must be at least 2 characters.",
     }),
     experience_years: z.coerce.number().min(0, {
         message: "Experience years must be a positive number.",
-    }),
+    }).optional(),
     address: z.string().min(5, {
         message: "Address must be at least 5 characters.",
-    }),
+    }).optional(),
     phone_number: z.string().min(10, {
         message: "Phone number must be at least 10 characters.",
     }),
     email: z.string().email({
         message: "Please enter a valid email address.",
-    }),
+    }).optional(),
     emergency_contact: z.string().min(10, {
         message: "Emergency contact must be at least 10 characters.",
-    }),
+    }).optional(),
     status: z.enum(["active", "inactive"]),
     hourly_rate: z.coerce.number().min(0, {
         message: "Hourly rate must be a positive number.",
-    }),
+    }).optional(),
     notes: z.string().optional(),
 });
 

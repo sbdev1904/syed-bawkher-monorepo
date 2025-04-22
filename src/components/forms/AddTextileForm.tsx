@@ -120,6 +120,7 @@ const AddTextileForm = ({ onSuccess }: AddTextileFormProps) => {
                 <Input
                   type="number"
                   min={0}
+                  step="0.01"
                   placeholder="Enter available length in meters"
                   {...field}
                   onChange={(e) => {

@@ -16,14 +16,11 @@ interface Supplier {
   notes: string;
 }
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
-
 const supplierService = {
   // Get all suppliers
   getAllSuppliers() {
     return axios
-      .get<Supplier[]>(`${BASE_URL}/api/suppliers`)
+      .get<Supplier[]>(`/api/suppliers`)
       .then((response) => response.data)
       .catch((error) => {
         console.error("Error fetching suppliers:", error);
@@ -34,9 +31,7 @@ const supplierService = {
   // Get a supplier by ID
   getSupplierById(supplierId: number) {
     return axios
-      .get<Supplier>(
-        `${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`
-      )
+      .get<Supplier>(`/api/suppliers/${encodeURIComponent(supplierId)}`)
       .then((response) => response.data)
       .catch((error) => {
         console.error("Error fetching supplier by ID:", error);
@@ -47,7 +42,7 @@ const supplierService = {
   // Create a new supplier
   createSupplier(supplier: Omit<Supplier, "supplier_id">) {
     return axios
-      .post<Supplier>(`${BASE_URL}/api/suppliers`, supplier, {
+      .post<Supplier>(`/api/suppliers`, supplier, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -63,7 +58,7 @@ const supplierService = {
   updateSupplier(supplierId: number, fields: Partial<Omit<Supplier, "id">>) {
     return axios
       .put<Supplier>(
-        `${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`,
+        `/api/suppliers/${encodeURIComponent(supplierId)}`,
         fields,
         {
           headers: {
@@ -81,9 +76,7 @@ const supplierService = {
   // Delete a supplier
   deleteSupplier(supplierId: number) {
     return axios
-      .delete<void>(
-        `${BASE_URL}/api/suppliers/${encodeURIComponent(supplierId)}`
-      )
+      .delete<void>(`/api/suppliers/${encodeURIComponent(supplierId)}`)
       .then((response) => response.data)
       .catch((error) => {
         console.error("Error deleting supplier:", error);

@@ -1,14 +1,12 @@
 import axios from "axios";
-import { PantMeasurement } from "@/components/modals/UpdatePantMeasurementModal";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
+import { PantMeasurement } from "@/components/modals/UpdatePantMeasurementModal";
 
 const pantService = {
   getPantByOrderNo: async (orderNo: string) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/pant-measurement/order/${encodeURIComponent(orderNo)}`
+        `/api/pant-measurement/order/${encodeURIComponent(orderNo)}`
       );
       return response.data[0];
     } catch (error) {
@@ -19,9 +17,7 @@ const pantService = {
   getPantByCustomerId: async (customerId: string) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/pant-measurement/customer/${encodeURIComponent(
-          customerId
-        )}`
+        `/api/pant-measurement/customer/${encodeURIComponent(customerId)}`
       );
       console.log("Pant1:" + customerId, response.data);
       return response.data;
@@ -37,7 +33,7 @@ const pantService = {
   ) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/pant-measurement`,
+        `/api/pant-measurement`,
         {
           ...measurementData,
           customerId,
@@ -62,7 +58,7 @@ const pantService = {
   ) => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/pant-measurement/${encodeURIComponent(measurementId)}`,
+        `/api/pant-measurement/${encodeURIComponent(measurementId)}`,
         measurementData,
         {
           headers: {

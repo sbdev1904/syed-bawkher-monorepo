@@ -35,7 +35,7 @@ const locationService = {
   // Get all locations with their racks and bunches
   getAllLocations: async () => {
     try {
-      const response = await axios.get("/api/locations");
+      const response = await axios.get(`/api/locations`);
       return response.data;
     } catch (error) {
       console.error("Error fetching locations:", error);
@@ -46,7 +46,7 @@ const locationService = {
   // Create a new location
   createLocation: async (data: { name: string; description?: string }) => {
     try {
-      const response = await axios.post("/api/locations", data);
+      const response = await axios.post(`/api/locations`, data);
       return response.data;
     } catch (error) {
       console.error("Error creating location:", error);
@@ -73,7 +73,7 @@ const locationService = {
     capacity?: number;
   }) => {
     try {
-      const response = await axios.post("/api/racks", data);
+      const response = await axios.post(`/api/racks`, data);
       return response.data;
     } catch (error) {
       console.error("Error creating rack:", error);

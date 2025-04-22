@@ -14,7 +14,7 @@ import {
     Bell,
     User,
     Settings,
-    LogOut, UserCog
+    LogOut, UserCog, Truck
 } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
@@ -59,7 +59,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         },
         {
             path: '/inventory',
-            icon: <Package className="h-5 w-5" />,
+            icon: <Truck className="h-5 w-5" />,
             label: 'Inventory',
         },
         {

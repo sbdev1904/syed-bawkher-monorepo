@@ -30,14 +30,11 @@ interface ItemFields {
   pant_measurement_id?: string;
 }
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
-
 const itemsService = {
   createMultipleItems: async (orderNo: string, items: Item[]) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/items`,
+        `/api/items`,
         { orderNo, items },
         {
           headers: {
@@ -55,7 +52,7 @@ const itemsService = {
   getOrderItems: async (orderNo: string) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/items/order/${encodeURIComponent(orderNo)}`
+        `/api/items/order/${encodeURIComponent(orderNo)}`
       );
       return response.data;
     } catch (error) {
@@ -68,7 +65,7 @@ const itemsService = {
   getItemById: async (itemId: string) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/items/${encodeURIComponent(itemId)}`
+        `/api/items/${encodeURIComponent(itemId)}`
       );
       return response.data;
     } catch (error) {
@@ -81,7 +78,7 @@ const itemsService = {
   updateItem: async (itemId: string, fields: ItemFields) => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/items/${encodeURIComponent(itemId)}`,
+        `/api/items/${encodeURIComponent(itemId)}`,
         fields,
         {
           headers: {
@@ -100,7 +97,7 @@ const itemsService = {
   deleteItem: async (itemId: string) => {
     try {
       const response = await axios.delete(
-        `${BASE_URL}/api/items/${encodeURIComponent(itemId)}`
+        `/api/items/${encodeURIComponent(itemId)}`
       );
       return response.data;
     } catch (error) {
@@ -118,7 +115,7 @@ const itemsService = {
   ) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/items/jacket`,
+        `/api/items/jacket`,
         {
           orderNo,
           item_name,
@@ -148,7 +145,7 @@ const itemsService = {
   ) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/items/shirt`,
+        `/api/items/shirt`,
         {
           orderNo,
           item_name,
@@ -178,7 +175,7 @@ const itemsService = {
   ) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/items/pant`,
+        `/api/items/pant`,
         {
           orderNo,
           item_name,

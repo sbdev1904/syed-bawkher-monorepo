@@ -24,14 +24,11 @@ interface FabricUpdateFields {
   // Add any other updatable fabric properties
 }
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
-
 const fabricService = {
   // Get all fabrics
   getAllFabrics: async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/fabrics`);
+      const response = await axios.get(`/api/fabrics`);
       return response.data;
     } catch (error) {
       console.error("Error fetching fabrics:", error);
@@ -43,7 +40,7 @@ const fabricService = {
   getFabricById: async (fabricId: number) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}`
+        `/api/fabrics/${encodeURIComponent(fabricId)}`
       );
       return response.data;
     } catch (error) {
@@ -56,7 +53,7 @@ const fabricService = {
   searchFabrics: async (query: string) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/fabrics/search?query=${encodeURIComponent(query)}`
+        `/api/fabrics/search?query=${encodeURIComponent(query)}`
       );
       return response.data;
     } catch (error) {
@@ -68,7 +65,7 @@ const fabricService = {
   // Create a new fabric
   createFabric: async (fabric: Fabric) => {
     try {
-      const response = await axios.post(`${BASE_URL}/api/fabrics`, fabric, {
+      const response = await axios.post(`/api/fabrics`, fabric, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -84,7 +81,7 @@ const fabricService = {
   updateFabric: async (fabricId: number, fields: FabricUpdateFields) => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}`,
+        `/api/fabrics/${encodeURIComponent(fabricId)}`,
         fields,
         {
           headers: {
@@ -103,7 +100,7 @@ const fabricService = {
   deleteFabric: async (fabricId: number) => {
     try {
       const response = await axios.delete(
-        `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}`
+        `/api/fabrics/${encodeURIComponent(fabricId)}`
       );
       return response.data;
     } catch (error) {
@@ -116,7 +113,7 @@ const fabricService = {
   getPresignedUrl: async (fabricId: number, filename: string) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}/upload-image`,
+        `/api/fabrics/${encodeURIComponent(fabricId)}/upload-image`,
         { filename },
         {
           headers: {
@@ -135,7 +132,7 @@ const fabricService = {
   getFabricImageUrl: async (fabricId: number) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}/image`
+        `/api/fabrics/${encodeURIComponent(fabricId)}/image`
       );
       return response.data;
     } catch (error) {
@@ -148,7 +145,7 @@ const fabricService = {
   deleteFabricImage: async (fabricId: number) => {
     try {
       const response = await axios.delete(
-        `${BASE_URL}/api/fabrics/${encodeURIComponent(fabricId)}/image`
+        `/api/fabrics/${encodeURIComponent(fabricId)}/image`
       );
       return response.data;
     } catch (error) {

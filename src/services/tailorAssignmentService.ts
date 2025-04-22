@@ -1,3 +1,5 @@
+import axios from "axios";
+
 interface AssignTailorInput {
   orderNo: string;
   tailorId: number;
@@ -16,19 +18,8 @@ const tailorAssignmentService = {
   // Assign a tailor to an order
   assignTailorToOrder: async (input: AssignTailorInput) => {
     try {
-      const response = await fetch("/api/tailor-assignments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(input),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to assign tailor to order");
-      }
-
-      return await response.json();
+      const response = await axios.post("/api/tailor-assignments", input);
+      return response.data;
     } catch (error) {
       console.error("Failed to assign tailor to order:", error);
       throw error;
@@ -38,13 +29,10 @@ const tailorAssignmentService = {
   // Get all tailors assigned to an order
   getTailorsByOrder: async (orderNo: string) => {
     try {
-      const response = await fetch(`/api/tailor-assignments/order/${orderNo}`);
-
-      if (!response.ok) {
-        throw new Error("Failed to get tailors for order");
-      }
-
-      return await response.json();
+      const response = await axios.get(
+        `/api/tailor-assignments/order/${orderNo}`
+      );
+      return response.data;
     } catch (error) {
       console.error("Failed to get tailors for order:", error);
       throw error;
@@ -54,15 +42,10 @@ const tailorAssignmentService = {
   // Get all orders assigned to a tailor
   getOrdersByTailor: async (tailorId: number) => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `/api/tailor-assignments/tailor/${tailorId}`
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to get orders for tailor");
-      }
-
-      return await response.json();
+      return response.data;
     } catch (error) {
       console.error("Failed to get orders for tailor:", error);
       throw error;
@@ -72,19 +55,8 @@ const tailorAssignmentService = {
   // Update assignment status
   updateAssignmentStatus: async (input: UpdateAssignmentInput) => {
     try {
-      const response = await fetch(`/api/tailor-assignments`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(input),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update assignment status");
-      }
-
-      return await response.json();
+      const response = await axios.put(`/api/tailor-assignments`, input);
+      return response.data;
     } catch (error) {
       console.error("Failed to update assignment status:", error);
       throw error;
@@ -94,19 +66,10 @@ const tailorAssignmentService = {
   // Remove a tailor from an order
   removeTailorFromOrder: async (orderNo: string, tailorId: number) => {
     try {
-      const response = await fetch(`/api/tailor-assignments`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ orderNo, tailorId }),
+      const response = await axios.delete(`/api/tailor-assignments`, {
+        data: { orderNo, tailorId },
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to remove tailor from order");
-      }
-
-      return await response.json();
+      return response.data;
     } catch (error) {
       console.error("Failed to remove tailor from order:", error);
       throw error;
