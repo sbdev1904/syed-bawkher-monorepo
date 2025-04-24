@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 // Get all fabric orders by fabric ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ fabricId: number }> }
+  { params }: { params: Promise<{ fabricId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,12 +14,14 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const id = (await params).fabricId;
-
-    const fabricId = id;
+    const { fabricId: fabricIdStr } = await params;
+    const fabricId = parseInt(fabricIdStr);
 
     if (isNaN(fabricId)) {
-      return NextResponse.json({ error: "Invalid fabric ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid fabric ID format" },
+        { status: 400 }
+      );
     }
 
     const orders = await prisma.fabricOrderList.findMany({
@@ -30,18 +32,19 @@ export async function GET(
       },
     });
 
-    if (orders.length === 0) {
-      return NextResponse.json(
-        { error: "No fabric orders found for the provided fabric ID" },
-        { status: 204 }
-      );
+    if (!orders || orders.length === 0) {
+      return NextResponse.json([]);
     }
 
     return NextResponse.json(orders);
   } catch (error) {
     console.error("Error getting fabric orders by fabric ID:", error);
     return NextResponse.json(
-      { error: "Error retrieving fabric orders" },
+      {
+        error: "Error retrieving fabric orders",
+        details:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      },
       { status: 500 }
     );
   }

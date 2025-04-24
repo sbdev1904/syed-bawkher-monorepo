@@ -1,3 +1,5 @@
+import axios from "axios";
+
 interface CreateTailorInput {
   first_name: string;
   last_name: string;
@@ -15,82 +17,50 @@ interface CreateTailorInput {
 const tailorService = {
   createTailor: async (data: CreateTailorInput) => {
     try {
-      const response = await fetch("/api/tailors", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create tailor");
-      }
-
-      return await response.json();
+      const response = await axios.post("/api/tailors", data);
+      return response.data;
     } catch (error) {
+      console.error("Error creating tailor:", error);
       throw error;
     }
   },
 
   getAllTailors: async () => {
     try {
-      const response = await fetch("/api/tailors");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch tailors");
-      }
-
-      return await response.json();
+      const response = await axios.get("/api/tailors");
+      return response.data;
     } catch (error) {
+      console.error("Error fetching tailors:", error);
       throw error;
     }
   },
 
   getTailorById: async (id: number) => {
     try {
-      const response = await fetch(`/api/tailors/${id}`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch tailor");
-      }
-
-      return await response.json();
+      const response = await axios.get(`/api/tailors/${id}`);
+      return response.data;
     } catch (error) {
+      console.error("Error fetching tailor:", error);
       throw error;
     }
   },
 
   updateTailor: async (id: number, data: Partial<CreateTailorInput>) => {
     try {
-      const response = await fetch(`/api/tailors/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update tailor");
-      }
-
-      return await response.json();
+      const response = await axios.put(`/api/tailors/${id}`, data);
+      return response.data;
     } catch (error) {
+      console.error("Error updating tailor:", error);
       throw error;
     }
   },
 
   deleteTailor: async (id: number) => {
     try {
-      const response = await fetch(`/api/tailors/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete tailor");
-      }
+      const response = await axios.delete(`/api/tailors/${id}`);
+      return response.data;
     } catch (error) {
+      console.error("Error deleting tailor:", error);
       throw error;
     }
   },

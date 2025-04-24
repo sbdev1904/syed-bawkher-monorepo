@@ -1,5 +1,4 @@
-import { apiBaseUrl } from "../config/apiConfig";
-
+import axios from "axios";
 /**
  * Service for handling authentication-related operations
  */
@@ -12,25 +11,15 @@ const authService = {
    */
   login: async (username: string, password: string) => {
     try {
-      const response = await fetch(`${apiBaseUrl}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
+      const response = await axios.post(`/api/auth/login`, {
+        username,
+        password,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
-      }
-
-      const data = await response.json();
-
       // Store token in localStorage or sessionStorage
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", response.data.token);
 
-      return data.token;
+      return response.data.token;
     } catch (error) {
       console.error("Login error:", error);
       throw error;

@@ -24,7 +24,16 @@ const AddTailorModal = ({ isOpen, onCancel }: AddTailorModalProps) => {
                 </DialogHeader>
                 <AddTailorForm
                     onSubmit={async (values) => {
-                        await tailorService.createTailor(values);
+                        const tailorInput = {
+                            ...values,
+                            last_name: values.last_name || "",
+                            experience_years: values.experience_years || 0,
+                            address: values.address || "",
+                            email: values.email || "",
+                            emergency_contact: values.emergency_contact || "",
+                            hourly_rate: values.hourly_rate || 0,
+                        };
+                        await tailorService.createTailor(tailorInput);
                         onCancel();
                     }}
                 />

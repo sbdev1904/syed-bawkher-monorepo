@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import tailorService from "../../services/tailorService";
 import {
     Table,
@@ -38,7 +38,11 @@ interface Tailor {
     notes: string | null;
 }
 
-const TailorListTable = () => {
+export interface TailorListTableRef {
+    refresh: () => Promise<void>;
+}
+
+const TailorListTable = forwardRef<TailorListTableRef>((_, ref) => {
     const [tailors, setTailors] = useState<Tailor[]>([]);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedTailor, setSelectedTailor] = useState<Tailor | null>(null);
@@ -61,6 +65,10 @@ const TailorListTable = () => {
             setIsLoading(false);
         }
     };
+
+    useImperativeHandle(ref, () => ({
+        refresh: fetchTailors
+    }));
 
     useEffect(() => {
         fetchTailors();
@@ -176,6 +184,8 @@ const TailorListTable = () => {
             </Dialog>
         </>
     );
-};
+});
+
+TailorListTable.displayName = "TailorListTable";
 
 export default TailorListTable; 

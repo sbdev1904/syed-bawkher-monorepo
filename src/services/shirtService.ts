@@ -1,14 +1,11 @@
 import axios from "axios";
 import { ShirtMeasurement } from "@/components/modals/UpdateShirtMeasurementModal";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
-
 const shirtService = {
   getShirtByOrderNo: async (orderNo: string) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/shirt-measurement/order/${encodeURIComponent(orderNo)}`
+        `/api/shirt-measurement/order/${encodeURIComponent(orderNo)}`
       );
       return response.data[0];
     } catch (error) {
@@ -19,9 +16,7 @@ const shirtService = {
   getShirtByCustomerId: async (customerId: string) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/shirt-measurement/customer/${encodeURIComponent(
-          customerId
-        )}`
+        `/api/shirt-measurement/customer/${encodeURIComponent(customerId)}`
       );
       console.log("Shirt1:" + customerId, response.data);
       return response.data;
@@ -37,7 +32,7 @@ const shirtService = {
   ) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/shirt-measurement`,
+        `/api/shirt-measurement`,
         {
           ...measurementData,
           customerId,
@@ -62,9 +57,7 @@ const shirtService = {
   ) => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/shirt-measurement/${encodeURIComponent(
-          measurementId
-        )}`,
+        `/api/shirt-measurement/${encodeURIComponent(measurementId)}`,
         measurementData,
         {
           headers: {

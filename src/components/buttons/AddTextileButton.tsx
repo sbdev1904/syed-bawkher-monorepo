@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/tooltip";
 import AddTextileModal from "../modals/AddTextileModal";
 
-const AddTextileButton = () => {
+interface AddTextileButtonProps {
+  onSuccess?: () => void;
+}
+
+const AddTextileButton = ({ onSuccess }: AddTextileButtonProps) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showModal = () => {
@@ -20,6 +24,11 @@ const AddTextileButton = () => {
 
   const handleCancel = () => {
     setIsModalVisible(false);
+  };
+
+  const handleSuccess = () => {
+    setIsModalVisible(false);
+    onSuccess?.();
   };
 
   return (
@@ -41,7 +50,7 @@ const AddTextileButton = () => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <AddTextileModal isOpen={isModalVisible} onCancel={handleCancel} />
+      <AddTextileModal isOpen={isModalVisible} onCancel={handleCancel} onSuccess={handleSuccess} />
     </>
   );
 };

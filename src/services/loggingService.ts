@@ -2,14 +2,11 @@
 
 import axios from "axios";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
-
 const loggingService = {
   // Log any user action
   logAction: async (actionData: string) => {
     try {
-      const response = await axios.post(`${BASE_URL}/api/log-entry`, actionData, {
+      const response = await axios.post(`/api/log-entry`, actionData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -24,7 +21,7 @@ const loggingService = {
   // Get all logs
   getLogs: async (filters = {}) => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/log-entry`, {
+      const response = await axios.get(`/api/log-entry`, {
         params: filters,
       });
       return response.data;
@@ -37,7 +34,7 @@ const loggingService = {
   // Get logs by type
   getLogsByType: async (type: string) => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/log-entry/type/${type}`);
+      const response = await axios.get(`/api/log-entry/type/${type}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching logs by type:", error);
@@ -48,7 +45,7 @@ const loggingService = {
   // Get logs by date range
   getLogsByDateRange: async (startDate: string, endDate: string) => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/log-entry/date-range`, {
+      const response = await axios.get(`/api/log-entry/date-range`, {
         params: { startDate, endDate },
       });
       return response.data;

@@ -44,7 +44,7 @@ export default function Home() {
   }, [status, router]);
 
   if (status === "loading" || isLoading) {
-    return <div>Loading...</div>;
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
   if (!session) {

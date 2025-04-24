@@ -427,6 +427,7 @@ model OrderProduction {
 }
 
 enum Role {
+  SUPER_ADMIN
   ADMIN
   FLOOR_MANAGER
   INVENTORY_MANAGER

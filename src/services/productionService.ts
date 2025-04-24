@@ -1,4 +1,5 @@
 import { ProductionStatus } from "@prisma/client";
+import axios from "axios";
 
 export interface UpdateProductionStatusInput {
   orderNo: string;
@@ -9,26 +10,19 @@ export interface UpdateProductionStatusInput {
 const productionService = {
   // Initialize production tracking for an order
   async initializeProduction(orderNo: string) {
-    const response = await fetch(`/api/production?orderNo=${orderNo}`, {
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to initialize production");
-    }
-
-    return response.json();
+    const response = await axios.post(`/api/production?orderNo=${orderNo}`);
+    return response.data;
   },
 
   // Get production status for an order
   async getProductionStatus(orderNo: string) {
-    const response = await fetch(`/api/production?orderNo=${orderNo}`);
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch production status");
+    try {
+      const response = await axios.get(`/api/production?orderNo=${orderNo}`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch production status:", error);
+      throw error;
     }
-
-    return response.json();
   },
 
   // Update production status
@@ -37,30 +31,18 @@ const productionService = {
     status,
     notes,
   }: UpdateProductionStatusInput) {
-    const response = await fetch(`/api/production`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ orderNo, status, notes }),
+    const response = await axios.put(`/api/production`, {
+      orderNo,
+      status,
+      notes,
     });
-
-    if (!response.ok) {
-      throw new Error("Failed to update production status");
-    }
-
-    return response.json();
+    return response.data;
   },
 
   // Get all orders with their production status
   async getAllProductionStatus() {
-    const response = await fetch(`/api/production/all`);
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch all production status");
-    }
-
-    return response.json();
+    const response = await axios.get(`/api/production/all`);
+    return response.data;
   },
 };
 

@@ -20,7 +20,7 @@ const bunchService = {
     rack_id: number;
   }) => {
     try {
-      const response = await axios.post("/api/bunches", data);
+      const response = await axios.post(`/api/bunches`, data);
       return response.data;
     } catch (error) {
       console.error("Error creating bunch:", error);

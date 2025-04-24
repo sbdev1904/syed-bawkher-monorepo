@@ -157,7 +157,7 @@ export async function PUT(
     }
 
     // Update each item
-    const updatedBunch = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       // Update each item
       const updatePromises = items.map((item) =>
         tx.inventoryItem.update({
@@ -215,8 +215,6 @@ export async function PUT(
           current_utilization: newUtilization,
         },
       });
-
-      return updatedBunch;
     });
 
     const finalBunch = await prisma.bunch.findUnique({

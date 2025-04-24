@@ -1,8 +1,5 @@
 import axios from "axios";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
-
 interface OrderDetails {
   orderNo: string;
   date: string;
@@ -11,7 +8,7 @@ interface OrderDetails {
 
 const orderService = {
   findByCustomerId: async (customer_id: string) => {
-    const url = `${BASE_URL}/api/orders/customer/${customer_id}`;
+    const url = `/api/orders/customer/${customer_id}`;
     try {
       const response = await axios.get(url);
       //console.log('Orders1:' + customer_id, response.data);
@@ -23,7 +20,7 @@ const orderService = {
   },
 
   getOrder: async (orderNo: string) => {
-    const url = `${BASE_URL}/api/orders/${encodeURIComponent(orderNo)}`;
+    const url = `/api/orders/${encodeURIComponent(orderNo)}`;
     try {
       const response = await axios.get(url);
       //console.log('Order'+ orderNo, response.data);
@@ -35,7 +32,7 @@ const orderService = {
   },
 
   createOrder: async (customerId: string, orderDetails: OrderDetails) => {
-    const url = `${BASE_URL}/api/orders`;
+    const url = `/api/orders`;
     try {
       const { orderNo, date, note } = orderDetails;
       console.log("Order:", orderDetails);
@@ -53,7 +50,7 @@ const orderService = {
   },
 
   deleteOrder: async (orderNo: string) => {
-    const url = `${BASE_URL}/api/order/${encodeURIComponent(orderNo)}`;
+    const url = `/api/order/${encodeURIComponent(orderNo)}`;
     try {
       const response = await axios.delete(url);
       console.log(`Order ${orderNo} deleted successfully.`);
@@ -65,9 +62,7 @@ const orderService = {
   },
 
   getPresignedUrl: async (orderNo: string, filename: string) => {
-    const url = `${BASE_URL}/api/order/${encodeURIComponent(
-      orderNo
-    )}/upload-photo`;
+    const url = `/api/order/${encodeURIComponent(orderNo)}/upload-photo`;
     try {
       const response = await axios.post(url, { filename });
       return response.data;
@@ -78,7 +73,7 @@ const orderService = {
   },
 
   getOrderPhotos: async (orderNo: string) => {
-    const url = `${BASE_URL}/api/order/${encodeURIComponent(orderNo)}/photos`;
+    const url = `/api/order/${encodeURIComponent(orderNo)}/photos`;
     try {
       const response = await axios.get(url);
       return response.data.photoUrls;
@@ -89,7 +84,7 @@ const orderService = {
   },
 
   deletePhoto: async (orderNo: string, s3Key: string) => {
-    const url = `${BASE_URL}/api/order/${encodeURIComponent(orderNo)}/photo`;
+    const url = `/api/order/${encodeURIComponent(orderNo)}/photo`;
     try {
       const response = await axios.delete(url, {
         data: { s3Key },

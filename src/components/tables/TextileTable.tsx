@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { useRouter } from "next/navigation";
 import fabricService from "../../services/fabricService";
 import {
@@ -25,14 +25,18 @@ interface Fabric {
   key?: string;
 }
 
-const TextileTable = () => {
+export interface TextileTableRef {
+  refreshData: () => Promise<void>;
+}
+
+const TextileTable = forwardRef<TextileTableRef>((_, ref) => {
   const [data, setData] = useState<Fabric[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
-  const fetchData = async () => {
+  const refreshData = async () => {
     setLoading(true);
     try {
       const fabrics = await fabricService.getAllFabrics();
@@ -48,8 +52,12 @@ const TextileTable = () => {
     setLoading(false);
   };
 
+  useImperativeHandle(ref, () => ({
+    refreshData
+  }));
+
   useEffect(() => {
-    fetchData();
+    refreshData();
   }, []);
 
   const handleView = (fabricId: number) => {
@@ -72,7 +80,7 @@ const TextileTable = () => {
       }
     } else {
       // If search query is empty, fetch all fabrics
-      await fetchData();
+      await refreshData();
     }
     setSearchLoading(false);
   };
@@ -117,7 +125,7 @@ const TextileTable = () => {
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-4">
                   <div className="flex justify-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-100"></div>
                   </div>
                 </TableCell>
               </TableRow>
@@ -153,6 +161,8 @@ const TextileTable = () => {
       </div>
     </div>
   );
-};
+});
+
+TextileTable.displayName = 'TextileTable';
 
 export default TextileTable;

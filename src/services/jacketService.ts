@@ -1,16 +1,11 @@
 import axios from "axios";
 import { JacketMeasurement } from "@/components/modals/UpdateJacketMeasurementModal";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
-
 const jacketService = {
   getJacketByOrderNo: async (orderNo: string) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/jacket-measurement/order/${encodeURIComponent(
-          orderNo
-        )}`
+        `/api/jacket-measurement/order/${encodeURIComponent(orderNo)}`
       );
       return response.data[0];
     } catch (error) {
@@ -21,9 +16,7 @@ const jacketService = {
   getJacketByCustomerId: async (customerId: string) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/jacket-measurement/customer/${encodeURIComponent(
-          customerId
-        )}`
+        `/api/jacket-measurement/customer/${encodeURIComponent(customerId)}`
       );
       console.log("Jacket1:" + customerId, response.data);
       return response.data;
@@ -39,7 +32,7 @@ const jacketService = {
   ) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/jacket-measurement`,
+        `/api/jacket-measurement`,
         {
           ...measurementData,
           customerId,
@@ -64,9 +57,7 @@ const jacketService = {
   ) => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/jacket-measurement/${encodeURIComponent(
-          measurementId
-        )}`,
+        `/api/jacket-measurement/${encodeURIComponent(measurementId)}`,
         measurementData,
         {
           headers: {
