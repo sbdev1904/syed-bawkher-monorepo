@@ -89,6 +89,13 @@ export async function DELETE(
       },
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Deleted photo ${s3Key} for order ${orderNo}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: `Photo ${s3Key} for order ${orderNo} deleted successfully.`,
     });

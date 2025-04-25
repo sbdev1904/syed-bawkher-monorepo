@@ -57,6 +57,13 @@ export async function POST(
       },
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Generated presigned URL for photo upload: ${s3Key}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({ url });
   } catch (error) {
     console.error("Failed to generate presigned URL:", error);

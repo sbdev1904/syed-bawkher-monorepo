@@ -101,6 +101,13 @@ export async function DELETE(
       await tx.orders.delete({ where: { orderNo } });
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Deleted order and all associated entities for orderNo: ${orderNo}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: `Order ${orderNo} and all associated entities have been deleted successfully.`,
     });

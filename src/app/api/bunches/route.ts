@@ -85,6 +85,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Created bunch with ID ${bunch.id}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: "Bunch created successfully",
       bunch,
