@@ -18,6 +18,7 @@ export async function GET() {
   }
 }
 
+// Create a new tailor
 export async function POST(request: Request) {
   try {
     const data = await request.json();

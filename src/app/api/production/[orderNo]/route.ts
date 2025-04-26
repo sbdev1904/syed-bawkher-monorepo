@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import productionService from "@/services/productionService";
+import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/authOptions";
 
 interface RouteContext {
   params: Promise<{ orderNo: string }>;
 }
 
+// Get production status by order number
 export async function GET(
   request: Request,
   context: RouteContext
@@ -30,6 +34,7 @@ export async function GET(
   }
 }
 
+// Update production status
 export async function PATCH(
   request: Request,
   context: RouteContext
@@ -37,6 +42,11 @@ export async function PATCH(
   try {
     const { orderNo } = await context.params;
     const { status, notes } = await request.json();
+
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     if (!status) {
       return NextResponse.json(
@@ -49,6 +59,13 @@ export async function PATCH(
       orderNo,
       status,
       notes,
+    });
+
+    await prisma.logEntry.create({
+      data: {
+        action: `Updated production status for order ${orderNo} to ${status}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
     });
 
     return NextResponse.json(production);

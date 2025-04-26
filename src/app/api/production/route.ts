@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { ProductionStatus } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/authOptions";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -40,9 +42,16 @@ export async function GET(request: Request) {
   }
 }
 
+// Initialize production tracking for an order
 export async function POST(request: Request) {
   const { searchParams } = new URL(request.url);
   const orderNo = searchParams.get("orderNo");
+
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   if (!orderNo) {
     return NextResponse.json(
@@ -65,6 +74,13 @@ export async function POST(request: Request) {
       data: {
         orderNo,
         status: "PATTERN_CUTTING_PENDING",
+      },
+    });
+
+    await prisma.logEntry.create({
+      data: {
+        action: `Production tracking initialized for order ${orderNo}`,
+        user: { connect: { id: Number(session.user.id) } },
       },
     });
 
