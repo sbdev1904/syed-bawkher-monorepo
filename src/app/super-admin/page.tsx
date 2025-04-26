@@ -14,7 +14,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import LogsTable from "@/components/tables/LogsTable";
-import { LogEntry } from "@/lib/logs";
+import { RefreshCw } from "lucide-react";
+
+interface LogEntry {
+  id: number;
+  action: string;
+  timestamp: string;
+}
 
 interface User {
   id: number;
@@ -46,6 +52,25 @@ export default function SuperAdminPage() {
       console.error("Failed to fetch users:", error);
     }
   };
+
+  const fetchUserLogs = async (userId: number) => {
+    try {
+      const response = await fetch(`/api/super-admin/users/${userId}/logs`);
+      if (response.ok) {
+        const data = await response.json();
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId ? { ...user, logs: data.logs } : user
+          )
+        );
+        setSelectedUser((prev) => (prev ? { ...prev, logs: data.logs } : null));
+      }
+    } catch (error) {
+      console.error("Failed to fetch user logs:", error);
+    }
+  };
+
+  console.log(selectedUser?.logs);
 
   const handleUpdateUser = async (userId: number, data: Partial<User>) => {
     try {
@@ -236,9 +261,22 @@ export default function SuperAdminPage() {
                   </p>
 
                   <h4 className="font-medium text-white mb-2">User Logs</h4>
-                  <div className="space-y-2">
-                    <LogsTable initialLogs={selectedUser.logs} />
-                  </div>
+
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-1 mb-4"
+                    onClick={() =>
+                      selectedUser && fetchUserLogs(selectedUser.id)
+                    }
+                  >
+                    <RefreshCw size={16} />
+                    Refresh
+                  </Button>
+
+                  <LogsTable
+                    key={selectedUser.id}
+                    initialLogs={selectedUser.logs}
+                  />
                 </div>
               )}
             </div>
