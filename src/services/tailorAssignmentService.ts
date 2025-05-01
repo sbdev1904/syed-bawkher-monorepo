@@ -30,7 +30,7 @@ const tailorAssignmentService = {
   getTailorsByOrder: async (orderNo: string) => {
     try {
       const response = await axios.get(
-        `/api/tailor-assignments/order/${orderNo}`
+        `/api/tailor-assignments/order/${encodeURIComponent(orderNo)}`
       );
       return response.data;
     } catch (error) {
