@@ -4,7 +4,6 @@ import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { Prisma } from "@prisma/client";
-import { connect } from "http2";
 const s3Client = new S3Client({
   region: process.env.AWS_REGION!,
   credentials: {
