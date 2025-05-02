@@ -70,16 +70,16 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { measurementId } = body;
 
-    // Remove undefined values to avoid Prisma validation errors
-    Object.keys(body).forEach(
-      (key) => body[key] === undefined && delete body[key]
+    const { measurementId, measurementData } = body;
+
+    Object.keys(measurementData).forEach(
+      (key) => measurementData[key] === undefined && delete measurementData[key]
     );
 
     const measurement = await prisma.shirtMeasurement.update({
       where: { measurement_id: measurementId },
-      data: body,
+      data: measurementData,
     });
 
     return NextResponse.json({

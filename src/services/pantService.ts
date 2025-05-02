@@ -58,8 +58,8 @@ const pantService = {
   ) => {
     try {
       const response = await axios.put(
-        `/api/pant-measurement/${encodeURIComponent(measurementId)}`,
-        measurementData,
+        `/api/pant-measurement`,
+        { measurementData, measurementId },
         {
           headers: {
             "Content-Type": "application/json",

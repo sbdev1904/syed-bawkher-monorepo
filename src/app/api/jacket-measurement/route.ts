@@ -76,15 +76,16 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { measurementId } = body;
 
-    Object.keys(body).forEach(
-      (key) => body[key] === undefined && delete body[key]
+    const { measurementId, measurementData } = body;
+
+    Object.keys(measurementData).forEach(
+      (key) => measurementData[key] === undefined && delete measurementData[key]
     );
 
     const measurement = await prisma.jacketMeasurement.update({
       where: { measurement_id: measurementId },
-      data: body,
+      data: measurementData,
     });
 
     return NextResponse.json({
