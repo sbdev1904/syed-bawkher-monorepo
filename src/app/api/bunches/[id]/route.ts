@@ -4,6 +4,7 @@ import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
+// Delete a bunch by ID
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -54,6 +55,13 @@ export async function DELETE(
           },
         },
       });
+    });
+
+    await prisma.logEntry.create({
+      data: {
+        action: `Deleted bunch with ID ${bunch_id}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
     });
 
     return NextResponse.json({

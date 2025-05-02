@@ -97,6 +97,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Created rack with ID ${rack.id}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: "Rack created successfully",
       rack,

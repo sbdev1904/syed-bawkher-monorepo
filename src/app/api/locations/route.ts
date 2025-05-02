@@ -61,6 +61,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Location ${name} created`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: "Location created successfully",
       location,

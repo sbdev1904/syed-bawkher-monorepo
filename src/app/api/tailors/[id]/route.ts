@@ -25,6 +25,8 @@ export async function GET(
   }
 }
 
+// Update an existing tailor
+
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -51,6 +53,7 @@ export async function PUT(
   }
 }
 
+// Delete a tailor by ID
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

@@ -55,6 +55,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Raw materials order ID: ${order.order_id}, ${product_name} created`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json(
       {
         message: "Raw materials order created successfully",

@@ -78,6 +78,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Order ${order.orderNo} created`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json(
       {
         message: "Order created successfully",

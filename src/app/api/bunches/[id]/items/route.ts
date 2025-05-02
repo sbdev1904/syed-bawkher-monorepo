@@ -114,6 +114,13 @@ export async function POST(
       });
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Added items to bunch with ID: ${bunch_id}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: "Items added successfully",
       bunch: updatedBunch,
@@ -238,6 +245,13 @@ export async function PUT(
       },
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Updated items in bunch with ID: ${bunch_id}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: "Items updated successfully",
       bunch: finalBunch,
@@ -339,6 +353,13 @@ export async function DELETE(
             location: true,
           },
         },
+      },
+    });
+
+    await prisma.logEntry.create({
+      data: {
+        action: `Removed items from bunch with ID: ${bunch_id}`,
+        user: { connect: { id: Number(session.user.id) } },
       },
     });
 

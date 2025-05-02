@@ -70,6 +70,13 @@ export async function PUT(
       data: body,
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Updated raw materials order with ID ${orderId}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: "Raw materials order updated successfully",
       order,
@@ -108,6 +115,13 @@ export async function DELETE(
 
     await prisma.rawMaterialsOrderList.delete({
       where: { order_id: orderId },
+    });
+
+    await prisma.logEntry.create({
+      data: {
+        action: `Deleted raw materials order with ID ${orderId}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
     });
 
     return NextResponse.json({

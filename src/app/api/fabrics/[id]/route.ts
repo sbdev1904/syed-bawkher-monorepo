@@ -82,6 +82,13 @@ export async function PUT(
       data: body,
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Fabric ID: ${fabricId}, ${fabric.fabric_brand} updated`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: "Fabric updated successfully",
       fabric,
@@ -145,6 +152,13 @@ export async function DELETE(
     // Delete the fabric from the database
     await prisma.fabric.delete({
       where: { fabric_id: fabricId },
+    });
+
+    await prisma.logEntry.create({
+      data: {
+        action: `Fabric ID: ${fabricId}, ${fabric.fabric_brand} deleted`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
     });
 
     return NextResponse.json({

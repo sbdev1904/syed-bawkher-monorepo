@@ -16,7 +16,13 @@ import ItemsTable from "@/components/tables/ItemsTable";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Order {
   orderNo: string;
@@ -47,10 +53,12 @@ interface TailorAssignment {
 
 const OrderDetails = () => {
   const pathname = usePathname();
-  const orderNo = pathname.split("/")[2];
+  const orderNo = decodeURIComponent(pathname.split("/")[2]);
   const [order, setOrder] = useState<Order | null>(null);
   const [availableTailors, setAvailableTailors] = useState<Tailor[]>([]);
-  const [assignedTailors, setAssignedTailors] = useState<TailorAssignment[]>([]);
+  const [assignedTailors, setAssignedTailors] = useState<TailorAssignment[]>(
+    []
+  );
   const [selectedTailor, setSelectedTailor] = useState<number | null>(null);
   const [dueDate, setDueDate] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
@@ -63,7 +71,9 @@ const OrderDetails = () => {
         const orderData = await orderService.getOrder(orderNo);
 
         // Fetch production status
-        const productionData = await productionService.getProductionStatus(orderNo);
+        const productionData = await productionService.getProductionStatus(
+          orderNo
+        );
 
         setOrder({
           ...orderData,
@@ -75,12 +85,18 @@ const OrderDetails = () => {
         setAvailableTailors(tailors);
 
         // Fetch assigned tailors
-        const assignments = await tailorAssignmentService.getTailorsByOrder(orderNo);
-        setAssignedTailors(assignments.map((assignment: TailorAssignment) => ({
-          ...assignment,
-          assigned_at: new Date(assignment.assigned_at),
-          due_date: assignment.due_date ? new Date(assignment.due_date) : null
-        })));
+        const assignments = await tailorAssignmentService.getTailorsByOrder(
+          orderNo
+        );
+        setAssignedTailors(
+          assignments.map((assignment: TailorAssignment) => ({
+            ...assignment,
+            assigned_at: new Date(assignment.assigned_at),
+            due_date: assignment.due_date
+              ? new Date(assignment.due_date)
+              : null,
+          }))
+        );
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
@@ -91,10 +107,14 @@ const OrderDetails = () => {
   const handleInitializeProduction = async () => {
     try {
       const production = await productionService.initializeProduction(orderNo);
-      setOrder(prev => prev ? {
-        ...prev,
-        production,
-      } : null);
+      setOrder((prev) =>
+        prev
+          ? {
+              ...prev,
+              production,
+            }
+          : null
+      );
       toast({
         title: "Success",
         description: "Production tracking initialized successfully!",
@@ -115,10 +135,14 @@ const OrderDetails = () => {
         orderNo,
         status,
       });
-      setOrder(prev => prev ? {
-        ...prev,
-        production,
-      } : null);
+      setOrder((prev) =>
+        prev
+          ? {
+              ...prev,
+              production,
+            }
+          : null
+      );
       toast({
         title: "Success",
         description: "Production status updated successfully!",
@@ -145,12 +169,16 @@ const OrderDetails = () => {
       });
 
       // Refresh assigned tailors
-      const assignments = await tailorAssignmentService.getTailorsByOrder(orderNo);
-      setAssignedTailors(assignments.map((assignment: TailorAssignment) => ({
-        ...assignment,
-        assigned_at: new Date(assignment.assigned_at),
-        due_date: assignment.due_date ? new Date(assignment.due_date) : null
-      })));
+      const assignments = await tailorAssignmentService.getTailorsByOrder(
+        orderNo
+      );
+      setAssignedTailors(
+        assignments.map((assignment: TailorAssignment) => ({
+          ...assignment,
+          assigned_at: new Date(assignment.assigned_at),
+          due_date: assignment.due_date ? new Date(assignment.due_date) : null,
+        }))
+      );
 
       // Reset form
       setSelectedTailor(null);
@@ -170,12 +198,16 @@ const OrderDetails = () => {
       });
 
       // Refresh assigned tailors
-      const assignments = await tailorAssignmentService.getTailorsByOrder(orderNo);
-      setAssignedTailors(assignments.map((assignment: TailorAssignment) => ({
-        ...assignment,
-        assigned_at: new Date(assignment.assigned_at),
-        due_date: assignment.due_date ? new Date(assignment.due_date) : null
-      })));
+      const assignments = await tailorAssignmentService.getTailorsByOrder(
+        orderNo
+      );
+      setAssignedTailors(
+        assignments.map((assignment: TailorAssignment) => ({
+          ...assignment,
+          assigned_at: new Date(assignment.assigned_at),
+          due_date: assignment.due_date ? new Date(assignment.due_date) : null,
+        }))
+      );
     } catch (error) {
       console.error("Failed to update status:", error);
     }
@@ -186,12 +218,16 @@ const OrderDetails = () => {
       await tailorAssignmentService.removeTailorFromOrder(orderNo, tailorId);
 
       // Refresh assigned tailors
-      const assignments = await tailorAssignmentService.getTailorsByOrder(orderNo);
-      setAssignedTailors(assignments.map((assignment: TailorAssignment) => ({
-        ...assignment,
-        assigned_at: new Date(assignment.assigned_at),
-        due_date: assignment.due_date ? new Date(assignment.due_date) : null
-      })));
+      const assignments = await tailorAssignmentService.getTailorsByOrder(
+        orderNo
+      );
+      setAssignedTailors(
+        assignments.map((assignment: TailorAssignment) => ({
+          ...assignment,
+          assigned_at: new Date(assignment.assigned_at),
+          due_date: assignment.due_date ? new Date(assignment.due_date) : null,
+        }))
+      );
     } catch (error) {
       console.error("Failed to remove tailor:", error);
     }
@@ -205,7 +241,9 @@ const OrderDetails = () => {
       <div className="mt-4">
         {!order?.production ? (
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">No production tracking</span>
+            <span className="text-sm text-muted-foreground">
+              No production tracking
+            </span>
             <Button
               variant="outline"
               size="sm"
@@ -219,19 +257,33 @@ const OrderDetails = () => {
             <span className="text-sm">Production Status:</span>
             <Select
               value={order.production.status}
-              onValueChange={(value) => handleUpdateProductionStatus(value as ProductionStatus)}
+              onValueChange={(value) =>
+                handleUpdateProductionStatus(value as ProductionStatus)
+              }
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="PATTERN_CUTTING_PENDING">Pattern Cutting</SelectItem>
-                <SelectItem value="TAILOR_ASSIGNMENT_PENDING">Tailor Assignment</SelectItem>
-                <SelectItem value="BASE_SUIT_PRODUCTION">Base Production</SelectItem>
+                <SelectItem value="PATTERN_CUTTING_PENDING">
+                  Pattern Cutting
+                </SelectItem>
+                <SelectItem value="TAILOR_ASSIGNMENT_PENDING">
+                  Tailor Assignment
+                </SelectItem>
+                <SelectItem value="BASE_SUIT_PRODUCTION">
+                  Base Production
+                </SelectItem>
                 <SelectItem value="TRIAL_PENDING">Trial Pending</SelectItem>
-                <SelectItem value="FINAL_PRODUCTION">Final Production</SelectItem>
-                <SelectItem value="FINAL_FITTING_PENDING">Final Fitting</SelectItem>
-                <SelectItem value="DELIVERY_PENDING">Delivery Pending</SelectItem>
+                <SelectItem value="FINAL_PRODUCTION">
+                  Final Production
+                </SelectItem>
+                <SelectItem value="FINAL_FITTING_PENDING">
+                  Final Fitting
+                </SelectItem>
+                <SelectItem value="DELIVERY_PENDING">
+                  Delivery Pending
+                </SelectItem>
                 <SelectItem value="DELIVERED">Delivered</SelectItem>
               </SelectContent>
             </Select>
@@ -252,14 +304,21 @@ const OrderDetails = () => {
         {/* Assignment Form */}
         <div className="bg-slate-800 p-4 rounded-lg shadow mb-4">
           <div className="grid grid-cols-4 gap-4">
-            <Select value={selectedTailor?.toString() || ""} onValueChange={(value) => setSelectedTailor(Number(value))}>
+            <Select
+              value={selectedTailor?.toString() || ""}
+              onValueChange={(value) => setSelectedTailor(Number(value))}
+            >
               <SelectTrigger className="bg-slate-900 w-full">
                 <SelectValue placeholder="Select Tailor" />
               </SelectTrigger>
               <SelectContent>
                 {availableTailors.map((tailor) => (
-                  <SelectItem key={tailor.tailor_id} value={tailor.tailor_id.toString()}>
-                    {tailor.first_name} {tailor.last_name} ({tailor.specialization})
+                  <SelectItem
+                    key={tailor.tailor_id}
+                    value={tailor.tailor_id.toString()}
+                  >
+                    {tailor.first_name} {tailor.last_name} (
+                    {tailor.specialization})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -318,7 +377,9 @@ const OrderDetails = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Select
                       value={assignment.status}
-                      onValueChange={(value) => handleUpdateStatus(assignment.tailor.tailor_id, value)}
+                      onValueChange={(value) =>
+                        handleUpdateStatus(assignment.tailor.tailor_id, value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -341,7 +402,9 @@ const OrderDetails = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
                       className="text-red-600 hover:text-red-900"
-                      onClick={() => handleRemoveTailor(assignment.tailor.tailor_id)}
+                      onClick={() =>
+                        handleRemoveTailor(assignment.tailor.tailor_id)
+                      }
                     >
                       Remove
                     </button>

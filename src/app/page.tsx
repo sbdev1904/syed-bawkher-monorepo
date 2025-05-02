@@ -35,7 +35,8 @@ import { format } from "date-fns";
 export default function Home() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { isLoading, error, stats, recentOrders, upcomingDeliveries } = useDashboard();
+  const { isLoading, error, stats, recentOrders, upcomingDeliveries } =
+    useDashboard();
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -44,7 +45,11 @@ export default function Home() {
   }, [status, router]);
 
   if (status === "loading" || isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
   if (!session) {
@@ -89,13 +94,19 @@ export default function Home() {
       <div className="space-y-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl text-slate-100 font-bold">Dashboard Overview</h1>
+            <h1 className="text-2xl text-slate-100 font-bold">
+              Dashboard Overview
+            </h1>
             <div className="flex flex-col gap-1">
               <div className="flex items-center text-slate-300">
                 <GreetingIcon className="h-4 w-4 mr-2" />
-                <span className="text-lg">{greeting}, {session.user.username}!</span>
+                <span className="text-lg">
+                  {greeting}, {session.user.username}!
+                </span>
               </div>
-              <p className="text-slate-400 text-sm ml-6">What are we doing today?</p>
+              <p className="text-slate-400 text-sm ml-6">
+                What are we doing today?
+              </p>
               <div className="flex items-center ml-6 mt-1">
                 <Badge variant="secondary" className="text-xs">
                   {session.user.role.toLowerCase()}
@@ -116,7 +127,9 @@ export default function Home() {
               <User className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalCustomers || 0}</div>
+              <div className="text-2xl font-bold">
+                {stats?.totalCustomers || 0}
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -125,7 +138,9 @@ export default function Home() {
               <ShoppingCart className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.activeOrders || 0}</div>
+              <div className="text-2xl font-bold">
+                {stats?.activeOrders || 0}
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -134,7 +149,9 @@ export default function Home() {
               <Scissors className="h-4 w-4 text-yellow-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.inProduction || 0}</div>
+              <div className="text-2xl font-bold">
+                {stats?.inProduction || 0}
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -143,7 +160,9 @@ export default function Home() {
               <Package className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.lowStockItems || 0}</div>
+              <div className="text-2xl font-bold">
+                {stats?.lowStockItems || 0}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -153,7 +172,9 @@ export default function Home() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <h3 className="text-lg font-medium">Recent Orders</h3>
-                <Button variant="link" onClick={() => router.push('/orders')}>View All</Button>
+                <Button variant="link" onClick={() => router.push("/orders")}>
+                  View All
+                </Button>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -171,7 +192,11 @@ export default function Home() {
                         <TableCell>
                           <Button
                             variant="link"
-                            onClick={() => router.push(`/order/${order.orderNo}`)}
+                            onClick={() =>
+                              router.push(
+                                `/order/${encodeURIComponent(order.orderNo)}`
+                              )
+                            }
                           >
                             {order.orderNo}
                           </Button>
@@ -180,14 +205,19 @@ export default function Home() {
                         <TableCell>
                           <div className="flex gap-1">
                             {order.items.map((item, index) => (
-                              <Badge key={`${order.orderNo}-${item.name}-${index}`} variant="secondary">
+                              <Badge
+                                key={`${order.orderNo}-${item.name}-${index}`}
+                                variant="secondary"
+                              >
                                 {item.name}
                               </Badge>
                             ))}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge className={cn(getStatusBadgeClass(order.status))}>
+                          <Badge
+                            className={cn(getStatusBadgeClass(order.status))}
+                          >
                             {order.status}
                           </Badge>
                         </TableCell>
@@ -207,10 +237,15 @@ export default function Home() {
               <CardContent>
                 <ul className="space-y-4">
                   {upcomingDeliveries.map((delivery) => (
-                    <li key={delivery.id} className="flex justify-between items-center">
-                      <span>{delivery.orderNo} - {delivery.customer.name}</span>
+                    <li
+                      key={delivery.id}
+                      className="flex justify-between items-center"
+                    >
+                      <span>
+                        {delivery.orderNo} - {delivery.customer.name}
+                      </span>
                       <Badge variant="secondary">
-                        {format(new Date(delivery.deliveryDate), 'MMM d')}
+                        {format(new Date(delivery.deliveryDate), "MMM d")}
                       </Badge>
                     </li>
                   ))}

@@ -121,6 +121,13 @@ export async function PATCH(
       });
     });
 
+    await prisma.logEntry.create({
+      data: {
+        action: `Moved bunch ${bunch.id} from rack ${bunch.rack_id} to rack ${newrack_id}`,
+        user: { connect: { id: Number(session.user.id) } },
+      },
+    });
+
     return NextResponse.json({
       message: "Bunch moved successfully",
       bunch: updatedBunch,
