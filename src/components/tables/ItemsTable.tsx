@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface Item {
@@ -82,7 +81,6 @@ const ItemsTable = ({ orderNo }: { orderNo: string }) => {
               <TableCell>{item.item_type}</TableCell>
               <TableCell>{item.fabric_id}</TableCell>
               <TableCell>{item.lining_fabric_id}</TableCell>
-              
             </TableRow>
           ))}
         </TableBody>
