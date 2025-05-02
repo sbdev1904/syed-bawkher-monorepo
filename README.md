@@ -98,10 +98,8 @@ npm run start
 - `/components` - Reusable UI components
 - `/app` - Next.js app router pages and layouts
 
-## Contributing
-
-[Add your contribution guidelines here]
+ 
 
 ## License
 
-[Add your license information here]
+By Crevn.xyz
