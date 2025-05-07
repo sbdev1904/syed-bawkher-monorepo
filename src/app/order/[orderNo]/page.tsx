@@ -368,7 +368,7 @@ const OrderDetails = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 text-white">
               {assignedTailors.map((assignment) => (
                 <tr key={assignment.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -400,14 +400,15 @@ const OrderDetails = () => {
                       : "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <button
-                      className="text-red-600 hover:text-red-900"
+                    <Button
+                      variant="destructive"
+                      className="bg-red-600 hover:bg-red-900"
                       onClick={() =>
                         handleRemoveTailor(assignment.tailor.tailor_id)
                       }
                     >
                       Remove
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}

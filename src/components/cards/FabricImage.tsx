@@ -122,8 +122,8 @@ const FabricImage = ({
 
       {imageUrl && (
         <div className="relative">
-          <div className="w-[150px] h-auto mt-2 overflow-hidden rounded-md">
-            <Image src={imageUrl} alt="Fabric" className="w-full h-auto" />
+          <div className=" h-auto mt-2 overflow-hidden rounded-md">
+            <Image src={imageUrl} alt="Fabric Image" height={400} width={300} />
           </div>
           <AlertDialog
             open={deleteDialogOpen}
