@@ -113,7 +113,7 @@ const fabricService = {
   getPresignedUrl: async (fabricId: number, filename: string) => {
     try {
       const response = await axios.post(
-        `/api/fabrics/${encodeURIComponent(fabricId)}/upload-image`,
+        `/api/fabrics/${encodeURIComponent(fabricId)}/image`,
         { filename },
         {
           headers: {
