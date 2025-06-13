@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output = "app/generated/prisma/client"
+  output   = "app/generated/prisma/client"
 }
 
 datasource db {
@@ -58,6 +58,9 @@ model InventoryMovement {
   quantity Float
   note     String?
   moved_at DateTime      @default(now())
+
+  @@index([item_id])
+  @@index([moved_at])
 }
 
 enum MovementType {
@@ -137,6 +140,8 @@ model Fabric {
   fabricOrders     FabricOrderList[]
   items            Items[]           @relation("FabricRelation")
   liningItems      Items[]           @relation("LiningFabricRelation")
+
+  @@index([available_length])
 }
 
 model FabricOrderList {
@@ -290,6 +295,9 @@ model Orders {
   OrderPhotos            OrderPhotos[]
   tailors                OrderTailor[]
   production             OrderProduction?
+
+  @@index([date])
+  @@index([customer_id])
 }
 
 model Items {
@@ -314,6 +322,9 @@ model Items {
   final_shirt_measurement_id  String?
   final_pant_measurement      FinalPantMeasurement?   @relation(fields: [final_pant_measurement_id], references: [measurement_id])
   final_pant_measurement_id   String?
+
+  @@index([orderNo])
+  @@index([item_type])
 }
 
 enum ItemType {
@@ -356,6 +367,8 @@ model Tailor {
   hourly_rate       Decimal?      @db.Decimal(10, 2)
   notes             String?
   orders            OrderTailor[]
+
+  @@index([status])
 }
 
 model OrderTailor {
@@ -403,6 +416,8 @@ model LogEntry {
   action    String
   timestamp DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
+
+  @@index([timestamp])
 }
 
 enum ProductionStatus {
@@ -425,6 +440,7 @@ model OrderProduction {
   notes     String?
 
   @@index([orderNo])
+  @@index([status])
 }
 
 enum Role {
